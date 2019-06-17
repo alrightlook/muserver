@@ -2,12 +2,17 @@ package messages;
 
 import com.google.auto.value.AutoValue;
 
+import javax.annotation.Nullable;
+
 @AutoValue
 public abstract class PMSG_SERVER_INFO_RECV {
-   public abstract PSBMSG_HEAD header();
-   public abstract byte serverCode();
+    @Nullable
+    public abstract PSBMSG_HEAD header();
 
-    public static PMSG_SERVER_INFO_RECV create(PSBMSG_HEAD header, byte serverCode) {
+    @Nullable
+    public abstract Byte serverCode();
+
+    public static PMSG_SERVER_INFO_RECV create(PSBMSG_HEAD header, Byte serverCode) {
         return builder()
                 .header(header)
                 .serverCode(serverCode)
@@ -22,7 +27,7 @@ public abstract class PMSG_SERVER_INFO_RECV {
     public abstract static class Builder {
         public abstract Builder header(PSBMSG_HEAD header);
 
-        public abstract Builder serverCode(byte serverCode);
+        public abstract Builder serverCode(Byte serverCode);
 
         public abstract PMSG_SERVER_INFO_RECV build();
     }

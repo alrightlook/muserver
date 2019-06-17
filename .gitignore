@@ -2,3 +2,5 @@
 \.idea/
 
 connectserver/target/classes/
+
+connectserver/target/

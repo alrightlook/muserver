@@ -1,14 +1,24 @@
 package messages;
 
 import com.google.auto.value.AutoValue;
+import io.netty.buffer.ByteBuf;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.handler.codec.MessageToByteEncoder;
+
+import javax.annotation.Nullable;
 
 @AutoValue
 public abstract class PBMSG_HEAD {
-    public abstract byte type();
-    public abstract byte size();
-    public abstract byte head();
+    @Nullable
+    public abstract Byte type();
 
-    public static PBMSG_HEAD create(byte type, byte size, byte head) {
+    @Nullable
+    public abstract Byte size();
+
+    @Nullable
+    public abstract Byte head();
+
+    public static PBMSG_HEAD create(Byte type, Byte size, Byte head) {
         return builder()
                 .type(type)
                 .size(size)
@@ -22,11 +32,11 @@ public abstract class PBMSG_HEAD {
 
     @AutoValue.Builder
     public abstract static class Builder {
-        public abstract Builder type(byte type);
+        public abstract Builder type(Byte type);
 
-        public abstract Builder size(byte size);
+        public abstract Builder size(Byte size);
 
-        public abstract Builder head(byte head);
+        public abstract Builder head(Byte head);
 
         public abstract PBMSG_HEAD build();
     }

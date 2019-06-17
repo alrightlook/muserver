@@ -2,13 +2,20 @@ package messages;
 
 import com.google.auto.value.AutoValue;
 
+import javax.annotation.Nullable;
+
 @AutoValue
 public abstract class PMSG_SERVER_INFO_SEND {
+    @Nullable
     public abstract PSBMSG_HEAD header();
-    public abstract byte[] serverAddress();
-    public abstract short serverPort();
 
-    public static PMSG_SERVER_INFO_SEND create(PSBMSG_HEAD header, byte[] serverAddress, short serverPort) {
+    @Nullable
+    public abstract byte[] serverAddress();
+
+    @Nullable
+    public abstract Short serverPort();
+
+    public static PMSG_SERVER_INFO_SEND create(PSBMSG_HEAD header, byte[] serverAddress, Short serverPort) {
         return builder()
                 .header(header)
                 .serverAddress(serverAddress)
@@ -26,7 +33,7 @@ public abstract class PMSG_SERVER_INFO_SEND {
 
         public abstract Builder serverAddress(byte[] serverAddress);
 
-        public abstract Builder serverPort(short serverPort);
+        public abstract Builder serverPort(Short serverPort);
 
         public abstract PMSG_SERVER_INFO_SEND build();
     }

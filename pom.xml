@@ -10,8 +10,6 @@
     <version>1.0</version>
     <modules>
         <module>connectserver</module>
-        <module>dataserver</module>
-        <module>joinserver</module>
     </modules>
 
     <build>
@@ -62,6 +60,14 @@
             <artifactId>auto-value-gson</artifactId>
             <version>0.8.0</version>
             <scope>provided</scope>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.4.2</version>
+            <scope>test</scope>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/io.netty/netty-all -->

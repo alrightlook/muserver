@@ -2,14 +2,23 @@ package messages;
 
 import com.google.auto.value.AutoValue;
 
+import javax.annotation.Nullable;
+
 @AutoValue
 public abstract class PSBMSG_HEAD {
-    public abstract byte type();
-    public abstract byte size();
-    public abstract byte head();
-    public abstract byte subH();
+    @Nullable
+    public abstract Byte type();
 
-    public static PSBMSG_HEAD create(byte type, byte size, byte head, byte subH) {
+    @Nullable
+    public abstract Byte size();
+
+    @Nullable
+    public abstract Byte head();
+
+    @Nullable
+    public abstract Byte subH();
+
+    public static PSBMSG_HEAD create(Byte type, Byte size, Byte head, Byte subH) {
         return builder()
                 .type(type)
                 .size(size)
@@ -24,13 +33,13 @@ public abstract class PSBMSG_HEAD {
 
     @AutoValue.Builder
     public abstract static class Builder {
-        public abstract Builder type(byte type);
+        public abstract Builder type(Byte type);
 
-        public abstract Builder size(byte size);
+        public abstract Builder size(Byte size);
 
-        public abstract Builder head(byte head);
+        public abstract Builder head(Byte head);
 
-        public abstract Builder subH(byte subH);
+        public abstract Builder subH(Byte subH);
 
         public abstract PSBMSG_HEAD build();
     }
