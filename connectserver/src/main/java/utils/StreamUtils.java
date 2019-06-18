@@ -1,12 +1,18 @@
 package utils;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public class StreamingUtils {
+public class StreamUtils {
     public static void writeByte(byte value, OutputStream stream) throws IOException {
         stream.write(value);
+    }
+
+    public static void writeShort(short value, ByteArrayOutputStream stream) throws IOException {
+        writeByte((byte) (value & 0xFF), stream);
+        writeByte((byte) ((value >> 8) & 0xFF), stream);
     }
 
     public static void writeInt(int value, OutputStream stream) throws IOException {
@@ -51,6 +57,18 @@ public class StreamingUtils {
         return val1 + (val2 << 8) + (val3 << 16) + (val4 << 24);
     }
 
+    public static byte readByte(InputStream stream) throws IOException {
+        byte[] buffer = new byte[1];
+
+        int read = stream.read(buffer, 0, 1);
+
+        if (read < 0) {
+            throw new IOException("Input stream is null or not valid");
+        }
+
+        return buffer[0];
+    }
+
     public static long readUInt(InputStream stream) throws IOException {
         int val1 = stream.read();
         int val2 = stream.read();
@@ -79,10 +97,13 @@ public class StreamingUtils {
         int offset = 0;
         while (offset < buffer.length) {
             int read = stream.read(buffer, offset, buffer.length - offset);
+
+            if (read < 0) {
+                throw new IOException("Input stream is null or not valid");
+            }
+
             if (read > 0) {
                 offset += read;
-            } else if (read < 0) {
-                throw new IOException();
             } else {
                 Thread.yield();
             }

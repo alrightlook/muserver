@@ -12,6 +12,8 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.lang.instrument.Instrumentation;
+
 public class ConnectServerTest {
     private static ChannelFuture connectServer;
 
@@ -19,8 +21,7 @@ public class ConnectServerTest {
 
     @BeforeAll
     public static void startup() throws Exception {
-        connectServer = ConnectServer.start();
-        Thread.sleep(5000);
+        connectServer = ConnectServer.start().sync();
     }
 
     @AfterAll
@@ -34,25 +35,31 @@ public class ConnectServerTest {
         try {
             Bootstrap tcpBootstrap = new Bootstrap();
             tcpBootstrap.group(group)
-                    .channel(NioSocketChannel.class)
-                    .handler(new ChannelInitializer<SocketChannel>() {
-                        @Override
-                        public void initChannel(SocketChannel ch) throws Exception {
-                            ChannelPipeline channelPipeline = ch.pipeline();
-                            channelPipeline.addLast(
-                                    new ObjectEncoder(),
-                                    new ObjectDecoder(ClassResolvers.cacheDisabled(null)),
-                                    new ConnectServerClientHandler());
-                        }
-                    });
+                .channel(NioSocketChannel.class)
+                .handler(new ChannelInitializer<SocketChannel>() {
+                    @Override
+                    public void initChannel(SocketChannel ch) throws Exception {
+                        ChannelPipeline channelPipeline = ch.pipeline();
+                        channelPipeline.addLast(
+                            new ObjectEncoder(),
+                            new ObjectDecoder(ClassResolvers.cacheDisabled(null)),
+                            new ConnectServerClientHandler());
+                    }
+                });
 
-            tcpBootstrap.connect("192.168.88.30", 44405).sync().channel().closeFuture().sync();
+            tcpBootstrap.connect("localhost", 44405).sync().channel().closeFuture().sync();
         } finally {
             group.shutdownGracefully();
         }
     }
 
     static class ConnectServerClientHandler extends ChannelInboundHandlerAdapter {
+        private static Instrumentation instrumentation;
+
+        public ConnectServerClientHandler() {
+            super();
+        }
+
         @Override
         public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
             logger.info(msg);
