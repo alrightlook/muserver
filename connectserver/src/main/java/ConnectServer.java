@@ -11,10 +11,17 @@ import org.apache.logging.log4j.Logger;
 public class ConnectServer {
     private final static Logger logger = LogManager.getLogger(ConnectServer.class);
 
-    public static ChannelFuture start() throws Exception {
+    public static ChannelFuture startTcpListener() throws Exception {
         EventLoopGroup parentLoopGroup = new NioEventLoopGroup(1), childLoopGroup = new NioEventLoopGroup();
+
         ServerBootstrap tcpBootstrap = new ServerBootstrap();
-        tcpBootstrap.group(parentLoopGroup, childLoopGroup).channel(NioServerSocketChannel.class).handler(new LoggingHandler(LogLevel.INFO)).childHandler(new ConnectServerInitializer());
+
+        tcpBootstrap
+                .group(parentLoopGroup, childLoopGroup)
+                .channel(NioServerSocketChannel.class)
+                .handler(new LoggingHandler(LogLevel.INFO))
+                .childHandler(new ConnectServerInitializer());
+
         return tcpBootstrap.bind(44405);
     }
 }

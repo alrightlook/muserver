@@ -7,8 +7,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 @AutoValue
-public abstract class ConnectionResponse extends AbstractSerializer {
- public static ConnectionResponse create(C1C3Header header, byte result) {
+public abstract class ConnectionResponse extends AbstractPacket {
+ public static ConnectionResponse create(ByteHeader header, byte result) {
   return builder()
       .header(header)
       .result(result)
@@ -19,7 +19,7 @@ public abstract class ConnectionResponse extends AbstractSerializer {
   return new AutoValue_ConnectionResponse.Builder();
  }
 
- public abstract C1C3Header header();
+ public abstract ByteHeader header();
 
  public abstract byte result();
 
@@ -32,7 +32,7 @@ public abstract class ConnectionResponse extends AbstractSerializer {
 
  @AutoValue.Builder
  public abstract static class Builder {
-  public abstract Builder header(C1C3Header header);
+  public abstract Builder header(ByteHeader header);
 
   public abstract Builder result(byte result);
 

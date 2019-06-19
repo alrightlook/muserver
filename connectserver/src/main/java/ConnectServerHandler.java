@@ -1,8 +1,8 @@
-import enums.PacketType;
+import enums.Type;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelId;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import messages.C1C3Header;
+import messages.ByteHeader;
 import messages.ConnectionResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,7 +17,11 @@ public class ConnectServerHandler extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        ctx.write(msg);
+        byte[] buffer = (byte[]) msg;
+
+        switch (buffer[0]) {
+
+        }
     }
 
     @Override
@@ -28,7 +32,8 @@ public class ConnectServerHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         clients.put(ctx.channel().id(), Client.create(clients.size()));
-        ctx.writeAndFlush(ConnectionResponse.create(C1C3Header.create(PacketType.C1, (byte) 4, (byte) 0), (byte) 1).serialize(new ByteArrayOutputStream()));
+        byte[] bytes = ConnectionResponse.create(ByteHeader.create(Type.C1, (byte) 0x4, (byte) 0x0), (byte) 0x1).serialize(new ByteArrayOutputStream());
+        ctx.writeAndFlush(bytes);
     }
 
     @Override

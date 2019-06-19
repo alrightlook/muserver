@@ -1,18 +1,21 @@
 import io.netty.bootstrap.Bootstrap;
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.codec.MessageToByteEncoder;
 import io.netty.handler.codec.serialization.ClassResolvers;
 import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
+import messages.AbstractPacket;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.lang.instrument.Instrumentation;
+import java.io.ByteArrayOutputStream;
 
 public class ConnectServerTest {
     private static ChannelFuture connectServer;
@@ -21,7 +24,7 @@ public class ConnectServerTest {
 
     @BeforeAll
     public static void startup() throws Exception {
-        connectServer = ConnectServer.start().sync();
+        connectServer = ConnectServer.startTcpListener().sync();
     }
 
     @AfterAll
@@ -35,17 +38,17 @@ public class ConnectServerTest {
         try {
             Bootstrap tcpBootstrap = new Bootstrap();
             tcpBootstrap.group(group)
-                .channel(NioSocketChannel.class)
-                .handler(new ChannelInitializer<SocketChannel>() {
-                    @Override
-                    public void initChannel(SocketChannel ch) throws Exception {
-                        ChannelPipeline channelPipeline = ch.pipeline();
-                        channelPipeline.addLast(
-                            new ObjectEncoder(),
-                            new ObjectDecoder(ClassResolvers.cacheDisabled(null)),
-                            new ConnectServerClientHandler());
-                    }
-                });
+                    .channel(NioSocketChannel.class)
+                    .handler(new ChannelInitializer<SocketChannel>() {
+                        @Override
+                        public void initChannel(SocketChannel ch) throws Exception {
+                            ChannelPipeline channelPipeline = ch.pipeline();
+                            channelPipeline.addLast(
+                                    new ObjectEncoder(),
+                                    new ObjectDecoder(ClassResolvers.cacheDisabled(null)),
+                                    new ConnectServerClientHandler());
+                        }
+                    });
 
             tcpBootstrap.connect("localhost", 44405).sync().channel().closeFuture().sync();
         } finally {
@@ -53,31 +56,34 @@ public class ConnectServerTest {
         }
     }
 
-    static class ConnectServerClientHandler extends ChannelInboundHandlerAdapter {
-        private static Instrumentation instrumentation;
+    static class PacketEncoder extends MessageToByteEncoder<AbstractPacket> {
+        @Override
+        protected void encode(ChannelHandlerContext ctx, AbstractPacket AbstractPacket, ByteBuf byteBuf) throws Exception {
+            try (ByteArrayOutputStream stream = new ByteArrayOutputStream()) {
+                byteBuf.writeBytes(AbstractPacket.serialize(stream));
+                ctx.writeAndFlush(byteBuf);
+            }
+        }
+    }
 
+    static class ConnectServerClientHandler extends ChannelInboundHandlerAdapter {
         public ConnectServerClientHandler() {
             super();
         }
 
         @Override
         public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-            logger.info(msg);
-            ctx.write(msg);
+            ctx.write(new byte[]{(byte) 0xC1, (byte) 0x10, (byte) 0x20, (byte) 0x30});
         }
 
         @Override
         public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
-            String logString = "Going to flush client message";
-            logger.info(logString);
             ctx.flush();
         }
 
         @Override
         public void channelActive(ChannelHandlerContext ctx) throws Exception {
-            String logString = "Hello, from client";
-            logger.info(logString);
-            ctx.writeAndFlush(logString);
+            ctx.writeAndFlush(new byte[]{(byte) 0xC1});
         }
 
         @Override

@@ -1,11 +1,11 @@
 package enums;
 
-public enum PacketType {
+public enum Type {
  C1(0xC1), C2(0xC2), C3(0xC3), C4(0xC4);
 
  private final int type;
 
- PacketType(int type) {
+ Type(int type) {
   this.type = type;
  }
 
@@ -13,8 +13,8 @@ public enum PacketType {
   return (byte) type;
  }
 
- public static PacketType toPacketType(int type) {
-  for (PacketType value : PacketType.values()) {
+ public static Type toPacketType(int type) {
+  for (Type value : Type.values()) {
    if (value.type() == type) {
     return value;
    }
