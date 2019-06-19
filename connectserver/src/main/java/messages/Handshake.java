@@ -7,8 +7,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 @AutoValue
-public abstract class ConnectionResponse extends AbstractPacket {
- public static ConnectionResponse create(ByteHeader header, byte result) {
+public abstract class Handshake extends AbstractPacket {
+ public static Handshake create(ByteHeader header, byte result) {
   return builder()
       .header(header)
       .result(result)
@@ -16,7 +16,7 @@ public abstract class ConnectionResponse extends AbstractPacket {
  }
 
  public static Builder builder() {
-  return new AutoValue_ConnectionResponse.Builder();
+  return new AutoValue_Handshake.Builder();
  }
 
  public abstract ByteHeader header();
@@ -36,6 +36,6 @@ public abstract class ConnectionResponse extends AbstractPacket {
 
   public abstract Builder result(byte result);
 
-  public abstract ConnectionResponse build();
+  public abstract Handshake build();
  }
 }

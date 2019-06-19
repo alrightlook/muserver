@@ -56,16 +56,6 @@ public class ConnectServerTest {
         }
     }
 
-    static class PacketEncoder extends MessageToByteEncoder<AbstractPacket> {
-        @Override
-        protected void encode(ChannelHandlerContext ctx, AbstractPacket AbstractPacket, ByteBuf byteBuf) throws Exception {
-            try (ByteArrayOutputStream stream = new ByteArrayOutputStream()) {
-                byteBuf.writeBytes(AbstractPacket.serialize(stream));
-                ctx.writeAndFlush(byteBuf);
-            }
-        }
-    }
-
     static class ConnectServerClientHandler extends ChannelInboundHandlerAdapter {
         public ConnectServerClientHandler() {
             super();

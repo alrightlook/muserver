@@ -1,59 +1,46 @@
 package messages;
 
 import com.google.auto.value.AutoValue;
-import enums.Type;
 import utils.StreamUtils;
 
 import java.io.*;
 
 @AutoValue
 public abstract class ByteHeader extends AbstractPacket {
- public abstract Type type();
-
- public abstract byte size();
-
- public abstract byte headCode();
-
- public abstract byte subCode();
-
- public static ByteHeader create(Type type, byte size, byte headCode) {
-  return builder()
-          .type(type)
-          .size(size)
-          .headCode(headCode)
-          .build();
+ public static Builder builder() {
+  return new AutoValue_ByteHeader.Builder();
  }
 
- public static ByteHeader create(Type type, byte size, byte headCode, byte subCode) {
-  return builder()
-          .type(type)
-          .size(size)
-          .headCode(headCode)
-          .subCode(subCode)
-          .build();
- }
+ public abstract Byte type();
+
+ public abstract Byte size();
+
+ public abstract Byte headCode();
+
+ public abstract Byte subCode();
 
  @Override
  public byte[] serialize(ByteArrayOutputStream stream) throws IOException {
-  StreamUtils.writeByte(type().type(), stream);
+  StreamUtils.writeByte(type(), stream);
   StreamUtils.writeByte(size(), stream);
   StreamUtils.writeByte(headCode(), stream);
-  return stream.toByteArray();
- }
 
- public static Builder builder() {
-  return new AutoValue_Byte_Header.Builder();
+  if (subCode() != null) {
+   StreamUtils.writeByte(subCode(), stream);
+  }
+
+  return stream.toByteArray();
  }
 
  @AutoValue.Builder
  public abstract static class Builder {
-  public abstract Builder type(Type type);
+  public abstract Builder type(Byte type);
 
-  public abstract Builder size(byte size);
+  public abstract Builder size(Byte size);
 
-  public abstract Builder headCode(byte headCode);
+  public abstract Builder headCode(Byte headCode);
 
-  public abstract Builder subCode(byte subCode);
+  public abstract Builder subCode(Byte subCode);
 
   public abstract ByteHeader build();
  }
