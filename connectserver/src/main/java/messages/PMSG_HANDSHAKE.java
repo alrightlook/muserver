@@ -16,7 +16,7 @@ public abstract class PMSG_HANDSHAKE extends AbstractPacket {
  }
 
  public static Builder builder() {
-  return new AutoValue_PMSGHANDSHAKE.Builder();
+  return new AutoValue_PMSG_HANDSHAKE.Builder();
  }
 
  public abstract PMSG_HEAD header();
