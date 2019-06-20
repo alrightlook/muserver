@@ -24,6 +24,10 @@ public abstract class PMSG_SERVERINFO extends AbstractPacket {
         return new AutoValue_PMSG_SERVERINFO.Builder();
     }
 
+    public static PMSG_SERVERINFO deserialize(byte[] buffer) {
+        return null;
+    }
+
     public abstract PMSG_HEAD header();
 
     public abstract short serverCode();
