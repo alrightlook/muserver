@@ -7,8 +7,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 @AutoValue
-public abstract class Handshake extends AbstractPacket {
- public static Handshake create(ByteHeader header, byte result) {
+public abstract class PMSG_HANDSHAKE extends AbstractPacket {
+ public static PMSG_HANDSHAKE create(PMSG_HEAD header, byte result) {
   return builder()
       .header(header)
       .result(result)
@@ -16,10 +16,10 @@ public abstract class Handshake extends AbstractPacket {
  }
 
  public static Builder builder() {
-  return new AutoValue_Handshake.Builder();
+  return new AutoValue_PMSGHANDSHAKE.Builder();
  }
 
- public abstract ByteHeader header();
+ public abstract PMSG_HEAD header();
 
  public abstract byte result();
 
@@ -32,10 +32,10 @@ public abstract class Handshake extends AbstractPacket {
 
  @AutoValue.Builder
  public abstract static class Builder {
-  public abstract Builder header(ByteHeader header);
+  public abstract Builder header(PMSG_HEAD header);
 
   public abstract Builder result(byte result);
 
-  public abstract Handshake build();
+  public abstract PMSG_HANDSHAKE build();
  }
 }

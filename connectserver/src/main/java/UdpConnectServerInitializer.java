@@ -11,8 +11,6 @@ public class UdpConnectServerInitializer extends ChannelInitializer<DatagramChan
  @Override
  protected void initChannel(DatagramChannel datagramChannel) throws Exception {
   ChannelPipeline channelPipeline = datagramChannel.pipeline();
-  channelPipeline.addLast(new ObjectEncoder());
-  channelPipeline.addLast(new ObjectDecoder(ClassResolvers.cacheDisabled(null)));
   channelPipeline.addLast(new LoggingHandler(LogLevel.INFO));
   channelPipeline.addLast(new UdpConnectServerHandler());
  }

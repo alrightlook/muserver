@@ -1,21 +1,16 @@
 import io.netty.bootstrap.Bootstrap;
-import io.netty.buffer.ByteBuf;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.MessageToByteEncoder;
 import io.netty.handler.codec.serialization.ClassResolvers;
 import io.netty.handler.codec.serialization.ObjectDecoder;
 import io.netty.handler.codec.serialization.ObjectEncoder;
-import messages.AbstractPacket;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
-import java.io.ByteArrayOutputStream;
 
 public class ConnectServerTest {
     private static ChannelFuture connectServer;
@@ -24,12 +19,10 @@ public class ConnectServerTest {
 
     @BeforeAll
     public static void startup() throws Exception {
-        connectServer = ConnectServer.startTcpListener().sync();
     }
 
     @AfterAll
     public static void shutdown() throws Exception {
-        connectServer.sync().channel().closeFuture().sync();
     }
 
     @Test
