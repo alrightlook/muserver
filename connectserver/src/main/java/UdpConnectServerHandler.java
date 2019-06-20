@@ -14,12 +14,7 @@ public class UdpConnectServerHandler extends SimpleChannelInboundHandler<Datagra
 
  @Override
  protected void channelRead0(ChannelHandlerContext ctx, DatagramPacket packet) throws Exception {
-  int readableBytes = packet.content().readableBytes();
-
-  byte[] buffer = new byte[readableBytes];
-
-  packet.content().readBytes(buffer);
-
-
+  logger.info("UDP CONNECT SERVER HANDLER");
+  logger.info(packet.toString());
  }
 }
