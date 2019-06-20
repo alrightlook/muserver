@@ -10,9 +10,9 @@ import java.io.IOException;
 public abstract class PMSG_HANDSHAKE extends AbstractPacket {
  public static PMSG_HANDSHAKE create(PMSG_HEAD header, byte result) {
   return builder()
-      .header(header)
-      .result(result)
-      .build();
+          .header(header)
+          .result(result)
+          .build();
  }
 
  public static Builder builder() {

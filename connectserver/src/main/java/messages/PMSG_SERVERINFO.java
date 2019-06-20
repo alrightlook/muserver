@@ -8,14 +8,6 @@ import java.io.IOException;
 
 @AutoValue
 public abstract class PMSG_SERVERINFO extends AbstractPacket {
-    public abstract PMSG_HEAD header();
-    public abstract short serverCode();
-    public abstract byte percent();
-    public abstract short userCount();
-    public abstract short accountCount();
-    public abstract short pcBangCount();
-    public abstract short maxUserCount();
-
     public static PMSG_SERVERINFO create(PMSG_HEAD header, short serverCode, byte percent, short userCount, short accountCount, short pcBangCount, short maxUserCount) {
         return builder()
                 .header(header)
@@ -30,6 +22,32 @@ public abstract class PMSG_SERVERINFO extends AbstractPacket {
 
     public static Builder builder() {
         return new AutoValue_PMSG_SERVERINFO.Builder();
+    }
+
+    public abstract PMSG_HEAD header();
+
+    public abstract short serverCode();
+
+    public abstract byte percent();
+
+    public abstract short userCount();
+
+    public abstract short accountCount();
+
+    public abstract short pcBangCount();
+
+    public abstract short maxUserCount();
+
+    @Override
+    public byte[] serialize(ByteArrayOutputStream stream) throws IOException {
+        header().serialize(stream);
+        StreamUtils.writeShort(serverCode(), stream);
+        StreamUtils.writeByte(percent(), stream);
+        StreamUtils.writeShort(userCount(), stream);
+        StreamUtils.writeShort(accountCount(), stream);
+        StreamUtils.writeShort(pcBangCount(), stream);
+        StreamUtils.writeShort(maxUserCount(), stream);
+        return stream.toByteArray();
     }
 
     @AutoValue.Builder
@@ -49,17 +67,5 @@ public abstract class PMSG_SERVERINFO extends AbstractPacket {
         public abstract Builder maxUserCount(short maxUserCount);
 
         public abstract PMSG_SERVERINFO build();
-    }
-
-    @Override
-    public byte[] serialize(ByteArrayOutputStream stream) throws IOException {
-        header().serialize(stream);
-        StreamUtils.writeShort(serverCode(), stream);
-        StreamUtils.writeByte(percent(), stream);
-        StreamUtils.writeShort(userCount(), stream);
-        StreamUtils.writeShort(accountCount(), stream);
-        StreamUtils.writeShort(pcBangCount(), stream);
-        StreamUtils.writeShort(maxUserCount(), stream);
-        return stream.toByteArray();
     }
 }

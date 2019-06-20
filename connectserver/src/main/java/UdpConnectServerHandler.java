@@ -8,9 +8,18 @@ public class UdpConnectServerHandler extends SimpleChannelInboundHandler<Datagra
  private final static Logger logger = LogManager.getLogger(UdpConnectServerHandler.class);
 
  @Override
- protected void channelRead0(ChannelHandlerContext channelHandlerContext, DatagramPacket packet) throws Exception {
-  logger.info(packet.toString());
+ public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
+  ctx.flush();
  }
 
+ @Override
+ protected void channelRead0(ChannelHandlerContext ctx, DatagramPacket packet) throws Exception {
+  int readableBytes = packet.content().readableBytes();
 
+  byte[] buffer = new byte[readableBytes];
+
+  packet.content().readBytes(buffer);
+
+
+ }
 }
