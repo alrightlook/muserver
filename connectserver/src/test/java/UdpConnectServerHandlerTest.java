@@ -36,16 +36,23 @@ public class UdpConnectServerHandlerTest {
             )
         ));
 
+//        embeddedChannel.writeInbound(new DatagramPacket(
+//            Unpooled.wrappedBuffer(new byte[] {(byte) 0xc1, 0x08, 02, 00, 00, 00, 00, 00}),
+//            SocketUtils.socketAddress("localhost", UDP_PORT)
+//        ));
+
+//        embeddedChannel.writeInbound(new DatagramPacket(
+//            Unpooled.wrappedBuffer(new byte[]{(byte) 0xC1, 0x10, 01, 01, 00, 00, 00, 00, 00, 00, 00, 00, 00, 00, (byte) 0x64, 00}),
+//            SocketUtils.socketAddress("localhost", UDP_PORT)
+//        ));
+
         embeddedChannel.writeInbound(new DatagramPacket(
-            Unpooled.wrappedBuffer(new byte[] {(byte) 0xc1, 0x08, 02, 00, 00, 00, 00, 00}),
+            Unpooled.wrappedBuffer(new byte[]{(byte) 0xC1, 0x10, 01, 00, 0x13, 01, 00, 01, 00, 00, 00, 00, 00, 00, (byte) 0xE8, 03}),
             SocketUtils.socketAddress("localhost", UDP_PORT)
         ));
 
-        embeddedChannel.writeInbound(new DatagramPacket(
-            Unpooled.wrappedBuffer(new byte[] {(byte) 0xc1, 0x10, 01, 00, 01, 00, 00, 00, 00, 00, 00, 00, 00, 00, 0x64, 00}),
-            SocketUtils.socketAddress("localhost", UDP_PORT)
-        ));
+//
 
-        Thread.sleep(1000 * 60);
+        Thread.sleep(1000 * 60 * 5);
     }
 }

@@ -1,14 +1,17 @@
 import com.fasterxml.jackson.databind.ObjectMapper;
 import enums.ServerType;
+import messages.PMSG_GAMESERVERINFO;
+import messages.PMSG_HEAD;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import settings.ConnectServerSettings;
 import settings.ListeningPortsSettings;
 import settings.GameServerSettings;
 
+import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
 
-public class SettingsSerializationTest {
+public class SerializationTest {
  private final static ObjectMapper json = new ObjectMapper();
 
  @Test

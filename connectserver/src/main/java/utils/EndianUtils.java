@@ -16,51 +16,51 @@ public class EndianUtils {
 
 
  public static void writeShort(byte[] data, int offset, short value) {
-  data[offset + 0] = (byte) (value >> 0 & 0xFF);
-  data[offset + 1] = (byte) (value >> 8 & 0xFF);
+  data[offset + 0] = (byte) (value >> 8 & 0xFF);
+  data[offset + 1] = (byte) (value >> 0 & 0xFF);
  }
 
  public static void writeShort(OutputStream output, short value) throws IOException {
-  output.write((byte) (value >> 0 & 0xFF));
   output.write((byte) (value >> 8 & 0xFF));
+  output.write((byte) (value >> 0 & 0xFF));
  }
 
 
  public static void writeInteger(byte[] data, int offset, int value) {
-  data[offset + 0] = (byte) (value >> 0 & 0xFF);
-  data[offset + 1] = (byte) (value >> 8 & 0xFF);
-  data[offset + 2] = (byte) (value >> 16 & 0xFF);
-  data[offset + 3] = (byte) (value >> 24 & 0xFF);
+  data[offset + 0] = (byte) (value >> 24 & 0xFF);
+  data[offset + 1] = (byte) (value >> 16 & 0xFF);
+  data[offset + 2] = (byte) (value >> 8 & 0xFF);
+  data[offset + 3] = (byte) (value >> 0 & 0xFF);
  }
 
  public static void writeInteger(OutputStream output, int value) throws IOException {
-  output.write((byte) (value >> 0 & 0xFF));
-  output.write((byte) (value >> 8 & 0xFF));
-  output.write((byte) (value >> 16 & 0xFF));
   output.write((byte) (value >> 24 & 0xFF));
+  output.write((byte) (value >> 16 & 0xFF));
+  output.write((byte) (value >> 8 & 0xFF));
+  output.write((byte) (value >> 0 & 0xFF));
  }
 
 
  public static void writeLong(byte[] data, int offset, long value) {
-  data[offset + 0] = (byte) ((int) (value >> 0 & 0xFF));
-  data[offset + 1] = (byte) ((int) (value >> 8 & 0xFF));
-  data[offset + 2] = (byte) ((int) (value >> 16 & 0xFF));
-  data[offset + 3] = (byte) ((int) (value >> 24 & 0xFF));
-  data[offset + 4] = (byte) ((int) (value >> 32 & 0xFF));
-  data[offset + 5] = (byte) ((int) (value >> 40 & 0xFF));
-  data[offset + 6] = (byte) ((int) (value >> 48 & 0xFF));
-  data[offset + 7] = (byte) ((int) (value >> 56 & 0xFF));
+  data[offset + 0] = (byte) ((int) (value >> 56 & 0xFF));
+  data[offset + 1] = (byte) ((int) (value >> 48 & 0xFF));
+  data[offset + 2] = (byte) ((int) (value >> 40 & 0xFF));
+  data[offset + 3] = (byte) ((int) (value >> 32 & 0xFF));
+  data[offset + 4] = (byte) ((int) (value >> 24 & 0xFF));
+  data[offset + 5] = (byte) ((int) (value >> 16 & 0xFF));
+  data[offset + 6] = (byte) ((int) (value >> 8 & 0xFF));
+  data[offset + 7] = (byte) ((int) (value >> 0 & 0xFF));
  }
 
  public static void writeLong(OutputStream output, long value) throws IOException {
-  output.write((byte) ((int) (value >> 0 & 0xFF)));
-  output.write((byte) ((int) (value >> 8 & 0xFF)));
-  output.write((byte) ((int) (value >> 16 & 0xFF)));
-  output.write((byte) ((int) (value >> 24 & 0xFF)));
-  output.write((byte) ((int) (value >> 32 & 0xFF)));
-  output.write((byte) ((int) (value >> 40 & 0xFF)));
-  output.write((byte) ((int) (value >> 48 & 0xFF)));
   output.write((byte) ((int) (value >> 56 & 0xFF)));
+  output.write((byte) ((int) (value >> 48 & 0xFF)));
+  output.write((byte) ((int) (value >> 40 & 0xFF)));
+  output.write((byte) ((int) (value >> 32 & 0xFF)));
+  output.write((byte) ((int) (value >> 24 & 0xFF)));
+  output.write((byte) ((int) (value >> 16 & 0xFF)));
+  output.write((byte) ((int) (value >> 8 & 0xFF)));
+  output.write((byte) ((int) (value >> 0 & 0xFF)));
  }
 
 
@@ -92,32 +92,32 @@ public class EndianUtils {
 
 
  public static short readShort(byte[] data, int offset) {
-  return (short) (((data[offset + 0] & 0xFF) << 0) + ((data[offset + 1] & 0xFF) << 8));
+  return (short) (((data[offset + 1] & 0xFF) << 8) | ((data[offset + 0] & 0xFF) << 0));
  }
 
  public static int readUnsignedShort(byte[] data, int offset) {
-  return ((data[offset + 0] & 0xFF) << 0) + ((data[offset + 1] & 0xFF) << 8);
+  return ((data[offset + 1] & 0xFF) << 8) | ((data[offset + 0] & 0xFF) << 0);
  }
 
  public static short readShort(InputStream input) throws IOException {
-  return (short) (((read(input) & 0xFF) << 0) + ((read(input) & 0xFF) << 8));
+  return (short) (((read(input) & 0xFF) << 8) | ((read(input) & 0xFF) << 0));
  }
 
  public static int readUnsignedShort(InputStream input) throws IOException {
   int value1 = read(input);
   int value2 = read(input);
-  return ((value1 & 0xFF) << 0) + ((value2 & 0xFF) << 8);
+  return ((value2 & 0xFF) << 8) | ((value1 & 0xFF) << 0);
  }
 
 
  public static int readInteger(byte[] data, int offset) {
-  return ((data[offset + 0] & 0xFF) << 0) + ((data[offset + 1] & 0xFF) << 8) + ((data[offset + 2] & 0xFF) << 16) + ((data[offset + 3] & 0xFF) << 24);
+  return ((data[offset + 3] & 0xFF) << 24) | ((data[offset + 2] & 0xFF) << 16) | ((data[offset + 1] & 0xFF) << 8) | ((data[offset + 0] & 0xFF) << 0);
  }
 
  public static long readUnsignedInteger(byte[] data, int offset) {
-  long low = (long) (((data[offset + 0] & 0xFF) << 0) + ((data[offset + 1] & 0xFF) << 8) + ((data[offset + 2] & 0xFF) << 16));
+  long low = (long) (((data[offset + 2] & 0xFF) << 16) | ((data[offset + 1] & 0xFF) << 8) | ((data[offset + 0] & 0xFF) << 0));
   long high = (long) (data[offset + 3] & 0xFF);
-  return (high << 24) + (4294967295L & low);
+  return (high << 24) | (4294967295L & low);
  }
 
  public static int readInteger(InputStream input) throws IOException {
@@ -125,7 +125,7 @@ public class EndianUtils {
   int value2 = read(input);
   int value3 = read(input);
   int value4 = read(input);
-  return ((value1 & 0xFF) << 0) + ((value2 & 0xFF) << 8) + ((value3 & 0xFF) << 16) + ((value4 & 0xFF) << 24);
+  return ((value4 & 0xFF) << 24) | ((value3 & 0xFF) << 16) | ((value2 & 0xFF) << 8) | ((value1 & 0xFF) << 0);
  }
 
  public static long readUnsignedInteger(InputStream input) throws IOException {
@@ -133,16 +133,16 @@ public class EndianUtils {
   int value2 = read(input);
   int value3 = read(input);
   int value4 = read(input);
-  long low = (long) (((value1 & 0xFF) << 0) + ((value2 & 0xFF) << 8) + ((value3 & 0xFF) << 16));
+  long low = (long) (((value3 & 0xFF) << 16) | ((value2 & 0xFF) << 8) | ((value1 & 0xFF) << 0));
   long high = (long) (value4 & 0xFF);
-  return (high << 24) + (4294967295L & low);
+  return (high << 24) | (4294967295L & low);
  }
 
 
  public static long readLong(byte[] data, int offset) {
   long low = (long) readInteger(data, offset);
   long high = (long) readInteger(data, offset + 4);
-  return (high << 32) + (4294967295L & low);
+  return (high << 32) | (4294967295L & low);
  }
 
  public static long readLong(InputStream input) throws IOException {
