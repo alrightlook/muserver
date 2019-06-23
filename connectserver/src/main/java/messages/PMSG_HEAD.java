@@ -1,22 +1,30 @@
 package messages;
 
 import com.google.auto.value.AutoValue;
-import utils.StreamUtils;
+import utils.EndianUtils;
 
 import java.io.*;
 
 @AutoValue
-public abstract class PMSG_HEAD extends AbstractPacket {
+public abstract class PMSG_HEAD extends AbstractPacket<PMSG_HEAD> {
  public static Builder builder() {
   return new AutoValue_PMSG_HEAD.Builder();
  }
 
  public static PMSG_HEAD create(Byte type, Byte size, Byte headCode) {
   return builder()
-          .type(type)
-          .size(size)
-          .headCode(headCode)
-          .build();
+      .type(type)
+      .size(size)
+      .headCode(headCode)
+      .build();
+ }
+
+ public static PMSG_HEAD deserialize(ByteArrayInputStream stream) throws IOException {
+  return PMSG_HEAD.create(
+      EndianUtils.readByte(stream),
+      EndianUtils.readByte(stream),
+      EndianUtils.readByte(stream)
+  );
  }
 
  public abstract Byte type();
@@ -27,9 +35,9 @@ public abstract class PMSG_HEAD extends AbstractPacket {
 
  @Override
  public byte[] serialize(ByteArrayOutputStream stream) throws IOException {
-  StreamUtils.writeByte(type(), stream);
-  StreamUtils.writeByte(size(), stream);
-  StreamUtils.writeByte(headCode(), stream);
+  EndianUtils.writeByte(stream, type());
+  EndianUtils.writeByte(stream, size());
+  EndianUtils.writeByte(stream, headCode());
   return stream.toByteArray();
  }
 

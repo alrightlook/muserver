@@ -1,53 +1,63 @@
 package messages;
 
 import com.google.auto.value.AutoValue;
-import utils.StreamUtils;
+import utils.EndianUtils;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 @AutoValue
-public abstract class PWMSG_HEAD2 extends AbstractPacket {
+public abstract class PWMSG_HEAD2 extends AbstractPacket<PWMSG_HEAD2> {
 
-    public static Builder builder() {
-        return new AutoValue_PWMSG_HEAD2.Builder();
-    }
+ public static Builder builder() {
+  return new AutoValue_PWMSG_HEAD2.Builder();
+ }
 
-    public static PWMSG_HEAD2 create(Byte type, Short size, Byte headCode, Byte subCode) {
-        return builder()
-                .type(type)
-                .size(size)
-                .headCode(headCode)
-                .subCode(subCode)
-                .build();
-    }
+ public static PWMSG_HEAD2 create(Byte type, Short size, Byte headCode, Byte subCode) {
+  return builder()
+      .type(type)
+      .size(size)
+      .headCode(headCode)
+      .subCode(subCode)
+      .build();
+ }
 
-    public abstract Byte type();
+ public static PWMSG_HEAD2 deserialize(ByteArrayInputStream stream) throws IOException {
+  return PWMSG_HEAD2.create(
+      EndianUtils.readByte(stream),
+      EndianUtils.readShort(stream),
+      EndianUtils.readByte(stream),
+      EndianUtils.readByte(stream)
+  );
+ }
 
-    public abstract Short size();
+ public abstract Byte type();
 
-    public abstract Byte headCode();
+ public abstract Short size();
 
-    public abstract Byte subCode();
+ public abstract Byte headCode();
 
-    @Override
-    public byte[] serialize(ByteArrayOutputStream stream) throws IOException {
-        StreamUtils.writeByte(type(), stream);
-        StreamUtils.writeShort(size(), stream);
-        StreamUtils.writeByte(headCode(), stream);
-        return stream.toByteArray();
-    }
+ public abstract Byte subCode();
 
-    @AutoValue.Builder
-    public abstract static class Builder {
-        public abstract Builder type(Byte type);
+ @Override
+ public byte[] serialize(ByteArrayOutputStream stream) throws IOException {
+  EndianUtils.writeByte(stream, type());
+  EndianUtils.writeShort(stream, size());
+  EndianUtils.writeByte(stream, headCode());
+  return stream.toByteArray();
+ }
 
-        public abstract Builder size(Short size);
+ @AutoValue.Builder
+ public abstract static class Builder {
+  public abstract Builder type(Byte type);
 
-        public abstract Builder headCode(Byte headCode);
+  public abstract Builder size(Short size);
 
-        public abstract Builder subCode(Byte subCode);
+  public abstract Builder headCode(Byte headCode);
 
-        public abstract PWMSG_HEAD2 build();
-    }
+  public abstract Builder subCode(Byte subCode);
+
+  public abstract PWMSG_HEAD2 build();
+ }
 }

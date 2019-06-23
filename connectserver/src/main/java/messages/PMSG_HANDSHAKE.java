@@ -1,22 +1,28 @@
 package messages;
 
 import com.google.auto.value.AutoValue;
-import utils.StreamUtils;
+import utils.EndianUtils;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 @AutoValue
-public abstract class PMSG_HANDSHAKE extends AbstractPacket {
+public abstract class PMSG_HANDSHAKE extends AbstractPacket<PMSG_HANDSHAKE> {
  public static PMSG_HANDSHAKE create(PMSG_HEAD header, byte result) {
   return builder()
-          .header(header)
-          .result(result)
-          .build();
+      .header(header)
+      .result(result)
+      .build();
  }
 
  public static Builder builder() {
   return new AutoValue_PMSG_HANDSHAKE.Builder();
+ }
+
+ public static PMSG_HANDSHAKE deserialize(ByteArrayInputStream stream) throws IOException {
+  PMSG_HEAD header = PMSG_HEAD.deserialize(stream);
+  return PMSG_HANDSHAKE.create(header, EndianUtils.readByte(stream));
  }
 
  public abstract PMSG_HEAD header();
@@ -26,7 +32,6 @@ public abstract class PMSG_HANDSHAKE extends AbstractPacket {
  @Override
  public byte[] serialize(ByteArrayOutputStream stream) throws IOException {
   header().serialize(stream);
-  StreamUtils.writeByte(result(), stream);
   return stream.toByteArray();
  }
 
