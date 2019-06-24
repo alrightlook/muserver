@@ -8,7 +8,7 @@ import enums.ServerType;
 @AutoValue
 public abstract class GameServerSettings {
  @JsonProperty("serverCode")
- public abstract Integer serverCode();
+ public abstract short serverCode();
 
  @JsonProperty("serverName")
  public abstract String serverName();
@@ -17,17 +17,17 @@ public abstract class GameServerSettings {
  public abstract String serverAddress();
 
  @JsonProperty("serverPort")
- public abstract Integer serverPort();
+ public abstract int serverPort();
 
  @JsonProperty("serverType")
  public abstract ServerType serverType();
 
  @JsonCreator
  public static GameServerSettings create(
-     @JsonProperty("serverCode") Integer serverCode,
+     @JsonProperty("serverCode") short serverCode,
      @JsonProperty("serverName") String serverName,
      @JsonProperty("serverAddress") String serverAddress,
-     @JsonProperty("serverPort") Integer serverPort,
+     @JsonProperty("serverPort") int serverPort,
      @JsonProperty("serverType") ServerType serverType
  ) {
   return builder()
@@ -45,13 +45,13 @@ public abstract class GameServerSettings {
 
  @AutoValue.Builder
  public abstract static class Builder {
-  public abstract Builder serverCode(Integer serverCode);
+  public abstract Builder serverCode(short serverCode);
 
   public abstract Builder serverName(String serverName);
 
   public abstract Builder serverAddress(String serverAddress);
 
-  public abstract Builder serverPort(Integer serverPort);
+  public abstract Builder serverPort(int serverPort);
 
   public abstract Builder serverType(ServerType serverType);
 

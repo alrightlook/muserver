@@ -28,9 +28,10 @@ public class ConnectServer {
 
     public void startup(int tcpPort, int udpPort) throws ConnectServerException {
         try {
+            logger.info(String.format("Loading file from path: %s", path));
             FileInputStream fileInputStream = new FileInputStream(path);
-
             String jsonString = IOUtils.toString(fileInputStream, "UTF-8");
+            logger.info(String.format("File %s has been successfully loaded", path));
 
             ConnectServerSettings connectServerSettings = json.readValue(jsonString, ConnectServerSettings.class);
 

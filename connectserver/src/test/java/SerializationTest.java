@@ -15,6 +15,23 @@ public class SerializationTest {
  private final static ObjectMapper json = new ObjectMapper();
 
  @Test
+ public void testGameServerSettingsSerialization() throws Exception {
+  int serverCode = 0, serverPort = 55901;
+  String serverName = "testServerName", serverAddress = "testServerAddress";
+  ServerType serverType = ServerType.VISIBLE;
+  GameServerSettings expectedGameServerSettings = GameServerSettings.create(
+      (short) serverCode,
+      serverName,
+      serverAddress,
+      serverPort,
+      serverType
+  );
+  String jsonString = json.writeValueAsString(expectedGameServerSettings);
+  GameServerSettings actualGameServerSettings = json.readValue(jsonString, GameServerSettings.class);
+  Assertions.assertEquals(expectedGameServerSettings, actualGameServerSettings);
+ }
+
+ @Test
  public void testConnectServerSettingsSerialization() throws Exception {
   int serverCode = 0, serverPort = 55901;
   String serverName = "testServerName", serverAddress = "testServerAddress";
@@ -23,7 +40,7 @@ public class SerializationTest {
       ListeningPortsSettings.create(44405, 55557),
       Arrays.asList(
           GameServerSettings.create(
-              serverCode,
+              (short) serverCode,
               serverName,
               serverAddress,
               serverPort,
@@ -34,23 +51,6 @@ public class SerializationTest {
   String jsonString = json.writeValueAsString(expectedConnectServerSettings);
   ConnectServerSettings actualConnectServerSettings = json.readValue(jsonString, ConnectServerSettings.class);
   Assertions.assertEquals(expectedConnectServerSettings, actualConnectServerSettings);
- }
-
- @Test
- public void testGameServerSettingsSerialization() throws Exception {
-  int serverCode = 0, serverPort = 55901;
-  String serverName = "testServerName", serverAddress = "testServerAddress";
-  ServerType serverType = ServerType.VISIBLE;
-  GameServerSettings expectedGameServerSettings = GameServerSettings.create(
-      serverCode,
-      serverName,
-      serverAddress,
-      serverPort,
-      serverType
-  );
-  String jsonString = json.writeValueAsString(expectedGameServerSettings);
-  GameServerSettings actualGameServerSettings = json.readValue(jsonString, GameServerSettings.class);
-  Assertions.assertEquals(expectedGameServerSettings, actualGameServerSettings);
  }
 
  @Test

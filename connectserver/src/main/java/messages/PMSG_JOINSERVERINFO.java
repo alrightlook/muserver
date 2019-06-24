@@ -12,7 +12,7 @@ public abstract class PMSG_JOINSERVERINFO extends AbstractPacket<PMSG_JOINSERVER
  public static PMSG_JOINSERVERINFO create(PMSG_HEAD header, int itemCount) {
   return builder()
       .header(header)
-      .itemCount(itemCount)
+      .queueSize(itemCount)
       .build();
  }
 
@@ -22,12 +22,12 @@ public abstract class PMSG_JOINSERVERINFO extends AbstractPacket<PMSG_JOINSERVER
 
  public abstract PMSG_HEAD header();
 
- public abstract int itemCount();
+ public abstract int queueSize();
 
  @Override
  public byte[] serialize(ByteArrayOutputStream stream) throws IOException {
   header().serialize(stream);
-  EndianUtils.writeInteger(stream, itemCount());
+  EndianUtils.writeInteger(stream, queueSize());
   return stream.toByteArray();
  }
 
@@ -40,7 +40,7 @@ public abstract class PMSG_JOINSERVERINFO extends AbstractPacket<PMSG_JOINSERVER
  public abstract static class Builder {
   public abstract Builder header(PMSG_HEAD header);
 
-  public abstract Builder itemCount(int itemCount);
+  public abstract Builder queueSize(int queueSize);
 
   public abstract PMSG_JOINSERVERINFO build();
  }
