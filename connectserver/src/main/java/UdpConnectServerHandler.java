@@ -15,16 +15,19 @@ import java.io.ByteArrayInputStream;
 import java.net.InetSocketAddress;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 public class UdpConnectServerHandler extends SimpleChannelInboundHandler<DatagramPacket> {
  private final static int DELAY_IN_MILLIS = 0;
  private final static int PERIOD_IN_MILLIS = 1000;
+ private final static int HEADER_MAX_LENGTH = 3;
  private final static int PACKET_TIMEOUT_IN_MILLIS = 1000 * 5;
  private final static Timer scheduler = new Timer();
  private final static Logger logger = LogManager.getLogger(UdpConnectServerHandler.class);
- private final Map<Short, GameServerSettings> gameServersSettingsMap = new HashMap<>();
- private final ConcurrentHashMap<Byte, AbstractPacket> packets = new ConcurrentHashMap<>();
+ private final static Map<Short, GameServerSettings> gameServersSettingsMap = new HashMap<>();
+ private final static AtomicReference<PMSG_JOINSERVERINFO> joinServerInfoReference = new AtomicReference<>();
+ private final static ConcurrentHashMap<Short, AbstractPacket> abstractPackets = new ConcurrentHashMap<>();
 
  public UdpConnectServerHandler(ConnectServerSettings connectServerSettings) {
   Map<Short, List<GameServerSettings>> gameServersGroupingBy = connectServerSettings.gameServers().stream().collect(Collectors.groupingBy(x -> x.serverCode()));
@@ -38,26 +41,20 @@ public class UdpConnectServerHandler extends SimpleChannelInboundHandler<Datagra
   scheduler.schedule(new TimerTask() {
    @Override
    public void run() {
-    for (Byte headCode : packets.keySet()) {
-     switch (headCode) {
-      case 1: {
-       AbstractPacket abstractPacket = packets.getOrDefault(headCode, null);
-       if (abstractPacket != null) {
-        if (new Date().getTime() - abstractPacket.packetTime().getTime() > PACKET_TIMEOUT_IN_MILLIS) {
-         logger.warn("Connection to the Game server has been interrupted");
-        }
-       }
+    for (Short serverCode : abstractPackets.keySet()) {
+     AbstractPacket abstractPacket = abstractPackets.getOrDefault(serverCode, null);
+     if (abstractPacket != null) {
+      if (new Date().getTime() - abstractPacket.packetTime().getTime() > PACKET_TIMEOUT_IN_MILLIS) {
+       logger.warn(String.format("Connection to the Game server with server code: %d has been interrupted", serverCode));
+       abstractPackets.remove(serverCode);
       }
-      break;
-      case 2: {
-       AbstractPacket abstractPacket = packets.getOrDefault(headCode, null);
-       if (abstractPacket != null) {
-        if (new Date().getTime() - abstractPacket.packetTime().getTime() > PACKET_TIMEOUT_IN_MILLIS) {
-         logger.warn("Connection to the Join server has been interrupted");
-        }
-       }
-      }
-      break;
+     }
+    }
+
+    if (joinServerInfoReference.get() != null) {
+     if (new Date().getTime() - joinServerInfoReference.get().packetTime().getTime() > PACKET_TIMEOUT_IN_MILLIS) {
+      logger.warn(String.format("Connection to the Join server has been interrupted"));
+      joinServerInfoReference.set(null);
      }
     }
    }
@@ -66,9 +63,10 @@ public class UdpConnectServerHandler extends SimpleChannelInboundHandler<Datagra
 
  @Override
  public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-  packets.clear();
   scheduler.cancel();
   scheduler.purge();
+  abstractPackets.clear();
+  joinServerInfoReference.set(null);
  }
 
  @Override
@@ -87,53 +85,61 @@ public class UdpConnectServerHandler extends SimpleChannelInboundHandler<Datagra
   ByteBuf content = packet.content();
   if (content.readableBytes() > 0) {
    byte[] buffer = new byte[content.readableBytes()];
+
    content.getBytes(0, buffer);
+
    byte type = buffer[0], headCode = buffer[2];
-   if (type == (byte) 0xC1) {
-    switch (headCode) {
-     case 1: {
-      PMSG_GAMESERVERINFO gameServerInfo = PMSG_GAMESERVERINFO.deserialize(new ByteArrayInputStream(buffer));
 
-      if (gameServerInfo.serverCode() < 0) {
-       throw new UdpConnectServerHandlerException(String.format("Invalid server code: %d", gameServerInfo.serverCode()));
-      }
+   if (buffer.length < HEADER_MAX_LENGTH) {
+    closeImmediately(ctx);
+   }
 
-      GameServerSettings gameServerSettings = gameServersSettingsMap.getOrDefault(gameServerInfo.serverCode(), null);
+   if (type != (byte) 0xC1) {
+    closeImmediately(ctx);
+   }
 
-      if (gameServerSettings == null) {
-       throw new UdpConnectServerHandlerException(String.format("Server code %d mismatching configuration", gameServerInfo.serverCode()));
-      }
+   switch (headCode) {
+    case 1: {
+     PMSG_GAMESERVERINFO gameServerInfo = PMSG_GAMESERVERINFO.deserialize(new ByteArrayInputStream(buffer));
 
-      if (!packets.containsKey(headCode)) {
-       logger.info(String.format("Connection to the game server %d has been established", gameServerInfo.serverCode()));
-      }
-
-      packets.put(headCode, gameServerInfo);
+     if (gameServerInfo.serverCode() < 0) {
+      throw new UdpConnectServerHandlerException(String.format("Invalid server code: %d", gameServerInfo.serverCode()));
      }
-     break;
-     case 2: {
-      PMSG_JOINSERVERINFO joinServerInfo = PMSG_JOINSERVERINFO.deserialize(new ByteArrayInputStream(buffer));
-      if (!packets.containsKey(headCode)) {
-       logger.info("Connection to the join server has been established");
-      }
-      packets.put(headCode, joinServerInfo);
+
+     GameServerSettings gameServerSettings = gameServersSettingsMap.getOrDefault(gameServerInfo.serverCode(), null);
+
+     if (gameServerSettings == null) {
+      throw new UdpConnectServerHandlerException(String.format("Server code %d mismatching configuration", gameServerInfo.serverCode()));
      }
-     break;
-     default: {
-      InetSocketAddress remoteAddress = (InetSocketAddress) ctx.channel().remoteAddress();
-      if (remoteAddress != null) {
-       logger.warn(String.format("Hacking attempt from: %s", remoteAddress.getAddress().getHostName()));
-       ctx.close();
-      }
+
+     if (!abstractPackets.containsKey(gameServerInfo.serverCode())) {
+      logger.info(String.format("Connection to the game server with server code: %d has been established", gameServerInfo.serverCode()));
      }
+
+     abstractPackets.put(gameServerInfo.serverCode(), gameServerInfo);
     }
-   } else {
-    InetSocketAddress remoteAddress = (InetSocketAddress) ctx.channel().remoteAddress();
-    if (remoteAddress != null) {
-     logger.warn(String.format("Hacking attempt from: %s", remoteAddress.getAddress().getHostName()));
-     ctx.close();
+    break;
+    case 2: {
+     PMSG_JOINSERVERINFO joinServerInfo = PMSG_JOINSERVERINFO.deserialize(new ByteArrayInputStream(buffer));
+     if (joinServerInfoReference.get() == null) {
+      logger.info("Connection to the join server has been established");
+     }
+     joinServerInfoReference.set(joinServerInfo);
+    }
+    break;
+    default: {
+     closeImmediately(ctx);
     }
    }
+  }
+ }
+
+
+ private void closeImmediately(ChannelHandlerContext ctx) {
+  InetSocketAddress remoteAddress = (InetSocketAddress) ctx.channel().remoteAddress();
+  if (remoteAddress != null) {
+   logger.warn(String.format("Hacking attempt from: %s", remoteAddress.getAddress().getHostName()));
+   ctx.close();
   }
  }
 }
