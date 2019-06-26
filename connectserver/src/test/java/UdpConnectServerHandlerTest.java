@@ -19,10 +19,9 @@ import java.util.concurrent.TimeUnit;
 
 public class UdpConnectServerHandlerTest {
  private final static int GS_PORT = 55901, TCP_PORT = 44405, UDP_PORT = 55557;
- private final static Logger logger = LogManager.getLogger(UdpConnectServerHandlerTest.class);
 
  @Test
- public void testUdpConnectServerHandler_PMSG_GAMESERVERINFO() throws Exception {
+ public void testUdpConnectServerHandlerValidPacket() throws Exception {
   EmbeddedChannel embeddedChannel = new EmbeddedChannel(new UdpConnectServerHandler(
       ConnectServerSettings.create(
           ListeningPortsSettings.create(TCP_PORT, UDP_PORT),
@@ -39,19 +38,9 @@ public class UdpConnectServerHandlerTest {
       (short) 19, (byte) 0, (short) 0, (short) 0, (short) 0, (short) 100
   );
 
-  CountDownLatch repeatLatch = new CountDownLatch(5);
-
-  while (repeatLatch.getCount() > 0) {
-   embeddedChannel.writeInbound(new DatagramPacket(
-       Unpooled.wrappedBuffer(gsInfo.serialize(new ByteArrayOutputStream())),
-       SocketUtils.socketAddress("localhost", UDP_PORT)
-   ));
-   repeatLatch.countDown();
-   Thread.sleep(1000);
-  }
-
-  Thread.sleep(1000 * 60 * 5);
-
-  repeatLatch.await();
+  embeddedChannel.writeInbound(new DatagramPacket(
+          Unpooled.wrappedBuffer(gsInfo.serialize(new ByteArrayOutputStream())),
+          SocketUtils.socketAddress("localhost", UDP_PORT)
+  ));
  }
 }
