@@ -32,6 +32,7 @@ public abstract class PMSG_HANDSHAKE extends AbstractPacket<PMSG_HANDSHAKE> {
  @Override
  public byte[] serialize(ByteArrayOutputStream stream) throws IOException {
   header().serialize(stream);
+  EndianUtils.writeByte(stream, result());
   return stream.toByteArray();
  }
 

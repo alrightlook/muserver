@@ -12,6 +12,9 @@ import org.apache.logging.log4j.Logger;
 import settings.ConnectServerSettings;
 
 import java.io.FileInputStream;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.concurrent.CountDownLatch;
 
 public class ConnectServer {
     private final String path;
@@ -53,5 +56,13 @@ public class ConnectServer {
         udpEventLoopGroup.shutdownGracefully();
         tcpChildLoopGroup.shutdownGracefully();
         tcpParentLoopGroup.shutdownGracefully();
+    }
+
+    public static void main(String[] args) throws Exception {
+        CountDownLatch shutdownLatch = new CountDownLatch(1);
+        Path path = Paths.get(System.getProperty("user.dir"), "settings.json");
+        ConnectServer connectServer = new ConnectServer(path.toString());
+        connectServer.startup(44405, 55557);
+        shutdownLatch.await();
     }
 }

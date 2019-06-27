@@ -39,8 +39,8 @@ public class UdpConnectServerHandlerTest {
   );
 
   embeddedChannel.writeInbound(new DatagramPacket(
-          Unpooled.wrappedBuffer(gsInfo.serialize(new ByteArrayOutputStream())),
-          SocketUtils.socketAddress("localhost", UDP_PORT)
+      Unpooled.wrappedBuffer(gsInfo.serialize(new ByteArrayOutputStream())),
+      SocketUtils.socketAddress("localhost", UDP_PORT)
   ));
  }
 }
