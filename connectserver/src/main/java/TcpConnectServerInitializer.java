@@ -18,8 +18,6 @@ public class TcpConnectServerInitializer extends ChannelInitializer<SocketChanne
  @Override
     protected void initChannel(SocketChannel socketChannel) throws Exception {
         ChannelPipeline channelPipeline = socketChannel.pipeline();
-//        channelPipeline.addLast(new ObjectEncoder());
-//        channelPipeline.addLast(new ObjectDecoder(ClassResolvers.cacheDisabled(null)));
 //        channelPipeline.addLast(new LoggingHandler(LogLevel.INFO));
         channelPipeline.addLast(new TcpConnectServerHandler(connectServerSettings));
     }
