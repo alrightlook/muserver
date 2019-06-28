@@ -1,4 +1,4 @@
-package settings;
+package configs;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -6,7 +6,7 @@ import com.google.auto.value.AutoValue;
 import enums.ServerType;
 
 @AutoValue
-public abstract class GameServerSettings {
+public abstract class ServerListConfigs {
  @JsonProperty("serverCode")
  public abstract short serverCode();
 
@@ -23,7 +23,7 @@ public abstract class GameServerSettings {
  public abstract ServerType serverType();
 
  @JsonCreator
- public static GameServerSettings create(
+ public static ServerListConfigs create(
      @JsonProperty("serverCode") short serverCode,
      @JsonProperty("serverName") String serverName,
      @JsonProperty("serverAddress") String serverAddress,
@@ -40,7 +40,7 @@ public abstract class GameServerSettings {
  }
 
  public static Builder builder() {
-  return new AutoValue_GameServerSettings.Builder();
+  return new AutoValue_ServerListConfigs.Builder();
  }
 
  @AutoValue.Builder
@@ -55,6 +55,6 @@ public abstract class GameServerSettings {
 
   public abstract Builder serverType(ServerType serverType);
 
-  public abstract GameServerSettings build();
+  public abstract ServerListConfigs build();
  }
 }

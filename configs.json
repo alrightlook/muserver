@@ -1,9 +1,9 @@
 {
-  "listeningPorts": {
+  "listeningPortsConfigs": {
     "tcpPort": 44405,
     "udpPort": 55557
   },
-  "gameServers": [{
+  "gameServersConfigs": [{
     "serverCode": 0,
     "serverName": "GameServer",
     "serverAddress": "192.168.88.30",

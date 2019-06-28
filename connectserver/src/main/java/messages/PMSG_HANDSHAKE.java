@@ -9,15 +9,19 @@ import java.io.IOException;
 
 @AutoValue
 public abstract class PMSG_HANDSHAKE extends AbstractPacket<PMSG_HANDSHAKE> {
+ public static int sizeOf() {
+  return 4;
+ }
+
+ public static Builder builder() {
+  return new AutoValue_PMSG_HANDSHAKE.Builder();
+ }
+
  public static PMSG_HANDSHAKE create(PMSG_HEAD header, byte result) {
   return builder()
       .header(header)
       .result(result)
       .build();
- }
-
- public static Builder builder() {
-  return new AutoValue_PMSG_HANDSHAKE.Builder();
  }
 
  public static PMSG_HANDSHAKE deserialize(ByteArrayInputStream stream) throws IOException {

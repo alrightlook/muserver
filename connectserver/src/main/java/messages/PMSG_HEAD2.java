@@ -9,6 +9,10 @@ import java.io.IOException;
 
 @AutoValue
 public abstract class PMSG_HEAD2 extends AbstractPacket<PMSG_HEAD2> {
+ public static int sizeOf() {
+  return 4;
+ }
+
  public static Builder builder() {
   return new AutoValue_PMSG_HEAD2.Builder();
  }

@@ -8,8 +8,16 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 @AutoValue
-public abstract class PMSG_GAMESERVERINFO extends AbstractPacket<PMSG_GAMESERVERINFO> {
- public static PMSG_GAMESERVERINFO create(PMSG_HEAD header, short serverCode, byte percent, short userCount, short accountCount, short pcBangCount, short maxUserCount) {
+public abstract class PMSG_GAMESERVER_STATISTICS extends AbstractPacket<PMSG_GAMESERVER_STATISTICS> {
+ public static int sizeOf() {
+  return 14;
+ }
+
+ public static Builder builder() {
+  return new AutoValue_PMSG_GAMESERVER_STATISTICS.Builder();
+ }
+
+ public static PMSG_GAMESERVER_STATISTICS create(PMSG_HEAD header, short serverCode, byte percent, short userCount, short accountCount, short pcBangCount, short maxUserCount) {
   return builder()
       .header(header)
       .serverCode(serverCode)
@@ -21,13 +29,9 @@ public abstract class PMSG_GAMESERVERINFO extends AbstractPacket<PMSG_GAMESERVER
       .build();
  }
 
- public static Builder builder() {
-  return new AutoValue_PMSG_GAMESERVERINFO.Builder();
- }
-
- public static PMSG_GAMESERVERINFO deserialize(ByteArrayInputStream stream) throws IOException {
+ public static PMSG_GAMESERVER_STATISTICS deserialize(ByteArrayInputStream stream) throws IOException {
   PMSG_HEAD header = PMSG_HEAD.deserialize(stream);
-  return PMSG_GAMESERVERINFO.create(
+  return PMSG_GAMESERVER_STATISTICS.create(
       header,
       EndianUtils.readShort(stream),
       EndianUtils.readByte(stream),
@@ -80,6 +84,6 @@ public abstract class PMSG_GAMESERVERINFO extends AbstractPacket<PMSG_GAMESERVER
 
   public abstract Builder maxUserCount(short maxUserCount);
 
-  public abstract PMSG_GAMESERVERINFO build();
+  public abstract PMSG_GAMESERVER_STATISTICS build();
  }
 }

@@ -1,14 +1,11 @@
 import com.fasterxml.jackson.databind.ObjectMapper;
+import configs.ConnectServerConfigs;
+import configs.ListeningPortsConfigs;
+import configs.ServerListConfigs;
 import enums.ServerType;
-import messages.PMSG_GAMESERVERINFO;
-import messages.PMSG_HEAD;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import settings.ConnectServerSettings;
-import settings.ListeningPortsSettings;
-import settings.GameServerSettings;
 
-import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
 
 public class SerializationTest {
@@ -19,16 +16,16 @@ public class SerializationTest {
   int serverCode = 0, serverPort = 55901;
   String serverName = "testServerName", serverAddress = "testServerAddress";
   ServerType serverType = ServerType.VISIBLE;
-  GameServerSettings expectedGameServerSettings = GameServerSettings.create(
+  ServerListConfigs expectedServerListConfigs = ServerListConfigs.create(
       (short) serverCode,
       serverName,
       serverAddress,
       serverPort,
       serverType
   );
-  String jsonString = json.writeValueAsString(expectedGameServerSettings);
-  GameServerSettings actualGameServerSettings = json.readValue(jsonString, GameServerSettings.class);
-  Assertions.assertEquals(expectedGameServerSettings, actualGameServerSettings);
+  String jsonString = json.writeValueAsString(expectedServerListConfigs);
+  ServerListConfigs actualServerListConfigs = json.readValue(jsonString, ServerListConfigs.class);
+  Assertions.assertEquals(expectedServerListConfigs, actualServerListConfigs);
  }
 
  @Test
@@ -36,10 +33,10 @@ public class SerializationTest {
   int serverCode = 0, serverPort = 55901;
   String serverName = "testServerName", serverAddress = "testServerAddress";
   ServerType serverType = ServerType.VISIBLE;
-  ConnectServerSettings expectedConnectServerSettings = ConnectServerSettings.create(
-      ListeningPortsSettings.create(44405, 55557),
+  ConnectServerConfigs expectedConnectServerConfigs = ConnectServerConfigs.create(
+      ListeningPortsConfigs.create(44405, 55557),
       Arrays.asList(
-          GameServerSettings.create(
+          ServerListConfigs.create(
               (short) serverCode,
               serverName,
               serverAddress,
@@ -48,16 +45,16 @@ public class SerializationTest {
           )
       )
   );
-  String jsonString = json.writeValueAsString(expectedConnectServerSettings);
-  ConnectServerSettings actualConnectServerSettings = json.readValue(jsonString, ConnectServerSettings.class);
-  Assertions.assertEquals(expectedConnectServerSettings, actualConnectServerSettings);
+  String jsonString = json.writeValueAsString(expectedConnectServerConfigs);
+  ConnectServerConfigs actualConnectServerConfigs = json.readValue(jsonString, ConnectServerConfigs.class);
+  Assertions.assertEquals(expectedConnectServerConfigs, actualConnectServerConfigs);
  }
 
  @Test
  public void testListeningPortsSettingsSerialization() throws Exception {
-  ListeningPortsSettings expectedListeningPortsSettings = ListeningPortsSettings.create(44405, 55557);
-  String jsonString = json.writeValueAsString(expectedListeningPortsSettings);
-  ListeningPortsSettings actualListeningPortsSettings = json.readValue(jsonString, ListeningPortsSettings.class);
-  Assertions.assertEquals(expectedListeningPortsSettings, actualListeningPortsSettings);
+  ListeningPortsConfigs expectedListeningPortsConfigs = ListeningPortsConfigs.create(44405, 55557);
+  String jsonString = json.writeValueAsString(expectedListeningPortsConfigs);
+  ListeningPortsConfigs actualListeningPortsConfigs = json.readValue(jsonString, ListeningPortsConfigs.class);
+  Assertions.assertEquals(expectedListeningPortsConfigs, actualListeningPortsConfigs);
  }
 }

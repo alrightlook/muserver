@@ -8,19 +8,20 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @AutoValue
 public abstract class PMSG_SERVERLIST extends AbstractPacket<PMSG_SERVERLIST> {
+ public static Builder builder() {
+  return new AutoValue_PMSG_SERVERLIST.Builder();
+ }
+
  public static PMSG_SERVERLIST create(PWMSG_HEAD2 header, short count, List<PMSG_SERVER> serverList) {
   return builder()
       .header(header)
       .count(count)
       .serverList(serverList)
       .build();
- }
-
- public static Builder builder() {
-  return new AutoValue_PMSG_SERVERLIST.Builder();
  }
 
  public static PMSG_SERVERLIST deserialize(ByteArrayInputStream stream) throws IOException {

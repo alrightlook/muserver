@@ -1,4 +1,5 @@
 import com.fasterxml.jackson.databind.ObjectMapper;
+import configs.ConnectServerConfigs;
 import exceptions.ConnectServerException;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
@@ -9,7 +10,6 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import settings.ConnectServerSettings;
 
 import java.io.FileInputStream;
 import java.nio.file.Path;
@@ -36,16 +36,16 @@ public class ConnectServer {
             String jsonString = IOUtils.toString(fileInputStream, "UTF-8");
             logger.info(String.format("File %s has been successfully loaded", path));
 
-            ConnectServerSettings connectServerSettings = json.readValue(jsonString, ConnectServerSettings.class);
+            ConnectServerConfigs ConnectServerConfigs = json.readValue(jsonString, ConnectServerConfigs.class);
 
             new Bootstrap().group(udpEventLoopGroup)
                 .channel(NioDatagramChannel.class)
-                .handler(new UdpConnectServerInitializer(connectServerSettings))
+                .handler(new UdpConnectServerInitializer(ConnectServerConfigs))
                 .bind(udpPort);
 
             new ServerBootstrap().group(tcpParentLoopGroup, tcpChildLoopGroup)
                 .channel(NioServerSocketChannel.class)
-                .childHandler(new TcpConnectServerInitializer(connectServerSettings))
+                .childHandler(new TcpConnectServerInitializer(ConnectServerConfigs))
                 .bind(tcpPort);
         } catch (Exception e) {
             throw new ConnectServerException(e.getMessage(), e);

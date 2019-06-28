@@ -1,19 +1,19 @@
+import configs.ConnectServerConfigs;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
-import settings.ConnectServerSettings;
 
 public class TcpConnectServerInitializer extends ChannelInitializer<SocketChannel> {
- private final ConnectServerSettings connectServerSettings;
+ private final ConnectServerConfigs ConnectServerConfigs;
 
- public TcpConnectServerInitializer(ConnectServerSettings connectServerSettings) {
-  this.connectServerSettings = connectServerSettings;
+ public TcpConnectServerInitializer(ConnectServerConfigs connectServerConfigs) {
+  this.ConnectServerConfigs = connectServerConfigs;
  }
 
  @Override
     protected void initChannel(SocketChannel socketChannel) throws Exception {
         ChannelPipeline channelPipeline = socketChannel.pipeline();
 //        channelPipeline.addLast(new LoggingHandler(LogLevel.INFO));
-        channelPipeline.addLast(new TcpConnectServerHandler(connectServerSettings));
+        channelPipeline.addLast(new TcpConnectServerHandler(ConnectServerConfigs));
     }
 }

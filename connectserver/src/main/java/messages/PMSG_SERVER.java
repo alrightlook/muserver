@@ -9,6 +9,10 @@ import java.io.IOException;
 
 @AutoValue
 public abstract class PMSG_SERVER extends AbstractPacket<PMSG_SERVER> {
+ public static int sizeOf() {
+  return 4;
+ }
+
  public static PMSG_SERVER create(Short serverCode, Byte usersCount, Byte type) {
   return builder()
       .serverCode(serverCode)

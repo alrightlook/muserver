@@ -1,16 +1,16 @@
+import configs.ServerListConfigs;
 import exceptions.UdpConnectServerHandlerException;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.DatagramPacket;
 import messages.AbstractPacket;
-import messages.PMSG_GAMESERVERINFO;
+import messages.PMSG_GAMESERVER_STATISTICS;
 import messages.PMSG_HEAD;
-import messages.PMSG_JOINSERVERINFO;
+import messages.PMSG_JOINSERVER_STATISTICS;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import settings.ConnectServerSettings;
-import settings.GameServerSettings;
+import configs.ConnectServerConfigs;
 
 import java.io.ByteArrayInputStream;
 import java.net.InetSocketAddress;
@@ -25,13 +25,13 @@ public class UdpConnectServerHandler extends SimpleChannelInboundHandler<Datagra
  private final static int PACKET_TIMEOUT_IN_MILLIS = 1000 * 5;
  private final static Timer scheduler = new Timer();
  private final static Logger logger = LogManager.getLogger(UdpConnectServerHandler.class);
- private final static Map<Short, GameServerSettings> gameServersSettingsMap = new HashMap<>();
- private final static AtomicReference<PMSG_JOINSERVERINFO> joinServerInfoReference = new AtomicReference<>();
+ private final static Map<Short, ServerListConfigs> gameServersSettingsMap = new HashMap<>();
+ private final static AtomicReference<PMSG_JOINSERVER_STATISTICS> joinServerInfoReference = new AtomicReference<>();
  private final static ConcurrentHashMap<Short, AbstractPacket> abstractPackets = new ConcurrentHashMap<>();
 
- public UdpConnectServerHandler(ConnectServerSettings connectServerSettings) {
-  Map<Short, List<GameServerSettings>> gameServersGroupingBy = connectServerSettings.gameServers().stream().collect(Collectors.groupingBy(x -> x.serverCode()));
-  for (Map.Entry<Short, List<GameServerSettings>> entry : gameServersGroupingBy.entrySet()) {
+ public UdpConnectServerHandler(ConnectServerConfigs connectServerConfigs) {
+  Map<Short, List<ServerListConfigs>> gameServersGroupingBy = connectServerConfigs.gameServersConfigs().stream().collect(Collectors.groupingBy(x -> x.serverCode()));
+  for (Map.Entry<Short, List<ServerListConfigs>> entry : gameServersGroupingBy.entrySet()) {
    gameServersSettingsMap.put(entry.getKey(), entry.getValue().get(0));
   }
  }
@@ -91,31 +91,31 @@ public class UdpConnectServerHandler extends SimpleChannelInboundHandler<Datagra
     case (byte) 0xC1: {
      switch (header.headCode() ) {
       case 1: {
-       PMSG_GAMESERVERINFO gameServerInfo = PMSG_GAMESERVERINFO.deserialize(new ByteArrayInputStream(buffer));
+       PMSG_GAMESERVER_STATISTICS gameServerStatistics = PMSG_GAMESERVER_STATISTICS.deserialize(new ByteArrayInputStream(buffer));
 
-       if (gameServerInfo.serverCode() < 0) {
-        throw new UdpConnectServerHandlerException(String.format("Invalid server code: %d", gameServerInfo.serverCode()));
+       if (gameServerStatistics.serverCode() < 0) {
+        throw new UdpConnectServerHandlerException(String.format("Invalid server code: %d", gameServerStatistics.serverCode()));
        }
 
-       GameServerSettings gameServerSettings = gameServersSettingsMap.getOrDefault(gameServerInfo.serverCode(), null);
+       ServerListConfigs ServerListConfigs = gameServersSettingsMap.getOrDefault(gameServerStatistics.serverCode(), null);
 
-       if (gameServerSettings == null) {
-        throw new UdpConnectServerHandlerException(String.format("Server code %d mismatching configuration", gameServerInfo.serverCode()));
+       if (ServerListConfigs == null) {
+        throw new UdpConnectServerHandlerException(String.format("Server code %d mismatching configuration", gameServerStatistics.serverCode()));
        }
 
-       if (!abstractPackets.containsKey(gameServerInfo.serverCode())) {
-        logger.info(String.format("Established connection to GameServer with code: %d", gameServerInfo.serverCode()));
+       if (!abstractPackets.containsKey(gameServerStatistics.serverCode())) {
+        logger.info(String.format("Established connection to GameServer with code: %d", gameServerStatistics.serverCode()));
        }
 
-       abstractPackets.put(gameServerInfo.serverCode(), gameServerInfo);
+       abstractPackets.put(gameServerStatistics.serverCode(), gameServerStatistics);
       }
       break;
       case 2: {
-       PMSG_JOINSERVERINFO joinServerInfo = PMSG_JOINSERVERINFO.deserialize(new ByteArrayInputStream(buffer));
+       PMSG_JOINSERVER_STATISTICS joinServerStatistics = PMSG_JOINSERVER_STATISTICS.deserialize(new ByteArrayInputStream(buffer));
        if (joinServerInfoReference.get() == null) {
         logger.info("Established connection to JoinServer");
        }
-       joinServerInfoReference.set(joinServerInfo);
+       joinServerInfoReference.set(joinServerStatistics);
       }
       break;
       default: {

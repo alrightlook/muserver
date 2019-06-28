@@ -1,11 +1,11 @@
-package settings;
+package configs;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.auto.value.AutoValue;
 
 @AutoValue
-public abstract class ListeningPortsSettings {
+public abstract class ListeningPortsConfigs {
  @JsonProperty("tcpPort")
  public abstract Integer tcpPort();
 
@@ -13,7 +13,7 @@ public abstract class ListeningPortsSettings {
  public abstract Integer udpPort();
 
  @JsonCreator
- public static ListeningPortsSettings create(
+ public static ListeningPortsConfigs create(
      @JsonProperty("tcpPort") Integer tcpPort,
      @JsonProperty("udpPort") Integer udpPort
  ) {
@@ -24,7 +24,7 @@ public abstract class ListeningPortsSettings {
  }
 
  public static Builder builder() {
-  return new AutoValue_ListeningPortsSettings.Builder();
+  return new AutoValue_ListeningPortsConfigs.Builder();
  }
 
  @AutoValue.Builder
@@ -33,6 +33,6 @@ public abstract class ListeningPortsSettings {
 
   public abstract Builder udpPort(Integer udpPort);
 
-  public abstract ListeningPortsSettings build();
+  public abstract ListeningPortsConfigs build();
  }
 }

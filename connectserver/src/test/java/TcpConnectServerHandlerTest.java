@@ -1,10 +1,10 @@
+import configs.ConnectServerConfigs;
+import configs.ListeningPortsConfigs;
+import configs.ServerListConfigs;
 import enums.ServerType;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.embedded.EmbeddedChannel;
 import org.junit.jupiter.api.Test;
-import settings.ConnectServerSettings;
-import settings.GameServerSettings;
-import settings.ListeningPortsSettings;
 
 import java.util.Arrays;
 
@@ -15,10 +15,10 @@ public class TcpConnectServerHandlerTest {
  @Test
  public void testTcpConnectServerHandlerServerInfo() throws Exception {
   EmbeddedChannel embeddedChannel = new EmbeddedChannel(new TcpConnectServerHandler(
-      ConnectServerSettings.create(
-          ListeningPortsSettings.create(TCP_PORT, UDP_PORT),
+      ConnectServerConfigs.create(
+          ListeningPortsConfigs.create(TCP_PORT, UDP_PORT),
           Arrays.asList(
-              GameServerSettings.create(
+              ServerListConfigs.create(
                   (short) 0, "GameServer", HOSTNAME, GS_PORT, ServerType.VISIBLE
               )
           )
@@ -31,10 +31,10 @@ public class TcpConnectServerHandlerTest {
  @Test
  public void testTcpConnectServerHandlerServerList() throws Exception {
   EmbeddedChannel embeddedChannel = new EmbeddedChannel(new TcpConnectServerHandler(
-      ConnectServerSettings.create(
-          ListeningPortsSettings.create(TCP_PORT, UDP_PORT),
+      ConnectServerConfigs.create(
+          ListeningPortsConfigs.create(TCP_PORT, UDP_PORT),
           Arrays.asList(
-              GameServerSettings.create(
+              ServerListConfigs.create(
                   (short) 0, "GameServer", HOSTNAME, GS_PORT, ServerType.VISIBLE
               )
           )

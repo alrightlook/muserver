@@ -7,6 +7,10 @@ import java.io.*;
 
 @AutoValue
 public abstract class PMSG_HEAD extends AbstractPacket<PMSG_HEAD> {
+ public static int sizeOf() {
+  return 3;
+ }
+
  public static Builder builder() {
   return new AutoValue_PMSG_HEAD.Builder();
  }
