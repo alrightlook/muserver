@@ -5,6 +5,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.DatagramPacket;
 import messages.AbstractPacket;
 import messages.PMSG_GAMESERVERINFO;
+import messages.PMSG_HEAD;
 import messages.PMSG_JOINSERVERINFO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -85,57 +86,55 @@ public class UdpConnectServerHandler extends SimpleChannelInboundHandler<Datagra
   ByteBuf content = packet.content();
   if (content.readableBytes() > 0) {
    byte[] buffer = new byte[content.readableBytes()];
-
    content.getBytes(0, buffer);
+   PMSG_HEAD header = PMSG_HEAD.deserialize(new ByteArrayInputStream(buffer));
+   switch (header.type()) {
+    case (byte) 0xC1: {
+     switch (header.headCode() ) {
+      case 1: {
+       PMSG_GAMESERVERINFO gameServerInfo = PMSG_GAMESERVERINFO.deserialize(new ByteArrayInputStream(buffer));
 
-   byte type = buffer[0], headCode = buffer[2];
+       if (gameServerInfo.serverCode() < 0) {
+        throw new UdpConnectServerHandlerException(String.format("Invalid server code: %d", gameServerInfo.serverCode()));
+       }
 
-   if (buffer.length < HEADER_MAX_LENGTH) {
-    closeImmediately(ctx);
-   }
+       GameServerSettings gameServerSettings = gameServersSettingsMap.getOrDefault(gameServerInfo.serverCode(), null);
 
-   if (type != (byte) 0xC1) {
-    closeImmediately(ctx);
-   }
+       if (gameServerSettings == null) {
+        throw new UdpConnectServerHandlerException(String.format("Server code %d mismatching configuration", gameServerInfo.serverCode()));
+       }
 
-   switch (headCode) {
-    case 1: {
-     PMSG_GAMESERVERINFO gameServerInfo = PMSG_GAMESERVERINFO.deserialize(new ByteArrayInputStream(buffer));
+       if (!abstractPackets.containsKey(gameServerInfo.serverCode())) {
+        logger.info(String.format("Established connection to GameServer with code: %d", gameServerInfo.serverCode()));
+       }
 
-     if (gameServerInfo.serverCode() < 0) {
-      throw new UdpConnectServerHandlerException(String.format("Invalid server code: %d", gameServerInfo.serverCode()));
+       abstractPackets.put(gameServerInfo.serverCode(), gameServerInfo);
+      }
+      break;
+      case 2: {
+       PMSG_JOINSERVERINFO joinServerInfo = PMSG_JOINSERVERINFO.deserialize(new ByteArrayInputStream(buffer));
+       if (joinServerInfoReference.get() == null) {
+        logger.info("Established connection to JoinServer");
+       }
+       joinServerInfoReference.set(joinServerInfo);
+      }
+      break;
+      default: {
+       throw new UnsupportedOperationException(String.format("Unsupported head code type: %d", header.headCode()));
+      }
      }
-
-     GameServerSettings gameServerSettings = gameServersSettingsMap.getOrDefault(gameServerInfo.serverCode(), null);
-
-     if (gameServerSettings == null) {
-      throw new UdpConnectServerHandlerException(String.format("Server code %d mismatching configuration", gameServerInfo.serverCode()));
-     }
-
-     if (!abstractPackets.containsKey(gameServerInfo.serverCode())) {
-      logger.info(String.format("Connection to the game server with server code: %d has been established", gameServerInfo.serverCode()));
-     }
-
-     abstractPackets.put(gameServerInfo.serverCode(), gameServerInfo);
     }
     break;
-    case 2: {
-     PMSG_JOINSERVERINFO joinServerInfo = PMSG_JOINSERVERINFO.deserialize(new ByteArrayInputStream(buffer));
-     if (joinServerInfoReference.get() == null) {
-      logger.info("Connection to the join server has been established");
-     }
-     joinServerInfoReference.set(joinServerInfo);
-    }
-    break;
-    default: {
-     closeImmediately(ctx);
-    }
+    default:
+     throw new UnsupportedOperationException(String.format("Unsupported protocol type: %d", header.type()));
    }
+  } else {
+   closeConnection(ctx);
   }
  }
 
 
- private void closeImmediately(ChannelHandlerContext ctx) {
+ private void closeConnection(ChannelHandlerContext ctx) {
   InetSocketAddress remoteAddress = (InetSocketAddress) ctx.channel().remoteAddress();
   if (remoteAddress != null) {
    logger.warn(String.format("Hacking attempt from: %s", remoteAddress.getAddress().getHostName()));

@@ -71,10 +71,36 @@ public class TcpConnectServerHandler extends SimpleChannelInboundHandler<ByteBuf
    byteBuf.getBytes(0, buffer);
    PMSG_HEAD2 header = PMSG_HEAD2.deserialize(new ByteArrayInputStream(buffer));
    switch (header.type()) {
-
+    case (byte) 0xC1: {
+     switch (header.headCode()) {
+      case (byte) 0xF4: {
+       switch (header.subCode()) {
+        case 3: {
+         //todo: server info
+        }
+        break;
+        case 6: {
+         //todo: server list
+        }
+        break;
+        default:
+         throw new UnsupportedOperationException(String.format("Unsupported sub code: %d", header.subCode()));
+       }
+      }
+      break;
+      default:
+       throw new UnsupportedOperationException(String.format("Unsupported head code: %d", header.headCode()));
+     }
+    }
+    break;
+    default:
+     throw new UnsupportedOperationException(String.format("Unsupported protocol type: %d", header.type()));
    }
+  } else {
+   closeConnection(ctx);
   }
  }
+
 
  private void handleProtocol(byte headCode, byte subCode) {
   switch (headCode) {
@@ -104,7 +130,7 @@ public class TcpConnectServerHandler extends SimpleChannelInboundHandler<ByteBuf
   }
  }
 
- private void closeImmediately(ChannelHandlerContext ctx) {
+ private void closeConnection(ChannelHandlerContext ctx) {
   InetSocketAddress remoteAddress = (InetSocketAddress) ctx.channel().remoteAddress();
   if (remoteAddress != null) {
    logger.warn(String.format("Hacking attempt from: %s", remoteAddress.getAddress().getHostName()));
