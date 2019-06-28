@@ -45,6 +45,7 @@ public abstract class PWMSG_HEAD2 extends AbstractPacket<PWMSG_HEAD2> {
   EndianUtils.writeByte(stream, type());
   EndianUtils.writeShort(stream, size());
   EndianUtils.writeByte(stream, headCode());
+  EndianUtils.writeByte(stream, subCode());
   return stream.toByteArray();
  }
 

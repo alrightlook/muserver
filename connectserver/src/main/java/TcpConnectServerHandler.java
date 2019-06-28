@@ -1,3 +1,4 @@
+import enums.ServerType;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
@@ -87,29 +88,27 @@ public class TcpConnectServerHandler extends SimpleChannelInboundHandler<ByteBuf
      case (byte) 0xF4: {
       switch (header.subCode()) {
        case 3: {
+        //todo:
+       }
+       break;
+       case 6: {
         List<PMSG_SERVER> servers = new ArrayList<>();
 
         for (GameServerSettings gameServerSettings : connectServerSettings.gameServers()) {
-         servers.add(PMSG_SERVER.create(
-             gameServerSettings.serverCode(),
-             (byte) 0,
-             (byte) 0xCC
-         ));
+         if (gameServerSettings.serverType() == ServerType.VISIBLE) {
+          servers.add(PMSG_SERVER.create(gameServerSettings.serverCode(), (byte) 0, (byte) 0xCC));
+         }
         }
 
         PMSG_SERVERLIST serverList = PMSG_SERVERLIST.create(
-            PWMSG_HEAD2.create((byte) 0xC2, (short) (5 + (4 * servers.size())), header.headCode(), header.subCode()),
+            PWMSG_HEAD2.create((byte) 0xC2, (short) (5 + (6 * servers.size())), header.headCode(), header.subCode()),
             (short) servers.size(),
-            new ArrayList<>()
+            servers
         );
 
         byte[] buffer = serverList.serialize(new ByteArrayOutputStream());
 
-        ctx.writeAndFlush(buffer);
-       }
-       break;
-       case 6: {
-        //todo: server list
+        ctx.writeAndFlush(Unpooled.wrappedBuffer(buffer));
        }
        break;
        default:
