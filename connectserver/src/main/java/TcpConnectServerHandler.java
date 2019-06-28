@@ -5,24 +5,27 @@ import io.netty.channel.ChannelId;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.MessageToMessageDecoder;
-import messages.PMSG_HANDSHAKE;
-import messages.PMSG_HEAD;
-import messages.PMSG_HEAD2;
-import messages.PWMSG_HEAD;
+import messages.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import settings.ConnectServerSettings;
+import settings.GameServerSettings;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class TcpConnectServerHandler extends SimpleChannelInboundHandler<ByteBuf> {
  private final static Logger logger = LogManager.getLogger(TcpConnectServerHandler.class);
  private final static ConcurrentHashMap<ChannelId, Client> clients = new ConcurrentHashMap<>();
+ private final ConnectServerSettings connectServerSettings;
 
  public TcpConnectServerHandler(ConnectServerSettings connectServerSettings) {
+  this.connectServerSettings = connectServerSettings;
  }
 
  @Override
@@ -70,63 +73,57 @@ public class TcpConnectServerHandler extends SimpleChannelInboundHandler<ByteBuf
    byte[] buffer = new byte[byteBuf.readableBytes()];
    byteBuf.getBytes(0, buffer);
    PMSG_HEAD2 header = PMSG_HEAD2.deserialize(new ByteArrayInputStream(buffer));
-   switch (header.type()) {
-    case (byte) 0xC1: {
-     switch (header.headCode()) {
-      case (byte) 0xF4: {
-       switch (header.subCode()) {
-        case 3: {
-         //todo: server info
-        }
-        break;
-        case 6: {
-         //todo: server list
-        }
-        break;
-        default:
-         throw new UnsupportedOperationException(String.format("Unsupported sub code: %d", header.subCode()));
-       }
-      }
-      break;
-      default:
-       throw new UnsupportedOperationException(String.format("Unsupported head code: %d", header.headCode()));
-     }
-    }
-    break;
-    default:
-     throw new UnsupportedOperationException(String.format("Unsupported protocol type: %d", header.type()));
-   }
+   handleProtocol(ctx, header);
   } else {
    closeConnection(ctx);
   }
  }
 
 
- private void handleProtocol(byte headCode, byte subCode) {
-  switch (headCode) {
-   case 5: {
-    //todo:
-   }
-   break;
+ private void handleProtocol(ChannelHandlerContext ctx, PMSG_HEAD2 header) throws IOException {
+  switch (header.type()) {
+   case (byte) 0xC1: {
+    switch (header.headCode()) {
+     case (byte) 0xF4: {
+      switch (header.subCode()) {
+       case 3: {
+        List<PMSG_SERVER> servers = new ArrayList<>();
 
-   case 6: {
-    //todo:
-   }
-   break;
+        for (GameServerSettings gameServerSettings : connectServerSettings.gameServers()) {
+         servers.add(PMSG_SERVER.create(
+             gameServerSettings.serverCode(),
+             (byte) 0,
+             (byte) 0xCC
+         ));
+        }
 
-   case (byte) 0xF4: {
-    switch (subCode) {
-     case 6: {
-      //todo:
+        PMSG_SERVERLIST serverList = PMSG_SERVERLIST.create(
+            PWMSG_HEAD2.create((byte) 0xC2, (short) (5 + (4 * servers.size())), header.headCode(), header.subCode()),
+            (short) servers.size(),
+            new ArrayList<>()
+        );
+
+        byte[] buffer = serverList.serialize(new ByteArrayOutputStream());
+
+        ctx.writeAndFlush(buffer);
+       }
+       break;
+       case 6: {
+        //todo: server list
+       }
+       break;
+       default:
+        throw new UnsupportedOperationException(String.format("Unsupported sub code: %d", header.subCode()));
+      }
      }
      break;
-     case 7: {
-      //todo:
-     }
-     break;
+     default:
+      throw new UnsupportedOperationException(String.format("Unsupported head code: %d", header.headCode()));
     }
    }
    break;
+   default:
+    throw new UnsupportedOperationException(String.format("Unsupported protocol type: %d", header.type()));
   }
  }
 

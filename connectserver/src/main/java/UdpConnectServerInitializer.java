@@ -1,8 +1,6 @@
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.DatagramChannel;
-import io.netty.handler.logging.LogLevel;
-import io.netty.handler.logging.LoggingHandler;
 import settings.ConnectServerSettings;
 
 public class UdpConnectServerInitializer extends ChannelInitializer<DatagramChannel> {

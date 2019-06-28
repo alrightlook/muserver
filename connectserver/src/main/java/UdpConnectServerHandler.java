@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 public class UdpConnectServerHandler extends SimpleChannelInboundHandler<DatagramPacket> {
  private final static int DELAY_IN_MILLIS = 0;
  private final static int PERIOD_IN_MILLIS = 1000;
- private final static int HEADER_MAX_LENGTH = 3;
  private final static int PACKET_TIMEOUT_IN_MILLIS = 1000 * 5;
  private final static Timer scheduler = new Timer();
  private final static Logger logger = LogManager.getLogger(UdpConnectServerHandler.class);
