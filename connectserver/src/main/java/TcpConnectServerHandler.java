@@ -2,6 +2,7 @@ import configs.ConnectServerConfigs;
 import configs.ServerListConfigs;
 import enums.PacketType;
 import enums.ServerType;
+import exceptions.ConnectServerException;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
@@ -16,16 +17,22 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 public class TcpConnectServerHandler extends SimpleChannelInboundHandler<ByteBuf> {
  private final static Logger logger = LogManager.getLogger(TcpConnectServerHandler.class);
+ private final static Map<Short, ServerListConfigs> serverListConfigsMap = new HashMap<>();
  private final static ConcurrentHashMap<ChannelId, ChannelHandlerContext> clients = new ConcurrentHashMap<>();
- private final ConnectServerConfigs connectServerConfigs;
 
  public TcpConnectServerHandler(ConnectServerConfigs connectServerConfigs) {
-  this.connectServerConfigs = connectServerConfigs;
+  Map<Short, List<ServerListConfigs>> serverListConfigsGroupingBy = connectServerConfigs.gameServersConfigs().stream().collect(Collectors.groupingBy(x -> x.serverCode()));
+  for (Map.Entry<Short, List<ServerListConfigs>> entry : serverListConfigsGroupingBy.entrySet()) {
+   serverListConfigsMap.put(entry.getKey(), entry.getValue().get(0));
+  }
  }
 
  @Override
@@ -72,58 +79,75 @@ public class TcpConnectServerHandler extends SimpleChannelInboundHandler<ByteBuf
   if (byteBuf.readableBytes() > 0) {
    byte[] buffer = new byte[byteBuf.readableBytes()];
    byteBuf.getBytes(0, buffer);
-   PMSG_HEAD2 header = PMSG_HEAD2.deserialize(new ByteArrayInputStream(buffer));
-   handleProtocol(ctx, header);
-  } else {
-   closeConnection(ctx);
-  }
- }
+   switch (buffer[0]) {
+    case PacketType.C1: {
+     switch (buffer[2]) {
+      case (byte) 0xF4: {
+       switch (buffer[3]) {
+        case 3: {
+         PMSG_SERVER_CODE serverCode = PMSG_SERVER_CODE.deserialize(new ByteArrayInputStream(buffer));
 
+         ServerListConfigs serverListConfigs = serverListConfigsMap.getOrDefault(serverCode.serverCode().shortValue(), null);
 
- private void handleProtocol(ChannelHandlerContext ctx, PMSG_HEAD2 header) throws IOException {
-  switch (header.type()) {
-   case (byte) PacketType.C1: {
-    switch (header.headCode()) {
-     case (byte) 0xF4: {
-      switch (header.subCode()) {
-       case 3: {
-        //todo:
-       }
-       break;
-       case 6: {
-        List<PMSG_SERVER> servers = new ArrayList<>();
-
-        for (ServerListConfigs serverListConfigs : connectServerConfigs.gameServersConfigs()) {
-         if (serverListConfigs.serverType() == ServerType.VISIBLE) {
-          servers.add(PMSG_SERVER.create(serverListConfigs.serverCode(), (byte) 20, (byte) 0xCC));
+         if (serverListConfigs == null) {
+          closeConnection(ctx);
+          throw new ConnectServerException(String.format("Server code %d not found in the server list configs", serverCode.serverCode()));
          }
+
+         byte packetSize = (byte) PMSG_SERVER_CONNECTION.sizeOf();
+
+         PMSG_SERVER_CONNECTION serverConnection = PMSG_SERVER_CONNECTION.create(
+             PMSG_HEAD2.create(PacketType.C1, packetSize, serverCode.header().headCode(), serverCode.header().subCode()),
+             serverListConfigs.serverAddress(),
+             (short) serverListConfigs.serverPort()
+         );
+
+         byte[] packetBytes = serverConnection.serialize(new ByteArrayOutputStream());
+
+         ctx.writeAndFlush(Unpooled.wrappedBuffer(packetBytes));
         }
+        break;
+        case 6: {
+         PMSG_HEAD2 header = PMSG_HEAD2.deserialize(new ByteArrayInputStream(buffer));
 
-        short packetSize = (short) (PWMSG_HEAD2.sizeOf() + 2 + (servers.size() * 4));
+         List<PMSG_SERVER> servers = new ArrayList<>();
 
-        PMSG_SERVERLIST serverList = PMSG_SERVERLIST.create(
-            PWMSG_HEAD2.create(PacketType.C2, packetSize, header.headCode(), header.subCode()),
-            (short) servers.size(),
-            servers
-        );
+         for (ServerListConfigs serverListConfigs : serverListConfigsMap.values()) {
+          if (serverListConfigs.serverType() == ServerType.VISIBLE) {
+           servers.add(PMSG_SERVER.create(serverListConfigs.serverCode(), (byte) 0, (byte) 0xCC));
+          }
+         }
 
-        byte[] buffer = serverList.serialize(new ByteArrayOutputStream());
+         short packetSize = (short) (PWMSG_HEAD2.sizeOf() + 2 + (servers.size() * 4));
 
-        ctx.writeAndFlush(Unpooled.wrappedBuffer(buffer));
+         PMSG_SERVER_LIST serverList = PMSG_SERVER_LIST.create(
+             PWMSG_HEAD2.create(PacketType.C2, packetSize, header.headCode(), header.subCode()),
+             (short) servers.size(),
+             servers
+         );
+
+         byte[] packetBytes = serverList.serialize(new ByteArrayOutputStream());
+
+         ctx.writeAndFlush(Unpooled.wrappedBuffer(packetBytes));
+        }
+        break;
+        default: {
+         throw new UnsupportedOperationException(String.format("Unsupported sub code: %d", buffer[3]));
+        }
        }
-       break;
-       default:
-        throw new UnsupportedOperationException(String.format("Unsupported sub code: %d", header.subCode()));
+      }
+      break;
+      default: {
+       throw new UnsupportedOperationException(String.format("Unsupported head code: %d", buffer[2]));
       }
      }
-     break;
-     default:
-      throw new UnsupportedOperationException(String.format("Unsupported head code: %d", header.headCode()));
     }
+    break;
+    default:
+     throw new UnsupportedOperationException(String.format("Unsupported protocol type: %s", buffer[0]));
    }
-   break;
-   default:
-    throw new UnsupportedOperationException(String.format("Unsupported protocol type: %d", header.type()));
+  } else {
+   closeConnection(ctx);
   }
  }
 

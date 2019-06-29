@@ -8,15 +8,14 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @AutoValue
-public abstract class PMSG_SERVERLIST extends AbstractPacket<PMSG_SERVERLIST> {
+public abstract class PMSG_SERVER_LIST extends AbstractPacket<PMSG_SERVER_LIST> {
  public static Builder builder() {
-  return new AutoValue_PMSG_SERVERLIST.Builder();
+  return new AutoValue_PMSG_SERVER_LIST.Builder();
  }
 
- public static PMSG_SERVERLIST create(PWMSG_HEAD2 header, short count, List<PMSG_SERVER> serverList) {
+ public static PMSG_SERVER_LIST create(PWMSG_HEAD2 header, short count, List<PMSG_SERVER> serverList) {
   return builder()
       .header(header)
       .count(count)
@@ -24,7 +23,7 @@ public abstract class PMSG_SERVERLIST extends AbstractPacket<PMSG_SERVERLIST> {
       .build();
  }
 
- public static PMSG_SERVERLIST deserialize(ByteArrayInputStream stream) throws IOException {
+ public static PMSG_SERVER_LIST deserialize(ByteArrayInputStream stream) throws IOException {
   PWMSG_HEAD2 header = PWMSG_HEAD2.deserialize(stream);
 
   short count = EndianUtils.readShort(stream);
@@ -35,7 +34,7 @@ public abstract class PMSG_SERVERLIST extends AbstractPacket<PMSG_SERVERLIST> {
    serverList.add(PMSG_SERVER.deserialize(stream));
   }
 
-  return PMSG_SERVERLIST.create(header, count, serverList);
+  return PMSG_SERVER_LIST.create(header, count, serverList);
  }
 
  public abstract PWMSG_HEAD2 header();
@@ -62,6 +61,6 @@ public abstract class PMSG_SERVERLIST extends AbstractPacket<PMSG_SERVERLIST> {
 
   public abstract Builder serverList(List<PMSG_SERVER> serverList);
 
-  public abstract PMSG_SERVERLIST build();
+  public abstract PMSG_SERVER_LIST build();
  }
 }

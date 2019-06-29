@@ -1,9 +1,12 @@
 package utils;
 
+import org.apache.commons.io.Charsets;
+
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 
 public class EndianUtils {
  public static void writeByte(byte[] data, int offset, byte value) {
@@ -15,6 +18,17 @@ public class EndianUtils {
  }
 
 
+ public static void writeBytes(byte[] data, int offset, byte[] value) {
+  for (int index = 0; index < value.length; index++) {
+   data[offset + index] = value[index];
+  }
+ }
+
+ public static void writeBytes(OutputStream output, byte[] value) throws IOException {
+  output.write(value);
+ }
+
+
  public static void writeShort(byte[] data, int offset, short value) {
   data[offset + 0] = (byte) (value >> 8 & 0xFF);
   data[offset + 1] = (byte) (value >> 0 & 0xFF);
@@ -23,6 +37,19 @@ public class EndianUtils {
  public static void writeShort(OutputStream output, short value) throws IOException {
   output.write((byte) (value >> 8 & 0xFF));
   output.write((byte) (value >> 0 & 0xFF));
+ }
+
+
+ public static void writeString(byte[] data, int offset, String value) {
+  int index = 0;
+  for (byte val : value.getBytes()) {
+   data[offset + index] = val;
+   index++;
+  }
+ }
+
+ public static void writeString(OutputStream output, String value) throws IOException {
+  output.write(value.getBytes());
  }
 
 

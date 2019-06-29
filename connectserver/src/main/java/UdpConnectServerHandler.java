@@ -25,14 +25,14 @@ public class UdpConnectServerHandler extends SimpleChannelInboundHandler<Datagra
  private final static int PACKET_TIMEOUT_IN_MILLIS = 1000 * 5;
  private final static Timer scheduler = new Timer();
  private final static Logger logger = LogManager.getLogger(UdpConnectServerHandler.class);
- private final static Map<Short, ServerListConfigs> gameServersSettingsMap = new HashMap<>();
+ private final static Map<Short, ServerListConfigs> serverListConfigsMap = new HashMap<>();
  private final static AtomicReference<PMSG_JOINSERVER_STATISTICS> joinServerInfoReference = new AtomicReference<>();
  private final static ConcurrentHashMap<Short, AbstractPacket> abstractPackets = new ConcurrentHashMap<>();
 
  public UdpConnectServerHandler(ConnectServerConfigs connectServerConfigs) {
-  Map<Short, List<ServerListConfigs>> gameServersGroupingBy = connectServerConfigs.gameServersConfigs().stream().collect(Collectors.groupingBy(x -> x.serverCode()));
-  for (Map.Entry<Short, List<ServerListConfigs>> entry : gameServersGroupingBy.entrySet()) {
-   gameServersSettingsMap.put(entry.getKey(), entry.getValue().get(0));
+  Map<Short, List<ServerListConfigs>> serverListConfigsGroupingBy = connectServerConfigs.gameServersConfigs().stream().collect(Collectors.groupingBy(x -> x.serverCode()));
+  for (Map.Entry<Short, List<ServerListConfigs>> entry : serverListConfigsGroupingBy.entrySet()) {
+   serverListConfigsMap.put(entry.getKey(), entry.getValue().get(0));
   }
  }
 
@@ -97,7 +97,7 @@ public class UdpConnectServerHandler extends SimpleChannelInboundHandler<Datagra
         throw new UdpConnectServerHandlerException(String.format("Invalid server code: %d", gameServerStatistics.serverCode()));
        }
 
-       ServerListConfigs ServerListConfigs = gameServersSettingsMap.getOrDefault(gameServerStatistics.serverCode(), null);
+       ServerListConfigs ServerListConfigs = serverListConfigsMap.getOrDefault(gameServerStatistics.serverCode(), null);
 
        if (ServerListConfigs == null) {
         throw new UdpConnectServerHandlerException(String.format("Server code %d mismatching configuration", gameServerStatistics.serverCode()));

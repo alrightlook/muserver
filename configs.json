@@ -6,13 +6,13 @@
   "gameServersConfigs": [{
     "serverCode": 0,
     "serverName": "GameServer",
-    "serverAddress": "192.168.88.30",
+    "serverAddress": "192.168.1.139",
     "serverPort": 55901,
     "serverType": "VISIBLE"
   }, {
     "serverCode": 19,
     "serverName": "GameServerCS",
-    "serverAddress": "192.168.88.30",
+    "serverAddress": "192.168.1.139",
     "serverPort": 55919,
     "serverType": "HIDDEN"
   } ]

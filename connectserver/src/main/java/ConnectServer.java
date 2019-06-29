@@ -60,7 +60,7 @@ public class ConnectServer {
 
     public static void main(String[] args) throws Exception {
         CountDownLatch shutdownLatch = new CountDownLatch(1);
-        Path path = Paths.get(System.getProperty("user.dir"), "settings.json");
+        Path path = Paths.get(System.getProperty("user.dir"), "configs.json");
         ConnectServer connectServer = new ConnectServer(path.toString());
         connectServer.startup(44405, 55557);
         shutdownLatch.await();
