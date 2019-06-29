@@ -26,7 +26,7 @@ public abstract class PMSG_SERVER_LIST extends AbstractPacket<PMSG_SERVER_LIST> 
  public static PMSG_SERVER_LIST deserialize(ByteArrayInputStream stream) throws IOException {
   PWMSG_HEAD2 header = PWMSG_HEAD2.deserialize(stream);
 
-  short count = EndianUtils.readShort(stream);
+  short count = EndianUtils.readShortLE(stream);
 
   List<PMSG_SERVER> serverList = new ArrayList<>();
 
@@ -46,7 +46,7 @@ public abstract class PMSG_SERVER_LIST extends AbstractPacket<PMSG_SERVER_LIST> 
  @Override
  public byte[] serialize(ByteArrayOutputStream stream) throws IOException {
   header().serialize(stream);
-  EndianUtils.writeShort(stream, count());
+  EndianUtils.writeShortLE(stream, count());
   for (PMSG_SERVER server : serverList()) {
    server.serialize(stream);
   }

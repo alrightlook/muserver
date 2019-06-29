@@ -36,7 +36,7 @@ public abstract class PMSG_JOINSERVER_STATISTICS extends AbstractPacket<PMSG_JOI
  @Override
  public byte[] serialize(ByteArrayOutputStream stream) throws IOException {
   header().serialize(stream);
-  EndianUtils.writeInteger(stream, queueSize());
+  EndianUtils.writeIntegerLE(stream, queueSize());
   return stream.toByteArray();
  }
 

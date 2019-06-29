@@ -28,7 +28,7 @@ public abstract class PWMSG_HEAD extends AbstractPacket<PWMSG_HEAD> {
  public static PWMSG_HEAD deserialize(ByteArrayInputStream stream) throws IOException {
   return PWMSG_HEAD.create(
       EndianUtils.readByte(stream),
-      EndianUtils.readShort(stream),
+      EndianUtils.readShortLE(stream),
       EndianUtils.readByte(stream)
   );
  }
@@ -42,7 +42,7 @@ public abstract class PWMSG_HEAD extends AbstractPacket<PWMSG_HEAD> {
  @Override
  public byte[] serialize(ByteArrayOutputStream stream) throws IOException {
   EndianUtils.writeByte(stream, type());
-  EndianUtils.writeShort(stream, size());
+  EndianUtils.writeShortLE(stream, size());
   EndianUtils.writeByte(stream, headCode());
   return stream.toByteArray();
  }

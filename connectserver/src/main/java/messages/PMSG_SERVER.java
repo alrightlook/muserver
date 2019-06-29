@@ -23,7 +23,7 @@ public abstract class PMSG_SERVER extends AbstractPacket<PMSG_SERVER> {
 
  public static PMSG_SERVER deserialize(ByteArrayInputStream stream) throws IOException {
   return PMSG_SERVER.create(
-      EndianUtils.readShort(stream),
+      EndianUtils.readShortLE(stream),
       EndianUtils.readByte(stream),
       EndianUtils.readByte(stream)
   );
@@ -41,7 +41,7 @@ public abstract class PMSG_SERVER extends AbstractPacket<PMSG_SERVER> {
 
  @Override
  public byte[] serialize(ByteArrayOutputStream stream) throws IOException {
-  EndianUtils.writeShort(stream, serverCode());
+  EndianUtils.writeShortLE(stream, serverCode());
   EndianUtils.writeByte(stream, usersCount());
   EndianUtils.writeByte(stream, type());
   return stream.toByteArray();

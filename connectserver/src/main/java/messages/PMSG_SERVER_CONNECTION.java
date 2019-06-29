@@ -1,7 +1,6 @@
 package messages;
 
 import com.google.auto.value.AutoValue;
-import org.apache.commons.io.IOUtils;
 import utils.EndianUtils;
 
 import java.io.ByteArrayOutputStream;
@@ -34,15 +33,17 @@ public abstract class PMSG_SERVER_CONNECTION extends AbstractPacket<PMSG_SERVER_
  @Override
  public byte[] serialize(ByteArrayOutputStream stream) throws IOException {
   header().serialize(stream);
+  byte[] serverAddress = new byte[16];
+  byte[] buffer =  serverAddress().getBytes();
 
-  char[] serverAddress = new char[16];
+  int i = 0;
+  for (Byte value : buffer) {
+   serverAddress[i] = value;
+   i++;
+  }
 
-  serverAddress().getChars(0, serverAddress().length(), serverAddress, 0);
-
-  serverAddress[serverAddress().length()] = '\0';
-
-  EndianUtils.writeByte(stream, (byte) 1) ;
-  EndianUtils.writeShort(stream, serverPort());
+  EndianUtils.writeBytes(stream, serverAddress) ;
+  EndianUtils.writeShortBE(stream, serverPort());
   return stream.toByteArray();
  }
 

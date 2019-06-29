@@ -33,12 +33,12 @@ public abstract class PMSG_GAMESERVER_STATISTICS extends AbstractPacket<PMSG_GAM
   PMSG_HEAD header = PMSG_HEAD.deserialize(stream);
   return PMSG_GAMESERVER_STATISTICS.create(
       header,
-      EndianUtils.readShort(stream),
+      EndianUtils.readShortLE(stream),
       EndianUtils.readByte(stream),
-      EndianUtils.readShort(stream),
-      EndianUtils.readShort(stream),
-      EndianUtils.readShort(stream),
-      EndianUtils.readShort(stream)
+      EndianUtils.readShortLE(stream),
+      EndianUtils.readShortLE(stream),
+      EndianUtils.readShortLE(stream),
+      EndianUtils.readShortLE(stream)
   );
  }
 
@@ -59,12 +59,12 @@ public abstract class PMSG_GAMESERVER_STATISTICS extends AbstractPacket<PMSG_GAM
  @Override
  public byte[] serialize(ByteArrayOutputStream stream) throws IOException {
   header().serialize(stream);
-  EndianUtils.writeShort(stream, serverCode());
+  EndianUtils.writeShortLE(stream, serverCode());
   EndianUtils.writeByte(stream, percent());
-  EndianUtils.writeShort(stream, userCount());
-  EndianUtils.writeShort(stream, accountCount());
-  EndianUtils.writeShort(stream, pcBangCount());
-  EndianUtils.writeShort(stream, maxUserCount());
+  EndianUtils.writeShortLE(stream, userCount());
+  EndianUtils.writeShortLE(stream, accountCount());
+  EndianUtils.writeShortLE(stream, pcBangCount());
+  EndianUtils.writeShortLE(stream, maxUserCount());
   return stream.toByteArray();
  }
 
