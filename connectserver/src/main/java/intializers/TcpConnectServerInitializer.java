@@ -8,18 +8,14 @@ import io.netty.channel.socket.SocketChannel;
 import java.util.Map;
 
 public class TcpConnectServerInitializer extends ChannelInitializer<SocketChannel> {
- private final TcpConnectServerHandler tcpConnectServerHandler;
+ private final Map<Short, ServerListConfigs> serverListConfigsMap;
 
  public TcpConnectServerInitializer(Map<Short, ServerListConfigs> serverListConfigsMap) {
-  tcpConnectServerHandler = new TcpConnectServerHandler(serverListConfigsMap);
- }
-
- public TcpConnectServerHandler getTcpConnectServerHandler() {
-  return tcpConnectServerHandler;
+  this.serverListConfigsMap = serverListConfigsMap ;
  }
 
  @Override
  protected void initChannel(SocketChannel socketChannel) throws Exception {
-  socketChannel.pipeline().addLast(tcpConnectServerHandler);
+  socketChannel.pipeline().addLast(new TcpConnectServerHandler(serverListConfigsMap));
  }
 }

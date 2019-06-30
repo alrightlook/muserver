@@ -10,18 +10,14 @@ import io.netty.channel.socket.DatagramChannel;
 import java.util.Map;
 
 public class UdpConnectServerInitializer extends ChannelInitializer<DatagramChannel> {
- private final UdpConnectServerHandler udpConnectServerHandler;
+ private final Map<Short, ServerListConfigs> serverListConfigsMap;
 
  public UdpConnectServerInitializer(Map<Short, ServerListConfigs> serverListConfigsMap) {
-  udpConnectServerHandler = new UdpConnectServerHandler(serverListConfigsMap);
- }
-
- public UdpConnectServerHandler getUdpConnectServerHandler() {
-  return udpConnectServerHandler;
+  this.serverListConfigsMap = serverListConfigsMap;
  }
 
  @Override
  protected void initChannel(DatagramChannel datagramChannel) throws Exception {
-  datagramChannel.pipeline().addLast(udpConnectServerHandler);
+  datagramChannel.pipeline().addLast(new UdpConnectServerHandler(serverListConfigsMap));
  }
 }
