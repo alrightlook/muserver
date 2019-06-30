@@ -10,6 +10,7 @@
  <version>1.0</version>
  <modules>
   <module>connectserver</module>
+  <module>joinserver</module>
  </modules>
 
  <build>

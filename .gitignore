@@ -10,3 +10,5 @@ multiserver\.iml
 connectserver/connectserver\.iml
 
 connectserver/dependency-reduced-pom\.xml
+
+joinserver/joinserver\.iml
