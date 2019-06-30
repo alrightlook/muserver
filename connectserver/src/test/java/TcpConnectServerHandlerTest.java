@@ -1,3 +1,4 @@
+import com.google.common.collect.ImmutableMap;
 import configs.ConnectServerConfigs;
 import configs.ServerListConfigs;
 import enums.ServerType;
@@ -17,11 +18,7 @@ public class TcpConnectServerHandlerTest {
  @Test
  public void testTcpConnectServerHandlerServerInfo() throws Exception {
   EmbeddedChannel embeddedChannel = new EmbeddedChannel(new TcpConnectServerHandler(
-      ConnectServerConfigs.create(
-          TCP_PORT,
-          UDP_PORT,
-          Arrays.asList(ServerListConfigs.create((short) 0, "GameServer", HOSTNAME, GS_PORT, ServerType.VISIBLE))
-      )
+      ImmutableMap.of((short) 0, ServerListConfigs.create((short) 0, "GameServer", HOSTNAME, GS_PORT, ServerType.VISIBLE))
   ));
 
   embeddedChannel.writeInbound(Unpooled.wrappedBuffer(new byte[0]));
@@ -30,11 +27,7 @@ public class TcpConnectServerHandlerTest {
  @Test
  public void testTcpConnectServerHandlerServerList() throws Exception {
   EmbeddedChannel embeddedChannel = new EmbeddedChannel(new TcpConnectServerHandler(
-      ConnectServerConfigs.create(
-          TCP_PORT,
-          UDP_PORT,
-          Arrays.asList(ServerListConfigs.create((short) 0, "GameServer", HOSTNAME, GS_PORT, ServerType.VISIBLE))
-      )
+      ImmutableMap.of((short) 0, ServerListConfigs.create((short) 0, "GameServer", HOSTNAME, GS_PORT, ServerType.VISIBLE))
   ));
 
   embeddedChannel.writeInbound(new DatagramPacket(Unpooled.wrappedBuffer(new byte[]{(byte) 1}), InetSocketAddress.createUnresolved("0.0.0.0", UDP_PORT)));

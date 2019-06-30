@@ -1,26 +1,27 @@
 package intializers;
 
-import configs.ConnectServerConfigs;
 import configs.AbstractConfigs;
+import configs.ConnectServerConfigs;
+import configs.ServerListConfigs;
 import handlers.UdpConnectServerHandler;
 import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.DatagramChannel;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+
+import java.util.Map;
 
 public class UdpConnectServerInitializer extends ChannelInitializer<DatagramChannel> {
- private final static Logger logger = LogManager.getLogger(UdpConnectServerInitializer.class);
+ private final UdpConnectServerHandler udpConnectServerHandler;
 
- private final AbstractConfigs abstractConfigs;
+ public UdpConnectServerInitializer(Map<Short, ServerListConfigs> serverListConfigsMap) {
+  udpConnectServerHandler = new UdpConnectServerHandler(serverListConfigsMap);
+ }
 
- public UdpConnectServerInitializer(AbstractConfigs abstractConfigs) {
-  this.abstractConfigs = abstractConfigs;
+ public UdpConnectServerHandler getUdpConnectServerHandler() {
+  return udpConnectServerHandler;
  }
 
  @Override
  protected void initChannel(DatagramChannel datagramChannel) throws Exception {
-  ChannelPipeline channelPipeline = datagramChannel.pipeline();
-  channelPipeline.addLast(new UdpConnectServerHandler((ConnectServerConfigs) abstractConfigs));
+  datagramChannel.pipeline().addLast(udpConnectServerHandler);
  }
 }

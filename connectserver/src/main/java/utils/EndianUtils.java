@@ -167,7 +167,7 @@ public class EndianUtils {
  public static byte readByte(InputStream input) throws IOException {
   return (byte) ((read(input) & 0xFF) << 0);
  }
- 
+
 
  public static short readShortLE(byte[] data, int offset) {
   return (short) (((data[offset + 1] & 0xFF) << 8) | ((data[offset + 0] & 0xFF) << 0));

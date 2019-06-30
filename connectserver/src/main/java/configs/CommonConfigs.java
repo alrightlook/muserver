@@ -6,13 +6,14 @@ import com.google.auto.value.AutoValue;
 
 @AutoValue
 public abstract class CommonConfigs extends AbstractConfigs {
- @JsonProperty("connectServer")
- public abstract ConnectServerConfigs connectServerConfigs();
-
  @JsonCreator
- public static CommonConfigs create(@JsonProperty("connectServer") ConnectServerConfigs connectServerConfigs) {
+ public static CommonConfigs create(
+     @JsonProperty("logging") LoggingConfigs logging,
+     @JsonProperty("connectServer") ConnectServerConfigs connectServer
+ ) {
   return builder()
-      .connectServerConfigs(connectServerConfigs)
+      .logging(logging)
+      .connectServer(connectServer)
       .build();
  }
 
@@ -20,9 +21,17 @@ public abstract class CommonConfigs extends AbstractConfigs {
   return new AutoValue_CommonConfigs.Builder();
  }
 
+ @JsonProperty("logging")
+ public abstract LoggingConfigs logging();
+
+ @JsonProperty("connectServer")
+ public abstract ConnectServerConfigs connectServer();
+
  @AutoValue.Builder
  public abstract static class Builder {
-  public abstract Builder connectServerConfigs(ConnectServerConfigs connectServerConfigs);
+  public abstract Builder logging(LoggingConfigs loggingConfigs);
+
+  public abstract Builder connectServer(ConnectServerConfigs connectServer);
 
   public abstract CommonConfigs build();
  }

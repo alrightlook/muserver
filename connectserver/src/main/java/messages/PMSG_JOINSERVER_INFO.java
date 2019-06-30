@@ -8,30 +8,30 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 @AutoValue
-public abstract class PMSG_JOINSERVER_STATISTICS extends AbstractPacket<PMSG_JOINSERVER_STATISTICS> {
+public abstract class PMSG_JOINSERVER_INFO extends AbstractPacket<PMSG_JOINSERVER_INFO> {
  public int sizeOf() {
   return 7;
  }
 
  public static Builder builder() {
-  return new AutoValue_PMSG_JOINSERVER_STATISTICS.Builder();
+  return new AutoValue_PMSG_JOINSERVER_INFO.Builder();
  }
 
- public static PMSG_JOINSERVER_STATISTICS create(PMSG_HEAD header, int itemCount) {
+ public static PMSG_JOINSERVER_INFO create(PMSG_HEAD header, Integer queueSize) {
   return builder()
       .header(header)
-      .queueSize(itemCount)
+      .queueSize(queueSize)
       .build();
  }
 
- public static PMSG_JOINSERVER_STATISTICS deserialize(ByteArrayInputStream stream) throws IOException {
+ public static PMSG_JOINSERVER_INFO deserialize(ByteArrayInputStream stream) throws IOException {
   PMSG_HEAD header = PMSG_HEAD.deserialize(stream);
-  return PMSG_JOINSERVER_STATISTICS.create(header, EndianUtils.readByte(stream));
+  return PMSG_JOINSERVER_INFO.create(header, EndianUtils.readIntegerLE(stream));
  }
 
  public abstract PMSG_HEAD header();
 
- public abstract int queueSize();
+ public abstract Integer queueSize();
 
  @Override
  public byte[] serialize(ByteArrayOutputStream stream) throws IOException {
@@ -44,8 +44,8 @@ public abstract class PMSG_JOINSERVER_STATISTICS extends AbstractPacket<PMSG_JOI
  public abstract static class Builder {
   public abstract Builder header(PMSG_HEAD header);
 
-  public abstract Builder queueSize(int queueSize);
+  public abstract Builder queueSize(Integer queueSize);
 
-  public abstract PMSG_JOINSERVER_STATISTICS build();
+  public abstract PMSG_JOINSERVER_INFO build();
  }
 }

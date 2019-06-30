@@ -1,8 +1,6 @@
 package handlers;
 
-import configs.ConnectServerConfigs;
 import configs.ServerListConfigs;
-import enums.PacketType;
 import enums.ServerType;
 import exceptions.ConnectServerException;
 import io.netty.buffer.ByteBuf;
@@ -18,22 +16,18 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
 
 public class TcpConnectServerHandler extends SimpleChannelInboundHandler<ByteBuf> {
  private final static Logger logger = LogManager.getLogger(TcpConnectServerHandler.class);
- private final static Map<Short, ServerListConfigs> serverListConfigsMap = new HashMap<>();
  private final static ConcurrentHashMap<ChannelId, ChannelHandlerContext> clients = new ConcurrentHashMap<>();
 
- public TcpConnectServerHandler(ConnectServerConfigs connectServerConfigs) {
-  Map<Short, List<ServerListConfigs>> serverListConfigsGroupingBy = connectServerConfigs.serverListConfigs().stream().collect(Collectors.groupingBy(x -> x.serverCode()));
-  for (Map.Entry<Short, List<ServerListConfigs>> entry : serverListConfigsGroupingBy.entrySet()) {
-   serverListConfigsMap.put(entry.getKey(), entry.getValue().get(0));
-  }
+ private final Map<Short, ServerListConfigs> serverListConfigsMap;
+
+ public TcpConnectServerHandler(Map<Short, ServerListConfigs> serverListConfigsMap) {
+  this.serverListConfigsMap = serverListConfigsMap;
  }
 
  @Override
@@ -79,9 +73,16 @@ public class TcpConnectServerHandler extends SimpleChannelInboundHandler<ByteBuf
  protected void channelRead0(ChannelHandlerContext ctx, ByteBuf byteBuf) throws Exception {
   if (byteBuf.readableBytes() > 0) {
    byte[] buffer = new byte[byteBuf.readableBytes()];
+
    byteBuf.getBytes(0, buffer);
+
+   if (buffer.length < 4) {
+    closeConnection(ctx);
+    logger.warn(String.format("Invalid buffer length that equals to: %d", buffer.length));
+   }
+
    switch (buffer[0]) {
-    case PacketType.C1: {
+    case (byte) 0xC1: {
      switch (buffer[2]) {
       case (byte) 0xF4: {
        switch (buffer[3]) {
@@ -92,20 +93,18 @@ public class TcpConnectServerHandler extends SimpleChannelInboundHandler<ByteBuf
 
          if (serverListConfigs == null) {
           closeConnection(ctx);
-          throw new ConnectServerException(String.format("Server code %d not found in the server list configs", serverCode.serverCode()));
+          throw new ConnectServerException(String.format("Server code: %d mismatch configuration", serverCode.serverCode()));
          }
 
-         byte packetSize = (byte) PMSG_SERVER_CONNECTION.sizeOf();
+         byte sizeOf = (byte) PMSG_SERVER_CONNECTION.sizeOf();
 
          PMSG_SERVER_CONNECTION serverConnection = PMSG_SERVER_CONNECTION.create(
-             PMSG_HEAD2.create(PacketType.C1, packetSize, serverCode.header().headCode(), serverCode.header().subCode()),
+             PMSG_HEAD2.create((byte) 0xC1, sizeOf, serverCode.header().headCode(), serverCode.header().subCode()),
              serverListConfigs.serverAddress(),
-             (short) serverListConfigs.serverPort()
+             serverListConfigs.serverPort().shortValue()
          );
 
-         byte[] packetBytes = serverConnection.serialize(new ByteArrayOutputStream());
-
-         ctx.writeAndFlush(Unpooled.wrappedBuffer(packetBytes));
+         ctx.writeAndFlush(Unpooled.wrappedBuffer(serverConnection.serialize(new ByteArrayOutputStream())));
         }
         break;
         case 6: {
@@ -115,21 +114,26 @@ public class TcpConnectServerHandler extends SimpleChannelInboundHandler<ByteBuf
 
          for (ServerListConfigs serverListConfigs : serverListConfigsMap.values()) {
           if (serverListConfigs.serverType() == ServerType.VISIBLE) {
-           servers.add(PMSG_SERVER.create(serverListConfigs.serverCode(), (byte) 0, (byte) 0xCC));
+           PMSG_GAMESERVER_INFO gameServerInfo = (PMSG_GAMESERVER_INFO) UdpConnectServerHandler.getAbstractPackets().getOrDefault(serverListConfigs.serverCode().shortValue(), null);
+
+           if (gameServerInfo == null) {
+            closeConnection(ctx);
+            throw new ConnectServerException(String.format("Game server connection has been interrupted. Server code: %d", serverListConfigs.serverCode()));
+           }
+
+           servers.add(PMSG_SERVER.create(serverListConfigs.serverCode(), gameServerInfo.percent(), (byte) 0xCC));
           }
          }
 
-         short packetSize = (short) (PWMSG_HEAD2.sizeOf() + 2 + (servers.size() * 4));
+         short sizeOf = (short) (PWMSG_HEAD2.sizeOf() + 2 + (servers.size() * 4));
 
          PMSG_SERVER_LIST serverList = PMSG_SERVER_LIST.create(
-             PWMSG_HEAD2.create(PacketType.C2, packetSize, header.headCode(), header.subCode()),
+             PWMSG_HEAD2.create((byte) 0xC2, sizeOf, header.headCode(), header.subCode()),
              (short) servers.size(),
              servers
          );
 
-         byte[] packetBytes = serverList.serialize(new ByteArrayOutputStream());
-
-         ctx.writeAndFlush(Unpooled.wrappedBuffer(packetBytes));
+         ctx.writeAndFlush(Unpooled.wrappedBuffer(serverList.serialize(new ByteArrayOutputStream())));
         }
         break;
         default: {

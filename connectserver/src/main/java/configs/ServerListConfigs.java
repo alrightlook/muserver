@@ -7,27 +7,12 @@ import enums.ServerType;
 
 @AutoValue
 public abstract class ServerListConfigs extends AbstractConfigs {
- @JsonProperty("serverCode")
- public abstract short serverCode();
-
- @JsonProperty("serverName")
- public abstract String serverName();
-
- @JsonProperty("serverAddress")
- public abstract String serverAddress();
-
- @JsonProperty("serverPort")
- public abstract int serverPort();
-
- @JsonProperty("serverType")
- public abstract ServerType serverType();
-
  @JsonCreator
  public static ServerListConfigs create(
-     @JsonProperty("serverCode") short serverCode,
+     @JsonProperty("serverCode") Short serverCode,
      @JsonProperty("serverName") String serverName,
      @JsonProperty("serverAddress") String serverAddress,
-     @JsonProperty("serverPort") int serverPort,
+     @JsonProperty("serverPort") Integer serverPort,
      @JsonProperty("serverType") ServerType serverType
  ) {
   return builder()
@@ -43,15 +28,30 @@ public abstract class ServerListConfigs extends AbstractConfigs {
   return new AutoValue_ServerListConfigs.Builder();
  }
 
+ @JsonProperty("serverCode")
+ public abstract Short serverCode();
+
+ @JsonProperty("serverName")
+ public abstract String serverName();
+
+ @JsonProperty("serverAddress")
+ public abstract String serverAddress();
+
+ @JsonProperty("serverPort")
+ public abstract Integer serverPort();
+
+ @JsonProperty("serverType")
+ public abstract ServerType serverType();
+
  @AutoValue.Builder
  public abstract static class Builder {
-  public abstract Builder serverCode(short serverCode);
+  public abstract Builder serverCode(Short serverCode);
 
   public abstract Builder serverName(String serverName);
 
   public abstract Builder serverAddress(String serverAddress);
 
-  public abstract Builder serverPort(int serverPort);
+  public abstract Builder serverPort(Integer serverPort);
 
   public abstract Builder serverType(ServerType serverType);
 

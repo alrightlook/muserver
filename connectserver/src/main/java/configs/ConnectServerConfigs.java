@@ -8,15 +8,6 @@ import java.util.List;
 
 @AutoValue
 public abstract class ConnectServerConfigs extends AbstractConfigs {
- @JsonProperty("tcpPort")
- public abstract Integer tcpPort();
-
- @JsonProperty("udpPort")
- public abstract Integer udpPort();
-
- @JsonProperty("serverList")
- public abstract List<ServerListConfigs> serverListConfigs();
-
  @JsonCreator
  public static ConnectServerConfigs create(
      @JsonProperty("tcpPort") Integer tcpPort,
@@ -33,6 +24,15 @@ public abstract class ConnectServerConfigs extends AbstractConfigs {
  public static Builder builder() {
   return new AutoValue_ConnectServerConfigs.Builder();
  }
+
+ @JsonProperty("tcpPort")
+ public abstract Integer tcpPort();
+
+ @JsonProperty("udpPort")
+ public abstract Integer udpPort();
+
+ @JsonProperty("serverList")
+ public abstract List<ServerListConfigs> serverListConfigs();
 
  @AutoValue.Builder
  public abstract static class Builder {
