@@ -1,3 +1,5 @@
+package handlers;
+
 import configs.ConnectServerConfigs;
 import configs.ServerListConfigs;
 import enums.PacketType;
@@ -14,7 +16,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,7 +30,7 @@ public class TcpConnectServerHandler extends SimpleChannelInboundHandler<ByteBuf
  private final static ConcurrentHashMap<ChannelId, ChannelHandlerContext> clients = new ConcurrentHashMap<>();
 
  public TcpConnectServerHandler(ConnectServerConfigs connectServerConfigs) {
-  Map<Short, List<ServerListConfigs>> serverListConfigsGroupingBy = connectServerConfigs.gameServersConfigs().stream().collect(Collectors.groupingBy(x -> x.serverCode()));
+  Map<Short, List<ServerListConfigs>> serverListConfigsGroupingBy = connectServerConfigs.serverListConfigs().stream().collect(Collectors.groupingBy(x -> x.serverCode()));
   for (Map.Entry<Short, List<ServerListConfigs>> entry : serverListConfigsGroupingBy.entrySet()) {
    serverListConfigsMap.put(entry.getKey(), entry.getValue().get(0));
   }
@@ -150,6 +151,7 @@ public class TcpConnectServerHandler extends SimpleChannelInboundHandler<ByteBuf
    closeConnection(ctx);
   }
  }
+
 
  private void closeConnection(ChannelHandlerContext ctx) {
   InetSocketAddress remoteAddress = (InetSocketAddress) ctx.channel().remoteAddress();

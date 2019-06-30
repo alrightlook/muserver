@@ -7,21 +7,26 @@ import com.google.auto.value.AutoValue;
 import java.util.List;
 
 @AutoValue
-public abstract class ConnectServerConfigs {
- @JsonProperty("listeningPortsConfigs")
- public abstract ListeningPortsConfigs listeningPortsConfigs();
+public abstract class ConnectServerConfigs extends AbstractConfigs {
+ @JsonProperty("tcpPort")
+ public abstract Integer tcpPort();
 
- @JsonProperty("gameServersConfigs")
- public abstract List<ServerListConfigs> gameServersConfigs();
+ @JsonProperty("udpPort")
+ public abstract Integer udpPort();
+
+ @JsonProperty("serverList")
+ public abstract List<ServerListConfigs> serverListConfigs();
 
  @JsonCreator
  public static ConnectServerConfigs create(
-     @JsonProperty("listeningPortsConfigs") ListeningPortsConfigs listeningPortsConfigs,
-     @JsonProperty("gameServersConfigs") List<ServerListConfigs> gameServersConfigs
+     @JsonProperty("tcpPort") Integer tcpPort,
+     @JsonProperty("udpPort") Integer udpPort,
+     @JsonProperty("serverList") List<ServerListConfigs> serverListConfigs
  ) {
   return builder()
-      .listeningPortsConfigs(listeningPortsConfigs)
-      .gameServersConfigs(gameServersConfigs)
+      .tcpPort(tcpPort)
+      .udpPort(udpPort)
+      .serverListConfigs(serverListConfigs)
       .build();
  }
 
@@ -31,9 +36,12 @@ public abstract class ConnectServerConfigs {
 
  @AutoValue.Builder
  public abstract static class Builder {
-  public abstract Builder listeningPortsConfigs(ListeningPortsConfigs listeningPortsConfigs);
 
-  public abstract Builder gameServersConfigs(List<ServerListConfigs> gameServersConfigs);
+  public abstract Builder serverListConfigs(List<ServerListConfigs> serverListConfigs);
+
+  public abstract Builder tcpPort(Integer tcpPort);
+
+  public abstract Builder udpPort(Integer udpPort);
 
   public abstract ConnectServerConfigs build();
  }

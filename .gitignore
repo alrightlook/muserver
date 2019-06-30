@@ -8,3 +8,5 @@ connectserver/target/
 multiserver\.iml
 
 connectserver/connectserver\.iml
+
+connectserver/dependency-reduced-pom\.xml

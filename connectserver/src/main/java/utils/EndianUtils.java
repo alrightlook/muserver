@@ -48,6 +48,21 @@ public class EndianUtils {
  }
 
 
+ public static void writeIntegerBE(byte[] data, int offset, int value) {
+  data[offset + 0] = (byte) (value >> 0 & 0xFF);
+  data[offset + 1] = (byte) (value >> 8 & 0xFF);
+  data[offset + 2] = (byte) (value >> 16 & 0xFF);
+  data[offset + 3] = (byte) (value >> 24 & 0xFF);
+ }
+
+ public static void writeIntegerBE(OutputStream output, int value) throws IOException {
+  output.write((byte) (value >> 0 & 0xFF));
+  output.write((byte) (value >> 8 & 0xFF));
+  output.write((byte) (value >> 16 & 0xFF));
+  output.write((byte) (value >> 24 & 0xFF));
+ }
+
+
  public static void writeIntegerLE(byte[] data, int offset, int value) {
   data[offset + 0] = (byte) (value >> 24 & 0xFF);
   data[offset + 1] = (byte) (value >> 16 & 0xFF);
@@ -60,6 +75,29 @@ public class EndianUtils {
   output.write((byte) (value >> 16 & 0xFF));
   output.write((byte) (value >> 8 & 0xFF));
   output.write((byte) (value >> 0 & 0xFF));
+ }
+
+
+ public static void writeLongBE(byte[] data, int offset, long value) {
+  data[offset + 0] = (byte) ((int) (value >> 0 & 0xFF));
+  data[offset + 1] = (byte) ((int) (value >> 8 & 0xFF));
+  data[offset + 2] = (byte) ((int) (value >> 16 & 0xFF));
+  data[offset + 3] = (byte) ((int) (value >> 24 & 0xFF));
+  data[offset + 4] = (byte) ((int) (value >> 32 & 0xFF));
+  data[offset + 5] = (byte) ((int) (value >> 40 & 0xFF));
+  data[offset + 6] = (byte) ((int) (value >> 48 & 0xFF));
+  data[offset + 7] = (byte) ((int) (value >> 56 & 0xFF));
+ }
+
+ public static void writeLongBE(OutputStream output, long value) throws IOException {
+  output.write((byte) ((int) (value >> 0 & 0xFF)));
+  output.write((byte) ((int) (value >> 8 & 0xFF)));
+  output.write((byte) ((int) (value >> 16 & 0xFF)));
+  output.write((byte) ((int) (value >> 24 & 0xFF)));
+  output.write((byte) ((int) (value >> 32 & 0xFF)));
+  output.write((byte) ((int) (value >> 40 & 0xFF)));
+  output.write((byte) ((int) (value >> 48 & 0xFF)));
+  output.write((byte) ((int) (value >> 56 & 0xFF)));
  }
 
 
@@ -86,12 +124,30 @@ public class EndianUtils {
  }
 
 
+ public static void writeFloatBE(byte[] data, int offset, float value) {
+  writeIntegerBE(data, offset, Float.floatToIntBits(value));
+ }
+
+ public static void writeFloatBE(OutputStream output, float value) throws IOException {
+  writeIntegerBE(output, Float.floatToIntBits(value));
+ }
+
+
  public static void writeFloatLE(byte[] data, int offset, float value) {
   writeIntegerLE(data, offset, Float.floatToIntBits(value));
  }
 
  public static void writeFloatLE(OutputStream output, float value) throws IOException {
   writeIntegerLE(output, Float.floatToIntBits(value));
+ }
+
+
+ public static void writeDoubleBE(byte[] data, int offset, double value) {
+  writeLongBE(data, offset, Double.doubleToLongBits(value));
+ }
+
+ public static void writeDoubleBE(OutputStream output, double value) throws IOException {
+  writeLongBE(output, Double.doubleToLongBits(value));
  }
 
 
@@ -111,7 +167,7 @@ public class EndianUtils {
  public static byte readByte(InputStream input) throws IOException {
   return (byte) ((read(input) & 0xFF) << 0);
  }
-
+ 
 
  public static short readShortLE(byte[] data, int offset) {
   return (short) (((data[offset + 1] & 0xFF) << 8) | ((data[offset + 0] & 0xFF) << 0));

@@ -1,3 +1,5 @@
+package handlers;
+
 import configs.ServerListConfigs;
 import exceptions.UdpConnectServerHandlerException;
 import io.netty.buffer.ByteBuf;
@@ -26,11 +28,11 @@ public class UdpConnectServerHandler extends SimpleChannelInboundHandler<Datagra
  private final static Timer scheduler = new Timer();
  private final static Logger logger = LogManager.getLogger(UdpConnectServerHandler.class);
  private final static Map<Short, ServerListConfigs> serverListConfigsMap = new HashMap<>();
- private final static AtomicReference<PMSG_JOINSERVER_STATISTICS> joinServerInfoReference = new AtomicReference<>();
  private final static ConcurrentHashMap<Short, AbstractPacket> abstractPackets = new ConcurrentHashMap<>();
+ private final static AtomicReference<PMSG_JOINSERVER_STATISTICS> joinServerInfoReference = new AtomicReference<>();
 
  public UdpConnectServerHandler(ConnectServerConfigs connectServerConfigs) {
-  Map<Short, List<ServerListConfigs>> serverListConfigsGroupingBy = connectServerConfigs.gameServersConfigs().stream().collect(Collectors.groupingBy(x -> x.serverCode()));
+  Map<Short, List<ServerListConfigs>> serverListConfigsGroupingBy = connectServerConfigs.serverListConfigs().stream().collect(Collectors.groupingBy(x -> x.serverCode()));
   for (Map.Entry<Short, List<ServerListConfigs>> entry : serverListConfigsGroupingBy.entrySet()) {
    serverListConfigsMap.put(entry.getKey(), entry.getValue().get(0));
   }

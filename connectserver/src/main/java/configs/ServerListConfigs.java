@@ -6,7 +6,7 @@ import com.google.auto.value.AutoValue;
 import enums.ServerType;
 
 @AutoValue
-public abstract class ServerListConfigs {
+public abstract class ServerListConfigs extends AbstractConfigs {
  @JsonProperty("serverCode")
  public abstract short serverCode();
 
