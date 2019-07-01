@@ -12,6 +12,7 @@
   <module>muserver-cs</module>
   <module>muserver-js</module>
   <module>muserver-utils</module>
+  <module>database-dialect</module>
  </modules>
 
  <build>
