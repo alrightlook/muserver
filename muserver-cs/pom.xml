@@ -46,7 +46,7 @@
         <transformer
             implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
          <manifestEntries>
-          <Main-Class>ConnectServer</Main-Class>
+          <Main-Class>muserver.cs.ConnectServer</Main-Class>
          </manifestEntries>
         </transformer>
        </transformers>
