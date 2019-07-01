@@ -4,14 +4,14 @@
 muserver\.iml
 
 muserver-cs/target/
-muserver-cs/.iml
+muserver-cs/muserver-cs.iml
 muserver-cs/dependency-reduced-pom.xml
 
 muserver-js/target/
-muserver-js/.iml
+muserver-js/muserver-js.iml
 muserver-js/dependency-reduced-pom.xml
 
 
 muserver-utils/target/
-muserver-utils/.iml
+muserver-utils/muserver-utils.iml
 muserver-utils/dependency-reduced-pom.xml
