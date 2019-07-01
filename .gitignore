@@ -1,14 +1,17 @@
 
 \.idea/
 
-connectserver/target/classes/
+muserver\.iml
 
-connectserver/target/
+muserver-cs/target/
+muserver-cs/.iml
+muserver-cs/dependency-reduced-pom.xml
 
-multiserver\.iml
+muserver-js/target/
+muserver-js/.iml
+muserver-js/dependency-reduced-pom.xml
 
-connectserver/connectserver\.iml
 
-connectserver/dependency-reduced-pom\.xml
-
-joinserver/joinserver\.iml
+muserver-utils/target/
+muserver-utils/.iml
+muserver-utils/dependency-reduced-pom.xml
