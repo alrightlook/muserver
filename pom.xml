@@ -9,8 +9,9 @@
  <packaging>pom</packaging>
  <version>1.0</version>
  <modules>
-  <module>connectserver</module>
-  <module>joinserver</module>
+  <module>muserver-cs</module>
+  <module>muserver-js</module>
+  <module>muserver-utils</module>
  </modules>
 
  <build>

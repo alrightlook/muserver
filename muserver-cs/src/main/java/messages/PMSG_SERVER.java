@@ -1,7 +1,7 @@
 package messages;
 
 import com.google.auto.value.AutoValue;
-import utils.EndianUtils;
+import muserver.utils.EndianUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
