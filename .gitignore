@@ -15,6 +15,10 @@ muserver-js/target/
 muserver-js/muserver-js.iml
 muserver-js/dependency-reduced-pom.xml
 
+muserver-tests/target/
+muserver-tests/muserver-tests.iml
+muserver-tests/dependency-reduced-pom.xml
+
 muserver-utils/target/
 muserver-utils/muserver-utils.iml
 muserver-utils/dependency-reduced-pom.xml
