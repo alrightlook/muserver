@@ -10,17 +10,11 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class SqlServerDatabaseDialect implements DatabaseDialect {
  private final static Logger logger = LogManager.getLogger(SqlServerDatabaseDialect.class);
- private final String hostname, instanceName, databaseName, username, password;
- private final Integer portNumber;
+ private final String connectionString;
  private final Queue<Connection> connections = new ConcurrentLinkedQueue<>();
 
- public SqlServerDatabaseDialect(String hostname, Integer portNumber, String instanceName, String databaseName, String username, String password) {
-  this.hostname = hostname;
-  this.portNumber = portNumber;
-  this.instanceName = instanceName;
-  this.databaseName = databaseName;
-  this.username = username;
-  this.password = password;
+ public SqlServerDatabaseDialect(String connectionString) {
+  this.connectionString = connectionString;
  }
 
  @Override
@@ -50,21 +44,8 @@ public class SqlServerDatabaseDialect implements DatabaseDialect {
  @Override
  public Connection getConnection() throws SQLException {
   Properties properties = new Properties();
-
-  if (username != null) {
-   properties.setProperty("username", username);
-  }
-
-  if (password != null) {
-   properties.setProperty("password", password);
-  }
-
-  String connectionString = String.format("jdbc:sqlserver://%s:%d;instanceName=%s;databaseName=%s;username=%s;password=%s", hostname, portNumber, instanceName, databaseName, username, password);
-
   Connection connection = DriverManager.getConnection(connectionString, properties);
-
   connections.add(connection);
-
   return connection;
  }
 }
