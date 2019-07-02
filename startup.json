@@ -37,5 +37,10 @@
     "serverType": "HIDDEN"
    }
   ]
+ },
+ "joinServer": {
+  "databaseConnectionString": "jdbc:sqlserver://127.0.0.1:1444;instanceName=MSSQLSERVER;databaseName=MuOnline;username=test;password=test",
+  "connectServerIp": "127.0.0.1",
+  "connectServerUdpPort": 55557
  }
 }
