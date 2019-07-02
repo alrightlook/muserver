@@ -12,11 +12,11 @@
  <artifactId>database-dialect</artifactId>
 
  <dependencies>
-  <!-- https://mvnrepository.com/artifact/net.sourceforge.jtds/jtds -->
+  <!-- https://mvnrepository.com/artifact/com.microsoft.sqlserver/mssql-jdbc -->
   <dependency>
-   <groupId>net.sourceforge.jtds</groupId>
-   <artifactId>jtds</artifactId>
-   <version>1.3.1</version>
+   <groupId>com.microsoft.sqlserver</groupId>
+   <artifactId>mssql-jdbc</artifactId>
+   <version>7.2.2.jre8</version>
   </dependency>
  </dependencies>
 </project>
