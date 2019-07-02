@@ -13,6 +13,7 @@
   <module>muserver-js</module>
   <module>muserver-utils</module>
   <module>database-dialect</module>
+  <module>muserver-tests</module>
  </modules>
 
  <build>
