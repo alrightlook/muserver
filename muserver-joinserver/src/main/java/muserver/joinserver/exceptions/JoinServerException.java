@@ -1,4 +1,4 @@
-package muserver.js.exceptions;
+package muserver.joinserver.exceptions;
 
 public class JoinServerException extends Exception {
     public JoinServerException() {
