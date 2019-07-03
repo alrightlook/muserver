@@ -1,6 +1,8 @@
-package muserver.cs.messages;
+package muserver.common;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.Date;
 
 public abstract class AbstractPacket<T> implements Serializable {

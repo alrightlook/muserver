@@ -1,34 +1,31 @@
-package muserver.cs.messages;
+package muserver.common.messages;
 
 import com.google.auto.value.AutoValue;
+import muserver.common.AbstractPacket;
 import muserver.utils.EndianUtils;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import java.io.*;
 
 @AutoValue
-public abstract class PMSG_HEAD2 extends AbstractPacket<PMSG_HEAD2> {
+public abstract class PBMSG_HEAD extends AbstractPacket<PBMSG_HEAD> {
  public static int sizeOf() {
-  return 4;
+  return 3;
  }
 
  public static Builder builder() {
-  return new AutoValue_PMSG_HEAD2.Builder();
+  return new AutoValue_PBMSG_HEAD.Builder();
  }
 
- public static PMSG_HEAD2 create(Byte type, Byte size, Byte headCode, Byte subCode) {
+ public static PBMSG_HEAD create(Byte type, Byte size, Byte headCode) {
   return builder()
       .type(type)
       .size(size)
       .headCode(headCode)
-      .subCode(subCode)
       .build();
  }
 
- public static PMSG_HEAD2 deserialize(ByteArrayInputStream stream) throws IOException {
-  return PMSG_HEAD2.create(
-      EndianUtils.readByte(stream),
+ public static PBMSG_HEAD deserialize(ByteArrayInputStream stream) throws IOException {
+  return PBMSG_HEAD.create(
       EndianUtils.readByte(stream),
       EndianUtils.readByte(stream),
       EndianUtils.readByte(stream)
@@ -41,14 +38,11 @@ public abstract class PMSG_HEAD2 extends AbstractPacket<PMSG_HEAD2> {
 
  public abstract Byte headCode();
 
- public abstract Byte subCode();
-
  @Override
  public byte[] serialize(ByteArrayOutputStream stream) throws IOException {
   EndianUtils.writeByte(stream, type());
   EndianUtils.writeByte(stream, size());
   EndianUtils.writeByte(stream, headCode());
-  EndianUtils.writeByte(stream, subCode());
   return stream.toByteArray();
  }
 
@@ -60,8 +54,6 @@ public abstract class PMSG_HEAD2 extends AbstractPacket<PMSG_HEAD2> {
 
   public abstract Builder headCode(Byte headCode);
 
-  public abstract Builder subCode(Byte subCode);
-
-  public abstract PMSG_HEAD2 build();
+  public abstract PBMSG_HEAD build();
  }
 }

@@ -1,21 +1,24 @@
-package muserver.cs.messages;
+package muserver.common.messages;
 
 import com.google.auto.value.AutoValue;
+import muserver.common.AbstractPacket;
 import muserver.utils.EndianUtils;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 @AutoValue
-public abstract class PMSG_HEAD extends AbstractPacket<PMSG_HEAD> {
- public static int sizeOf() {
-  return 3;
+public abstract class PWMSG_HEAD extends AbstractPacket<PWMSG_HEAD> {
+ public int sizeOf() {
+  return 4;
  }
 
  public static Builder builder() {
-  return new AutoValue_PMSG_HEAD.Builder();
+  return new AutoValue_PWMSG_HEAD.Builder();
  }
 
- public static PMSG_HEAD create(Byte type, Byte size, Byte headCode) {
+ public static PWMSG_HEAD create(Byte type, Short size, Byte headCode) {
   return builder()
       .type(type)
       .size(size)
@@ -23,24 +26,24 @@ public abstract class PMSG_HEAD extends AbstractPacket<PMSG_HEAD> {
       .build();
  }
 
- public static PMSG_HEAD deserialize(ByteArrayInputStream stream) throws IOException {
-  return PMSG_HEAD.create(
+ public static PWMSG_HEAD deserialize(ByteArrayInputStream stream) throws IOException {
+  return PWMSG_HEAD.create(
       EndianUtils.readByte(stream),
-      EndianUtils.readByte(stream),
+      EndianUtils.readShortLE(stream),
       EndianUtils.readByte(stream)
   );
  }
 
  public abstract Byte type();
 
- public abstract Byte size();
+ public abstract Short size();
 
  public abstract Byte headCode();
 
  @Override
  public byte[] serialize(ByteArrayOutputStream stream) throws IOException {
   EndianUtils.writeByte(stream, type());
-  EndianUtils.writeByte(stream, size());
+  EndianUtils.writeShortLE(stream, size());
   EndianUtils.writeByte(stream, headCode());
   return stream.toByteArray();
  }
@@ -49,10 +52,10 @@ public abstract class PMSG_HEAD extends AbstractPacket<PMSG_HEAD> {
  public abstract static class Builder {
   public abstract Builder type(Byte type);
 
-  public abstract Builder size(Byte size);
+  public abstract Builder size(Short size);
 
   public abstract Builder headCode(Byte headCode);
 
-  public abstract PMSG_HEAD build();
+  public abstract PWMSG_HEAD build();
  }
 }
