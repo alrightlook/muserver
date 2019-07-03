@@ -4,21 +4,25 @@
 muserver\.iml
 
 database-dialect/target/
-database-dialect/database-dialect.iml
+database-dialect/*.iml
 database-dialect/dependency-reduced-pom.xml
 
-muserver-cs/target/
-muserver-cs/muserver-cs.iml
-muserver-cs/dependency-reduced-pom.xml
+muserver-common/target/
+muserver-common/*.iml
+muserver-common/dependency-reduced-pom.xml
 
-muserver-js/target/
-muserver-js/muserver-js.iml
-muserver-js/dependency-reduced-pom.xml
+muserver-connectserver/target/
+muserver-connectserver/*.iml
+muserver-connectserver/dependency-reduced-pom.xml
+
+muserver-joinserver/target/
+muserver-joinserver/*.iml
+muserver-joinserver/dependency-reduced-pom.xml
 
 muserver-tests/target/
-muserver-tests/muserver-tests.iml
+muserver-tests/*.iml
 muserver-tests/dependency-reduced-pom.xml
 
 muserver-utils/target/
-muserver-utils/muserver-utils.iml
+muserver-utils/*.iml
 muserver-utils/dependency-reduced-pom.xml

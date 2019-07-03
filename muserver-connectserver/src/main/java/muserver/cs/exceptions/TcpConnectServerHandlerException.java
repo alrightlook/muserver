@@ -1,6 +1,6 @@
 package muserver.cs.exceptions;
 
-public class TcpConnectServerHandlerException  extends Exception {
+public class TcpConnectServerHandlerException extends Exception {
  public TcpConnectServerHandlerException() {
  }
 

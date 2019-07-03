@@ -9,11 +9,12 @@
  <packaging>pom</packaging>
  <version>1.0</version>
  <modules>
-  <module>muserver-cs</module>
-  <module>muserver-js</module>
-  <module>muserver-utils</module>
   <module>database-dialect</module>
+  <module>muserver-common</module>
+  <module>muserver-connectserver</module>
+  <module>muserver-joinserver</module>
   <module>muserver-tests</module>
+  <module>muserver-utils</module>
  </modules>
 
  <build>
