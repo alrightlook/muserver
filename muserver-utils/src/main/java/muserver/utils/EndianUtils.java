@@ -15,12 +15,6 @@ public class EndianUtils {
  }
 
 
- public static void writeBytes(byte[] data, int offset, byte[] value) {
-  for (int index = 0; index < value.length; index++) {
-   data[offset + index] = value[index];
-  }
- }
-
  public static void writeBytes(OutputStream output, byte[] value) throws IOException {
   output.write(value);
  }
@@ -166,6 +160,24 @@ public class EndianUtils {
 
  public static byte readByte(InputStream input) throws IOException {
   return (byte) ((read(input) & 0xFF) << 0);
+ }
+
+
+ public static byte[] readBytes(InputStream stream, int count) throws IOException {
+  byte[] buffer = new byte[count];
+  int offset = 0;
+  while (offset < buffer.length) {
+   int read = stream.read(buffer, offset, buffer.length - offset);
+   if (read < 0) {
+    throw new IOException();
+   }
+   if (read > 0) {
+    offset += read;
+   } else {
+    Thread.yield();
+   }
+  }
+  return buffer;
  }
 
 
