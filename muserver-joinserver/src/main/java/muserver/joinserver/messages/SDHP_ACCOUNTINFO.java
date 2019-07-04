@@ -2,6 +2,7 @@ package muserver.joinserver.messages;
 
 import com.google.auto.value.AutoValue;
 import muserver.common.AbstractPacket;
+import muserver.common.GlobalDefinitions;
 import muserver.common.messages.PBMSG_HEAD;
 import muserver.utils.EndianUtils;
 
@@ -9,6 +10,18 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+/*
+typedef struct
+{
+	PBMSG_HEAD	h;
+	BYTE		ServerCode;
+	BYTE		Subcode;
+
+	int			Number;
+	char		AccountID[MAX_IDSTRING+1];// °иБ¤ ѕЖАМµр
+
+} SDHP_ACCOUNTINFO, * LPSDHP_ACCOUNTINFO;
+ */
 @AutoValue
 public abstract class SDHP_ACCOUNTINFO extends AbstractPacket<SDHP_ACCOUNTINFO> {
     public int sizeOf() { return 20; }
@@ -35,7 +48,7 @@ public abstract class SDHP_ACCOUNTINFO extends AbstractPacket<SDHP_ACCOUNTINFO> 
                 EndianUtils.readByte(stream),
                 EndianUtils.readByte(stream),
                 EndianUtils.readIntegerLE(stream),
-                new String(EndianUtils.readBytes(stream, 11))
+                new String(EndianUtils.readBytes(stream, GlobalDefinitions.MAX_IDSTRING + 1))
         );
     }
 
@@ -47,7 +60,7 @@ public abstract class SDHP_ACCOUNTINFO extends AbstractPacket<SDHP_ACCOUNTINFO> 
 
     public abstract Integer number();
 
-    public abstract String accountId(); //10 + 1
+    public abstract String accountId();
 
     @Override
     public byte[] serialize(ByteArrayOutputStream stream) throws IOException {
@@ -55,17 +68,7 @@ public abstract class SDHP_ACCOUNTINFO extends AbstractPacket<SDHP_ACCOUNTINFO> 
         EndianUtils.writeByte(stream, serverCode());
         EndianUtils.writeByte(stream, subCode());
         EndianUtils.writeIntegerBE(stream, number());
-
-        byte[] accountId = new byte[11];
-
-        int i = 0;
-        for (byte value : accountId().getBytes()) {
-            accountId[i] = value;
-            i++;
-        }
-
-        EndianUtils.writeBytes(stream, accountId);
-
+        EndianUtils.writeString(stream, accountId(), GlobalDefinitions.MAX_IDSTRING);
         return stream.toByteArray();
     }
 
