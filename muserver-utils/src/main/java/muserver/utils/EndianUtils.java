@@ -20,6 +20,20 @@ public class EndianUtils {
  }
 
 
+ public static void writeString(OutputStream output, String value, int count) throws IOException {
+  byte[] buffer = new byte[count];
+
+  int index = 0;
+
+  for (byte val : value.getBytes()) {
+   buffer[index] = val;
+   index++;
+  }
+
+  output.write(buffer);
+ }
+
+
  public static void writeShortBE(byte[] data, int offset, short value) {
   data[offset + 0] = (byte) (value >> 0 & 0xFF);
   data[offset + 1] = (byte) (value >> 8 & 0xFF);
