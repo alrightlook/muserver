@@ -1,5 +1,8 @@
 package muserver.connectserver.handlers;
 
+import muserver.common.messages.PBMSG_HEAD;
+import muserver.common.messages.PBMSG_HEAD2;
+import muserver.common.messages.PWMSG_HEAD2;
 import muserver.connectserver.configs.ServerListConfigs;
 import muserver.connectserver.enums.ServerType;
 import muserver.connectserver.exceptions.ConnectServerException;
@@ -40,11 +43,11 @@ public class TcpConnectServerHandler extends SimpleChannelInboundHandler<ByteBuf
 
   clients.put(ctx.channel().id(), ctx);
 
-//  PMSG_HANDSHAKE handshake = PMSG_HANDSHAKE.create(PBMSG_HEAD.create((byte) 0xC1, (byte) 4, (byte) 0), (byte) 1);
-//
-//  byte[] buffer = handshake.serialize(new ByteArrayOutputStream());
-//
-//  ctx.writeAndFlush(Unpooled.wrappedBuffer(buffer));
+  PMSG_HANDSHAKE handshake = PMSG_HANDSHAKE.create(PBMSG_HEAD.create((byte) 0xC1, (byte) 4, (byte) 0), (byte) 1);
+
+  byte[] buffer = handshake.serialize(new ByteArrayOutputStream());
+
+  ctx.writeAndFlush(Unpooled.wrappedBuffer(buffer));
  }
 
  @Override
@@ -81,76 +84,76 @@ public class TcpConnectServerHandler extends SimpleChannelInboundHandler<ByteBuf
     logger.warn(String.format("Invalid buffer length that equals to: %d", buffer.length));
    }
 
-//   switch (buffer[0]) {
-//    case (byte) 0xC1: {
-//     switch (buffer[2]) {
-//      case (byte) 0xF4: {
-//       switch (buffer[3]) {
-//        case 3: {
-//         PMSG_SERVER_CODE serverCode = PMSG_SERVER_CODE.deserialize(new ByteArrayInputStream(buffer));
-//
-//         ServerListConfigs serverListConfigs = serverListConfigsMap.getOrDefault(serverCode.serverCode().shortValue(), null);
-//
-//         if (serverListConfigs == null) {
-//          closeConnection(ctx);
-//          throw new ConnectServerException(String.format("Server code: %d mismatch configuration", serverCode.serverCode()));
-//         }
-//
-//         byte sizeOf = (byte) PMSG_SERVER_CONNECTION.sizeOf();
-//
-//         PMSG_SERVER_CONNECTION serverConnection = PMSG_SERVER_CONNECTION.create(
-//             PBMSG_HEAD2.create((byte) 0xC1, sizeOf, serverCode.header().headCode(), serverCode.header().subCode()),
-//             serverListConfigs.serverAddress(),
-//             serverListConfigs.serverPort().shortValue()
-//         );
-//
-//         ctx.writeAndFlush(Unpooled.wrappedBuffer(serverConnection.serialize(new ByteArrayOutputStream())));
-//        }
-//        break;
-//        case 6: {
-//         PBMSG_HEAD2 header = PBMSG_HEAD2.deserialize(new ByteArrayInputStream(buffer));
-//
-//         List<PMSG_SERVER> servers = new ArrayList<>();
-//
-//         for (ServerListConfigs serverListConfigs : serverListConfigsMap.values()) {
-//          if (serverListConfigs.serverType() == ServerType.VISIBLE) {
-//           PMSG_GAMESERVER_INFO gameServerInfo = (PMSG_GAMESERVER_INFO) UdpConnectServerHandler.getAbstractPackets().getOrDefault(serverListConfigs.serverCode().shortValue(), null);
-//
-//           if (gameServerInfo == null) {
-//            closeConnection(ctx);
-//            throw new ConnectServerException(String.format("Game server connection has been interrupted. Server code: %d", serverListConfigs.serverCode()));
-//           }
-//
-//           servers.add(PMSG_SERVER.create(serverListConfigs.serverCode(), gameServerInfo.percent(), (byte) 0xCC));
-//          }
-//         }
-//
-//         short sizeOf = (short) (PWMSG_HEAD2.sizeOf() + 2 + (servers.size() * 4));
-//
-//         PMSG_SERVER_LIST serverList = PMSG_SERVER_LIST.create(
-//             PWMSG_HEAD2.create((byte) 0xC2, sizeOf, header.headCode(), header.subCode()),
-//             (short) servers.size(),
-//             servers
-//         );
-//
-//         ctx.writeAndFlush(Unpooled.wrappedBuffer(serverList.serialize(new ByteArrayOutputStream())));
-//        }
-//        break;
-//        default: {
-//         throw new UnsupportedOperationException(String.format("Unsupported sub code: %d", buffer[3]));
-//        }
-//       }
-//      }
-//      break;
-//      default: {
-//       throw new UnsupportedOperationException(String.format("Unsupported head code: %d", buffer[2]));
-//      }
-//     }
-//    }
-//    break;
-//    default:
-//     throw new UnsupportedOperationException(String.format("Unsupported protocol type: %s", buffer[0]));
-//   }
+   switch (buffer[0]) {
+    case (byte) 0xC1: {
+     switch (buffer[2]) {
+      case (byte) 0xF4: {
+       switch (buffer[3]) {
+        case 3: {
+         PMSG_SERVER_CODE serverCode = PMSG_SERVER_CODE.deserialize(new ByteArrayInputStream(buffer));
+
+         ServerListConfigs serverListConfigs = serverListConfigsMap.getOrDefault(serverCode.serverCode().shortValue(), null);
+
+         if (serverListConfigs == null) {
+          closeConnection(ctx);
+          throw new ConnectServerException(String.format("Server code: %d mismatch configuration", serverCode.serverCode()));
+         }
+
+         byte sizeOf = (byte) PMSG_SERVER_CONNECTION.sizeOf();
+
+         PMSG_SERVER_CONNECTION serverConnection = PMSG_SERVER_CONNECTION.create(
+             PBMSG_HEAD2.create((byte) 0xC1, sizeOf, serverCode.header().headCode(), serverCode.header().subCode()),
+             serverListConfigs.serverAddress(),
+             serverListConfigs.serverPort().shortValue()
+         );
+
+         ctx.writeAndFlush(Unpooled.wrappedBuffer(serverConnection.serialize(new ByteArrayOutputStream())));
+        }
+        break;
+        case 6: {
+         PBMSG_HEAD2 header = PBMSG_HEAD2.deserialize(new ByteArrayInputStream(buffer));
+
+         List<PMSG_SERVER> servers = new ArrayList<>();
+
+         for (ServerListConfigs serverListConfigs : serverListConfigsMap.values()) {
+          if (serverListConfigs.serverType() == ServerType.VISIBLE) {
+           PMSG_GAMESERVER_INFO gameServerInfo = (PMSG_GAMESERVER_INFO) UdpConnectServerHandler.getAbstractPackets().getOrDefault(serverListConfigs.serverCode().shortValue(), null);
+
+           if (gameServerInfo == null) {
+            closeConnection(ctx);
+            throw new ConnectServerException(String.format("Game server connection has been interrupted. Server code: %d", serverListConfigs.serverCode()));
+           }
+
+           servers.add(PMSG_SERVER.create(serverListConfigs.serverCode(), gameServerInfo.percent(), (byte) 0xCC));
+          }
+         }
+
+         short sizeOf = (short) (PWMSG_HEAD2.sizeOf() + 2 + (servers.size() * 4));
+
+         PMSG_SERVER_LIST serverList = PMSG_SERVER_LIST.create(
+             PWMSG_HEAD2.create((byte) 0xC2, sizeOf, header.headCode(), header.subCode()),
+             (short) servers.size(),
+             servers
+         );
+
+         ctx.writeAndFlush(Unpooled.wrappedBuffer(serverList.serialize(new ByteArrayOutputStream())));
+        }
+        break;
+        default: {
+         throw new UnsupportedOperationException(String.format("Unsupported sub code: %d", buffer[3]));
+        }
+       }
+      }
+      break;
+      default: {
+       throw new UnsupportedOperationException(String.format("Unsupported head code: %d", buffer[2]));
+      }
+     }
+    }
+    break;
+    default:
+     throw new UnsupportedOperationException(String.format("Unsupported protocol type: %s", buffer[0]));
+   }
   } else {
    closeConnection(ctx);
   }

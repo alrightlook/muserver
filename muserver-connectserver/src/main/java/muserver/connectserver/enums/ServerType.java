@@ -19,7 +19,7 @@ public enum ServerType {
 
  public static ServerType fromString(String type) {
   for (ServerType value : ServerType.values()) {
-   if (value.type().equals(type)) {
+   if (value.type().toUpperCase().equals(type.toUpperCase())) {
     return value;
    }
   }
