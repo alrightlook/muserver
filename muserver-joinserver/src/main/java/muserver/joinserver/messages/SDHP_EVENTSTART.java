@@ -11,11 +11,12 @@ typedef struct
 import com.google.auto.value.AutoValue;
 import muserver.common.AbstractPacket;
 import muserver.common.messages.PBMSG_HEAD;
-import muserver.utils.EndianUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+
+import static muserver.utils.EndianUtils.*;
 
 @AutoValue
 public abstract class SDHP_EVENTSTART extends AbstractPacket<SDHP_EVENTSTART> {
@@ -35,7 +36,7 @@ public abstract class SDHP_EVENTSTART extends AbstractPacket<SDHP_EVENTSTART> {
 
   return SDHP_EVENTSTART.create(
       header,
-      EndianUtils.readByte(stream)
+      readByte(stream)
   );
  }
 
@@ -46,7 +47,7 @@ public abstract class SDHP_EVENTSTART extends AbstractPacket<SDHP_EVENTSTART> {
  @Override
  public byte[] serialize(ByteArrayOutputStream stream) throws IOException {
   header().serialize(stream);
-  EndianUtils.writeByte(stream, event());
+  writeByte(stream, event());
   return stream.toByteArray();
  }
 

@@ -4,11 +4,12 @@ import com.google.auto.value.AutoValue;
 import muserver.common.AbstractPacket;
 import muserver.common.Globals;
 import muserver.common.messages.PWMSG_HEAD;
-import muserver.utils.EndianUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+
+import static muserver.utils.EndianUtils.*;
 
 /*
 typedef struct
@@ -43,6 +44,7 @@ typedef struct
 	int   PkTime;
 } SDHP_DBCHAR_INFORESULT, *LPSDHP_DBCHAR_INFORESULT;
  */
+
 @AutoValue
 public abstract class SDHP_DBCHAR_INFORESULT extends AbstractPacket<SDHP_DBCHAR_INFORESULT> {
     public static Builder builder() {
@@ -87,34 +89,34 @@ public abstract class SDHP_DBCHAR_INFORESULT extends AbstractPacket<SDHP_DBCHAR_
 
         return SDHP_DBCHAR_INFORESULT.create(
                 header,
-                EndianUtils.readByte(stream),
-                EndianUtils.readShortLE(stream),
-                new String(EndianUtils.readBytes(stream, Globals.MAX_IDSTRING)),
-                new String(EndianUtils.readBytes(stream, Globals.MAX_IDSTRING + 1)),
-                EndianUtils.readByte(stream),
-                EndianUtils.readShortLE(stream),
-                EndianUtils.readIntegerLE(stream),
-                EndianUtils.readIntegerLE(stream),
-                EndianUtils.readIntegerLE(stream),
+                readByte(stream),
+                readShortLE(stream),
+                new String(readBytes(stream, Globals.MAX_IDSTRING)),
+                new String(readBytes(stream, Globals.MAX_IDSTRING + 1)),
+                readByte(stream),
+                readShortLE(stream),
+                readIntegerLE(stream),
+                readIntegerLE(stream),
+                readIntegerLE(stream),
 
-                EndianUtils.readIntegerLE(stream),
-                EndianUtils.readShortLE(stream),
-                EndianUtils.readShortLE(stream),
-                EndianUtils.readShortLE(stream),
-                EndianUtils.readShortLE(stream),
-                EndianUtils.readShortLE(stream),
-                EndianUtils.readShortLE(stream),
-                EndianUtils.readShortLE(stream),
-                EndianUtils.readShortLE(stream),
-                EndianUtils.readBytes(stream, Globals.MAX_DBINVENTORY),
-                EndianUtils.readBytes(stream, Globals.MAX_DBMAGIC),
-                EndianUtils.readByte(stream),
-                EndianUtils.readByte(stream),
-                EndianUtils.readByte(stream),
-                EndianUtils.readByte(stream),
-                EndianUtils.readIntegerLE(stream),
-                EndianUtils.readIntegerLE(stream),
-                EndianUtils.readIntegerLE(stream)
+                readIntegerLE(stream),
+                readShortLE(stream),
+                readShortLE(stream),
+                readShortLE(stream),
+                readShortLE(stream),
+                readShortLE(stream),
+                readShortLE(stream),
+                readShortLE(stream),
+                readShortLE(stream),
+                readBytes(stream, Globals.MAX_DBINVENTORY),
+                readBytes(stream, Globals.MAX_DBMAGIC),
+                readByte(stream),
+                readByte(stream),
+                readByte(stream),
+                readByte(stream),
+                readIntegerLE(stream),
+                readIntegerLE(stream),
+                readIntegerLE(stream)
         );
     }
 
@@ -177,33 +179,33 @@ public abstract class SDHP_DBCHAR_INFORESULT extends AbstractPacket<SDHP_DBCHAR_
     @Override
     public byte[] serialize(ByteArrayOutputStream stream) throws IOException {
         header().serialize(stream);
-        EndianUtils.writeByte(stream, result());
-        EndianUtils.writeShortLE(stream, number());
-        EndianUtils.writeString(stream, accountId(), Globals.MAX_IDSTRING);
-        EndianUtils.writeString(stream, name(), Globals.MAX_IDSTRING + 1);
-        EndianUtils.writeByte(stream, clazz());
-        EndianUtils.writeShortLE(stream, level());
-        EndianUtils.writeIntegerLE(stream, levelUpPoint());
-        EndianUtils.writeIntegerLE(stream, exp());
-        EndianUtils.writeIntegerLE(stream, nextExp());
-        EndianUtils.writeIntegerLE(stream, money());
-        EndianUtils.writeShortLE(stream, str());
-        EndianUtils.writeShortLE(stream, dex());
-        EndianUtils.writeShortLE(stream, vit());
-        EndianUtils.writeShortLE(stream, energy());
-        EndianUtils.writeShortLE(stream, life());
-        EndianUtils.writeShortLE(stream, maxLife());
-        EndianUtils.writeShortLE(stream, mana());
-        EndianUtils.writeShortLE(stream, maxMana());
-        EndianUtils.writeBytes(stream, dbInventory());
-        EndianUtils.writeBytes(stream, dbMagicList());
-        EndianUtils.writeByte(stream, mapNumber());
-        EndianUtils.writeByte(stream, mapX());
-        EndianUtils.writeByte(stream, mapY());
-        EndianUtils.writeByte(stream, dir());
-        EndianUtils.writeIntegerLE(stream, pkCount());
-        EndianUtils.writeIntegerLE(stream, pkLevel());
-        EndianUtils.writeIntegerLE(stream, pkTime());
+        writeByte(stream, result());
+        writeShortLE(stream, number());
+        writeString(stream, accountId(), Globals.MAX_IDSTRING);
+        writeString(stream, name(), Globals.MAX_IDSTRING + 1);
+        writeByte(stream, clazz());
+        writeShortLE(stream, level());
+        writeIntegerLE(stream, levelUpPoint());
+        writeIntegerLE(stream, exp());
+        writeIntegerLE(stream, nextExp());
+        writeIntegerLE(stream, money());
+        writeShortLE(stream, str());
+        writeShortLE(stream, dex());
+        writeShortLE(stream, vit());
+        writeShortLE(stream, energy());
+        writeShortLE(stream, life());
+        writeShortLE(stream, maxLife());
+        writeShortLE(stream, mana());
+        writeShortLE(stream, maxMana());
+        writeBytes(stream, dbInventory());
+        writeBytes(stream, dbMagicList());
+        writeByte(stream, mapNumber());
+        writeByte(stream, mapX());
+        writeByte(stream, mapY());
+        writeByte(stream, dir());
+        writeIntegerLE(stream, pkCount());
+        writeIntegerLE(stream, pkLevel());
+        writeIntegerLE(stream, pkTime());
         return stream.toByteArray();
     }
 

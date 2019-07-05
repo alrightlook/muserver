@@ -11,11 +11,12 @@ typedef struct
 import com.google.auto.value.AutoValue;
 import muserver.common.AbstractPacket;
 import muserver.common.messages.PBMSG_HEAD;
-import muserver.utils.EndianUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+
+import static muserver.utils.EndianUtils.*;
 
 @AutoValue
 public abstract class SDHP_GAME_BLOCK_RESULT extends AbstractPacket<SDHP_GAME_BLOCK_RESULT> {
@@ -33,7 +34,7 @@ public abstract class SDHP_GAME_BLOCK_RESULT extends AbstractPacket<SDHP_GAME_BL
  public static SDHP_GAME_BLOCK_RESULT deserialize(ByteArrayInputStream stream) throws IOException {
   PBMSG_HEAD header = PBMSG_HEAD.deserialize(stream);
 
-  return SDHP_GAME_BLOCK_RESULT.create(header, EndianUtils.readByte(stream));
+  return SDHP_GAME_BLOCK_RESULT.create(header, readByte(stream));
  }
 
  public abstract PBMSG_HEAD header();
@@ -43,7 +44,7 @@ public abstract class SDHP_GAME_BLOCK_RESULT extends AbstractPacket<SDHP_GAME_BL
  @Override
  public byte[] serialize(ByteArrayOutputStream stream) throws IOException {
   header().serialize(stream);
-  EndianUtils.writeByte(stream, result());
+  writeByte(stream, result());
   return stream.toByteArray();
  }
 

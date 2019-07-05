@@ -4,11 +4,12 @@ import com.google.auto.value.AutoValue;
 import muserver.common.AbstractPacket;
 import muserver.common.Globals;
 import muserver.common.messages.PWMSG_HEAD;
-import muserver.utils.EndianUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+
+import static muserver.utils.EndianUtils.*;
 
 /*
 typedef struct
@@ -43,11 +44,11 @@ public abstract class SDHP_CHARLISTCOUNT extends AbstractPacket<SDHP_CHARLISTCOU
 
         return SDHP_CHARLISTCOUNT.create(
                 header,
-                EndianUtils.readShortLE(stream),
-                EndianUtils.readByte(stream),
-                EndianUtils.readIntegerLE(stream),
-                EndianUtils.readByte(stream),
-                new String(EndianUtils.readBytes(stream, Globals.MAX_IDSTRING + 1))
+                readShortLE(stream),
+                readByte(stream),
+                readIntegerLE(stream),
+                readByte(stream),
+                new String(readBytes(stream, Globals.MAX_IDSTRING + 1))
         );
     }
 
@@ -66,11 +67,11 @@ public abstract class SDHP_CHARLISTCOUNT extends AbstractPacket<SDHP_CHARLISTCOU
     @Override
     public byte[] serialize(ByteArrayOutputStream stream) throws IOException {
         header().serialize(stream);
-        EndianUtils.writeShortLE(stream, number());
-        EndianUtils.writeByte(stream, count());
-        EndianUtils.writeIntegerLE(stream, dbNumber());
-        EndianUtils.writeByte(stream, magumsa());
-        EndianUtils.writeString(stream, accountId(), Globals.MAX_IDSTRING + 1);
+        writeShortLE(stream, number());
+        writeByte(stream, count());
+        writeIntegerLE(stream, dbNumber());
+        writeByte(stream, magumsa());
+        writeString(stream, accountId(), Globals.MAX_IDSTRING + 1);
         return stream.toByteArray();
     }
 

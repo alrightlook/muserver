@@ -11,11 +11,12 @@ typedef struct
 import com.google.auto.value.AutoValue;
 import muserver.common.AbstractPacket;
 import muserver.common.messages.PBMSG_HEAD;
-import muserver.utils.EndianUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+
+import static muserver.utils.EndianUtils.*;
 
 @AutoValue
 public abstract class SDHP_EXITMSG extends AbstractPacket<SDHP_EXITMSG> {
@@ -35,7 +36,7 @@ public abstract class SDHP_EXITMSG extends AbstractPacket<SDHP_EXITMSG> {
 
   return SDHP_EXITMSG.create(
       header,
-      EndianUtils.readBytes(stream, 3)
+      readBytes(stream, 3)
   );
  }
 
@@ -46,7 +47,7 @@ public abstract class SDHP_EXITMSG extends AbstractPacket<SDHP_EXITMSG> {
  @Override
  public byte[] serialize(ByteArrayOutputStream stream) throws IOException {
   header().serialize(stream);
-  EndianUtils.writeBytes(stream, exitCode());
+  writeBytes(stream, exitCode());
   return stream.toByteArray();
  }
 

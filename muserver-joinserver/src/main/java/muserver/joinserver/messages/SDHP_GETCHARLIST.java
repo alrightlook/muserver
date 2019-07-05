@@ -14,11 +14,12 @@ import com.google.auto.value.AutoValue;
 import muserver.common.AbstractPacket;
 import muserver.common.Globals;
 import muserver.common.messages.PBMSG_HEAD;
-import muserver.utils.EndianUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+
+import static muserver.utils.EndianUtils.*;
 
 @AutoValue
 public abstract class SDHP_GETCHARLIST extends AbstractPacket<SDHP_GETCHARLIST> {
@@ -39,8 +40,8 @@ public abstract class SDHP_GETCHARLIST extends AbstractPacket<SDHP_GETCHARLIST> 
 
   return SDHP_GETCHARLIST.create(
       header,
-      new String(EndianUtils.readBytes(stream, Globals.MAX_IDSTRING)),
-      EndianUtils.readShortLE(stream)
+      new String(readBytes(stream, Globals.MAX_IDSTRING)),
+      readShortLE(stream)
   );
  }
 
@@ -53,8 +54,8 @@ public abstract class SDHP_GETCHARLIST extends AbstractPacket<SDHP_GETCHARLIST> 
  @Override
  public byte[] serialize(ByteArrayOutputStream stream) throws IOException {
   header().serialize(stream);
-  EndianUtils.writeString(stream, id(), Globals.MAX_IDSTRING);
-  EndianUtils.writeShortLE(stream, number());
+  writeString(stream, id(), Globals.MAX_IDSTRING);
+  writeShortLE(stream, number());
   return stream.toByteArray();
  }
 

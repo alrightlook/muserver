@@ -3,11 +3,12 @@ package muserver.joinserver.messages;
 import com.google.auto.value.AutoValue;
 import muserver.common.AbstractPacket;
 import muserver.common.Globals;
-import muserver.utils.EndianUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+
+import static muserver.utils.EndianUtils.*;
 
 /*
 {
@@ -37,11 +38,11 @@ public abstract class SDHP_CHARLIST extends AbstractPacket<SDHP_CHARLIST> {
 
     public static SDHP_CHARLIST deserialize(ByteArrayInputStream stream) throws IOException {
         return SDHP_CHARLIST.create(
-                EndianUtils.readByte(stream),
-                new String(EndianUtils.readBytes(stream, Globals.MAX_IDSTRING)),
-                EndianUtils.readShortLE(stream),
-                EndianUtils.readByte(stream),
-                EndianUtils.readBytes(stream, 24)
+                readByte(stream),
+                new String(readBytes(stream, Globals.MAX_IDSTRING)),
+                readShortLE(stream),
+                readByte(stream),
+                readBytes(stream, 24)
         );
     }
 
@@ -57,11 +58,11 @@ public abstract class SDHP_CHARLIST extends AbstractPacket<SDHP_CHARLIST> {
 
     @Override
     public byte[] serialize(ByteArrayOutputStream stream) throws IOException {
-        EndianUtils.writeByte(stream, index());
-        EndianUtils.writeString(stream, name(), Globals.MAX_IDSTRING);
-        EndianUtils.writeShortLE(stream, level());
-        EndianUtils.writeByte(stream, clazz());
-        EndianUtils.writeBytes(stream, dbInventory());
+        writeByte(stream, index());
+        writeString(stream, name(), Globals.MAX_IDSTRING);
+        writeShortLE(stream, level());
+        writeByte(stream, clazz());
+        writeBytes(stream, dbInventory());
         return stream.toByteArray();
     }
 

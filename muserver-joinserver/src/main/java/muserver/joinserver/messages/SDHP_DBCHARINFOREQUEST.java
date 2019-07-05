@@ -14,11 +14,12 @@ import com.google.auto.value.AutoValue;
 import muserver.common.AbstractPacket;
 import muserver.common.Globals;
 import muserver.common.messages.PBMSG_HEAD;
-import muserver.utils.EndianUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+
+import static muserver.utils.EndianUtils.*;
 
 @AutoValue
 public abstract class SDHP_DBCHARINFOREQUEST extends AbstractPacket<SDHP_DBCHARINFOREQUEST> {
@@ -40,9 +41,9 @@ public abstract class SDHP_DBCHARINFOREQUEST extends AbstractPacket<SDHP_DBCHARI
 
   return SDHP_DBCHARINFOREQUEST.create(
       header,
-      new String(EndianUtils.readBytes(stream, Globals.MAX_IDSTRING + 1)),
-      new String(EndianUtils.readBytes(stream, Globals.MAX_IDSTRING + 1)),
-      EndianUtils.readShortLE(stream)
+      new String(readBytes(stream, Globals.MAX_IDSTRING + 1)),
+      new String(readBytes(stream, Globals.MAX_IDSTRING + 1)),
+      readShortLE(stream)
   );
  }
 
@@ -57,8 +58,8 @@ public abstract class SDHP_DBCHARINFOREQUEST extends AbstractPacket<SDHP_DBCHARI
  @Override
  public byte[] serialize(ByteArrayOutputStream stream) throws IOException {
   header().serialize(stream);
-  EndianUtils.writeString(stream, accountId(), Globals.MAX_IDSTRING + 1);
-  EndianUtils.writeShortLE(stream, number());
+  writeString(stream, accountId(), Globals.MAX_IDSTRING + 1);
+  writeShortLE(stream, number());
   return stream.toByteArray();
  }
 

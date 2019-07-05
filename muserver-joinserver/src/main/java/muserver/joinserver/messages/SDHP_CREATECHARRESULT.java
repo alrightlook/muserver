@@ -18,11 +18,12 @@ import com.google.auto.value.AutoValue;
 import muserver.common.AbstractPacket;
 import muserver.common.Globals;
 import muserver.common.messages.PBMSG_HEAD;
-import muserver.utils.EndianUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+
+import static muserver.utils.EndianUtils.*;
 
 @AutoValue
 public abstract class SDHP_CREATECHARRESULT extends AbstractPacket<SDHP_CREATECHARRESULT> {
@@ -48,13 +49,13 @@ public abstract class SDHP_CREATECHARRESULT extends AbstractPacket<SDHP_CREATECH
 
         return SDHP_CREATECHARRESULT.create(
                 header,
-                EndianUtils.readByte(stream),
-                EndianUtils.readShortLE(stream),
-                new String(EndianUtils.readBytes(stream, Globals.MAX_IDSTRING)),
-                new String(EndianUtils.readBytes(stream, Globals.MAX_IDSTRING)),
-                EndianUtils.readByte(stream),
-                EndianUtils.readByte(stream),
-                EndianUtils.readBytes(stream, 24)
+                readByte(stream),
+                readShortLE(stream),
+                new String(readBytes(stream, Globals.MAX_IDSTRING)),
+                new String(readBytes(stream, Globals.MAX_IDSTRING)),
+                readByte(stream),
+                readByte(stream),
+                readBytes(stream, 24)
         );
     }
 
@@ -77,13 +78,13 @@ public abstract class SDHP_CREATECHARRESULT extends AbstractPacket<SDHP_CREATECH
     @Override
     public byte[] serialize(ByteArrayOutputStream stream) throws IOException {
         header().serialize(stream);
-        EndianUtils.writeByte(stream, result());
-        EndianUtils.writeShortLE(stream, number());
-        EndianUtils.writeString(stream, accountId(), Globals.MAX_IDSTRING);
-        EndianUtils.writeString(stream, name(), Globals.MAX_IDSTRING);
-        EndianUtils.writeByte(stream, pos());
-        EndianUtils.writeByte(stream, classSkin());
-        EndianUtils.writeBytes(stream, equipment());
+        writeByte(stream, result());
+        writeShortLE(stream, number());
+        writeString(stream, accountId(), Globals.MAX_IDSTRING);
+        writeString(stream, name(), Globals.MAX_IDSTRING);
+        writeByte(stream, pos());
+        writeByte(stream, classSkin());
+        writeBytes(stream, equipment());
         return stream.toByteArray();
     }
 

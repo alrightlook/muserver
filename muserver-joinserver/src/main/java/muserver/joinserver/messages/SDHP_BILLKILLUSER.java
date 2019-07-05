@@ -4,11 +4,12 @@ import com.google.auto.value.AutoValue;
 import muserver.common.AbstractPacket;
 import muserver.common.Globals;
 import muserver.common.messages.PBMSG_HEAD;
-import muserver.utils.EndianUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+
+import static muserver.utils.EndianUtils.*;
 
 /*
 typedef struct
@@ -36,7 +37,7 @@ public abstract class SDHP_BILLKILLUSER extends AbstractPacket<SDHP_BILLKILLUSER
 
     public static SDHP_BILLKILLUSER deserialize(ByteArrayInputStream stream) throws IOException {
         PBMSG_HEAD header = PBMSG_HEAD.deserialize(stream);
-        return SDHP_BILLKILLUSER.create(header, new String(EndianUtils.readBytes(stream, Globals.MAX_IDSTRING)), EndianUtils.readShortLE(stream));
+        return SDHP_BILLKILLUSER.create(header, new String(readBytes(stream, Globals.MAX_IDSTRING)), readShortLE(stream));
     }
 
     public abstract PBMSG_HEAD header();
@@ -48,8 +49,8 @@ public abstract class SDHP_BILLKILLUSER extends AbstractPacket<SDHP_BILLKILLUSER
     @Override
     public byte[] serialize(ByteArrayOutputStream stream) throws IOException {
         header().serialize(stream);
-        EndianUtils.writeString(stream, id(), Globals.MAX_IDSTRING);
-        EndianUtils.writeShortLE(stream, number());
+        writeString(stream, id(), Globals.MAX_IDSTRING);
+        writeShortLE(stream, number());
         return stream.toByteArray();
     }
 

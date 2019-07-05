@@ -4,11 +4,12 @@ import com.google.auto.value.AutoValue;
 import muserver.common.AbstractPacket;
 import muserver.common.Globals;
 import muserver.common.messages.PBMSG_HEAD;
-import muserver.utils.EndianUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+
+import static muserver.utils.EndianUtils.*;
 
 /*
 typedef struct
@@ -44,11 +45,11 @@ public abstract class SDHP_COMMAND_BLOCK extends AbstractPacket<SDHP_COMMAND_BLO
 
         return SDHP_COMMAND_BLOCK.create(
                 header,
-                EndianUtils.readShortLE(stream),
-                new String(EndianUtils.readBytes(stream, Globals.MAX_IDSTRING + 1)),
-                EndianUtils.readIntegerLE(stream),
-                EndianUtils.readIntegerLE(stream),
-                EndianUtils.readByte(stream)
+                readShortLE(stream),
+                new String(readBytes(stream, Globals.MAX_IDSTRING + 1)),
+                readIntegerLE(stream),
+                readIntegerLE(stream),
+                readByte(stream)
         );
     }
 
@@ -67,11 +68,11 @@ public abstract class SDHP_COMMAND_BLOCK extends AbstractPacket<SDHP_COMMAND_BLO
     @Override
     public byte[] serialize(ByteArrayOutputStream stream) throws IOException {
         header().serialize(stream);
-        EndianUtils.writeShortLE(stream, number());
-        EndianUtils.writeString(stream, id(), Globals.MAX_IDSTRING + 1);
-        EndianUtils.writeIntegerLE(stream, userNumber());
-        EndianUtils.writeIntegerLE(stream, dbNumber());
-        EndianUtils.writeByte(stream, blockCode());
+        writeShortLE(stream, number());
+        writeString(stream, id(), Globals.MAX_IDSTRING + 1);
+        writeIntegerLE(stream, userNumber());
+        writeIntegerLE(stream, dbNumber());
+        writeByte(stream, blockCode());
         return stream.toByteArray();
     }
 

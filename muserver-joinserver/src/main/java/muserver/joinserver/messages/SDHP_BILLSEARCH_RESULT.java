@@ -4,11 +4,12 @@ import com.google.auto.value.AutoValue;
 import muserver.common.AbstractPacket;
 import muserver.common.Globals;
 import muserver.common.messages.PBMSG_HEAD;
-import muserver.utils.EndianUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+
+import static muserver.utils.EndianUtils.*;
 
 /*
 typedef struct
@@ -54,12 +55,12 @@ public abstract class SDHP_BILLSEARCH_RESULT extends AbstractPacket<SDHP_BILLSEA
         PBMSG_HEAD header = PBMSG_HEAD.deserialize(stream);
         return SDHP_BILLSEARCH_RESULT.create(
                 header,
-                new String(EndianUtils.readBytes(stream, Globals.MAX_IDSTRING)),
-                EndianUtils.readShortLE(stream),
-                EndianUtils.readByte(stream),
-                EndianUtils.readByte(stream),
-                new String(EndianUtils.readBytes(stream, 12)),
-                EndianUtils.readIntegerLE(stream)
+                new String(readBytes(stream, Globals.MAX_IDSTRING)),
+                readShortLE(stream),
+                readByte(stream),
+                readByte(stream),
+                new String(readBytes(stream, 12)),
+                readIntegerLE(stream)
         );
     }
 
@@ -80,12 +81,12 @@ public abstract class SDHP_BILLSEARCH_RESULT extends AbstractPacket<SDHP_BILLSEA
     @Override
     public byte[] serialize(ByteArrayOutputStream stream) throws IOException {
         header().serialize(stream);
-        EndianUtils.writeString(stream, id(), Globals.MAX_IDSTRING);
-        EndianUtils.writeShortLE(stream, number());
-        EndianUtils.writeByte(stream, certifyType());
-        EndianUtils.writeByte(stream, payCode());
-        EndianUtils.writeString(stream, endsDays(), 12);
-        EndianUtils.writeIntegerLE(stream, endTime());
+        writeString(stream, id(), Globals.MAX_IDSTRING);
+        writeShortLE(stream, number());
+        writeByte(stream, certifyType());
+        writeByte(stream, payCode());
+        writeString(stream, endsDays(), 12);
+        writeIntegerLE(stream, endTime());
         return stream.toByteArray();
     }
 

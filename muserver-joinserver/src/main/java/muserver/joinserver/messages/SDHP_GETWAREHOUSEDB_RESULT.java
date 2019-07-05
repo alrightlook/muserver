@@ -15,11 +15,12 @@ import com.google.auto.value.AutoValue;
 import muserver.common.AbstractPacket;
 import muserver.common.Globals;
 import muserver.common.messages.PWMSG_HEAD;
-import muserver.utils.EndianUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+
+import static muserver.utils.EndianUtils.*;
 
 @AutoValue
 public abstract class SDHP_GETWAREHOUSEDB_RESULT extends AbstractPacket<SDHP_GETWAREHOUSEDB_RESULT> {
@@ -42,10 +43,10 @@ public abstract class SDHP_GETWAREHOUSEDB_RESULT extends AbstractPacket<SDHP_GET
 
   return SDHP_GETWAREHOUSEDB_RESULT.create(
       header,
-      new String(EndianUtils.readBytes(stream, Globals.MAX_IDSTRING)),
-      EndianUtils.readShortLE(stream),
-      EndianUtils.readIntegerLE(stream),
-      EndianUtils.readBytes(stream, Globals.MAX_WAREHOUSEDBSIZE)
+      new String(readBytes(stream, Globals.MAX_IDSTRING)),
+      readShortLE(stream),
+      readIntegerLE(stream),
+      readBytes(stream, Globals.MAX_WAREHOUSEDBSIZE)
   );
  }
 
@@ -62,10 +63,10 @@ public abstract class SDHP_GETWAREHOUSEDB_RESULT extends AbstractPacket<SDHP_GET
  @Override
  public byte[] serialize(ByteArrayOutputStream stream) throws IOException {
   header().serialize(stream);
-  EndianUtils.writeString(stream, accountId(), Globals.MAX_IDSTRING);
-  EndianUtils.writeShortLE(stream, index());
-  EndianUtils.writeIntegerLE(stream, money());
-  EndianUtils.writeBytes(stream, dbItems());
+  writeString(stream, accountId(), Globals.MAX_IDSTRING);
+  writeShortLE(stream, index());
+  writeIntegerLE(stream, money());
+  writeBytes(stream, dbItems());
   return stream.toByteArray();
  }
 
