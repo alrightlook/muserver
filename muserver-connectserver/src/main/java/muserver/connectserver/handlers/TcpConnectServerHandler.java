@@ -12,6 +12,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelId;
 import io.netty.channel.SimpleChannelInboundHandler;
 import muserver.connectserver.messages.*;
+import muserver.utils.NettyUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -80,7 +81,7 @@ public class TcpConnectServerHandler extends SimpleChannelInboundHandler<ByteBuf
    byteBuf.getBytes(0, buffer);
 
    if (buffer.length < 4) {
-    closeConnection(ctx);
+    NettyUtils.closeConnection(ctx);
     logger.warn(String.format("Invalid buffer length that equals to: %d", buffer.length));
    }
 
@@ -95,16 +96,16 @@ public class TcpConnectServerHandler extends SimpleChannelInboundHandler<ByteBuf
          ServerListConfigs serverListConfigs = serverListConfigsMap.getOrDefault(serverCode.serverCode().shortValue(), null);
 
          if (serverListConfigs == null) {
-          closeConnection(ctx);
+          NettyUtils.closeConnection(ctx);
           throw new ConnectServerException(String.format("Server code: %d mismatch configuration", serverCode.serverCode()));
          }
 
          byte sizeOf = (byte) PMSG_SERVER_CONNECTION.sizeOf();
 
          PMSG_SERVER_CONNECTION serverConnection = PMSG_SERVER_CONNECTION.create(
-             PBMSG_HEAD2.create((byte) 0xC1, sizeOf, serverCode.header().headCode(), serverCode.header().subCode()),
-             serverListConfigs.serverAddress(),
-             serverListConfigs.serverPort().shortValue()
+                 PBMSG_HEAD2.create((byte) 0xC1, sizeOf, serverCode.header().headCode(), serverCode.header().subCode()),
+                 serverListConfigs.serverAddress(),
+                 serverListConfigs.serverPort().shortValue()
          );
 
          ctx.writeAndFlush(Unpooled.wrappedBuffer(serverConnection.serialize(new ByteArrayOutputStream())));
@@ -120,7 +121,7 @@ public class TcpConnectServerHandler extends SimpleChannelInboundHandler<ByteBuf
            PMSG_GAMESERVER_INFO gameServerInfo = (PMSG_GAMESERVER_INFO) UdpConnectServerHandler.getAbstractPackets().getOrDefault(serverListConfigs.serverCode().shortValue(), null);
 
            if (gameServerInfo == null) {
-            closeConnection(ctx);
+            NettyUtils.closeConnection(ctx);
             throw new ConnectServerException(String.format("Game server connection has been interrupted. Server code: %d", serverListConfigs.serverCode()));
            }
 
@@ -131,9 +132,9 @@ public class TcpConnectServerHandler extends SimpleChannelInboundHandler<ByteBuf
          short sizeOf = (short) (PWMSG_HEAD2.sizeOf() + 2 + (servers.size() * 4));
 
          PMSG_SERVER_LIST serverList = PMSG_SERVER_LIST.create(
-             PWMSG_HEAD2.create((byte) 0xC2, sizeOf, header.headCode(), header.subCode()),
-             (short) servers.size(),
-             servers
+                 PWMSG_HEAD2.create((byte) 0xC2, sizeOf, header.headCode(), header.subCode()),
+                 (short) servers.size(),
+                 servers
          );
 
          ctx.writeAndFlush(Unpooled.wrappedBuffer(serverList.serialize(new ByteArrayOutputStream())));
@@ -155,16 +156,7 @@ public class TcpConnectServerHandler extends SimpleChannelInboundHandler<ByteBuf
      throw new UnsupportedOperationException(String.format("Unsupported protocol type: %s", buffer[0]));
    }
   } else {
-   closeConnection(ctx);
-  }
- }
-
-
- private void closeConnection(ChannelHandlerContext ctx) {
-  InetSocketAddress remoteAddress = (InetSocketAddress) ctx.channel().remoteAddress();
-  if (remoteAddress != null) {
-   logger.warn(String.format("Hacking attempt from: %s", remoteAddress.getAddress().getHostName()));
-   ctx.close();
+   NettyUtils.closeConnection(ctx);
   }
  }
 }

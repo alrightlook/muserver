@@ -1,23 +1,20 @@
 package muserver.connectserver.handlers;
 
-import muserver.common.AbstractPacket;
-import muserver.common.messages.PBMSG_HEAD;
-import muserver.connectserver.configs.ServerListConfigs;
-import muserver.connectserver.exceptions.UdpConnectServerHandlerException;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.DatagramPacket;
-//import muserver.connectserver.messages.PMSG_GAMESERVER_INFO;
-//import muserver.common.messages.PBMSG_HEAD;
-//import muserver.connectserver.messages.PMSG_JOINSERVER_INFO;
+import muserver.common.AbstractPacket;
+import muserver.common.messages.PBMSG_HEAD;
+import muserver.connectserver.configs.ServerListConfigs;
+import muserver.connectserver.exceptions.UdpConnectServerHandlerException;
 import muserver.connectserver.messages.PMSG_GAMESERVER_INFO;
 import muserver.connectserver.messages.PMSG_JOINSERVER_INFO;
+import muserver.utils.NettyUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.ByteArrayInputStream;
-import java.net.InetSocketAddress;
 import java.util.Date;
 import java.util.Map;
 import java.util.Timer;
@@ -102,7 +99,7 @@ public class UdpConnectServerHandler extends SimpleChannelInboundHandler<Datagra
    content.getBytes(0, buffer);
 
    if (buffer.length < 3) {
-    closeConnection(ctx);
+    NettyUtils.closeConnection(ctx);
     logger.warn(String.format("Invalid buffer length that equals to: %d", buffer.length));
    }
 
@@ -145,16 +142,7 @@ public class UdpConnectServerHandler extends SimpleChannelInboundHandler<Datagra
      throw new UnsupportedOperationException(String.format("Unsupported protocol type: %d", header.type()));
    }
   } else {
-   closeConnection(ctx);
-  }
- }
-
-
- private void closeConnection(ChannelHandlerContext ctx) {
-  InetSocketAddress remoteAddress = (InetSocketAddress) ctx.channel().remoteAddress();
-  if (remoteAddress != null) {
-   logger.warn(String.format("Hacking attempt from: %s", remoteAddress.getAddress().getHostName()));
-   ctx.close();
+   NettyUtils.closeConnection(ctx);
   }
  }
 }
