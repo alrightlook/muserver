@@ -2,7 +2,7 @@ package muserver.joinserver.messages;
 
 import com.google.auto.value.AutoValue;
 import muserver.common.AbstractPacket;
-import muserver.common.GlobalDefinitions;
+import muserver.common.Globals;
 import muserver.utils.EndianUtils;
 
 import java.io.ByteArrayInputStream;
@@ -38,7 +38,7 @@ public abstract class SDHP_CHARLIST extends AbstractPacket<SDHP_CHARLIST> {
     public static SDHP_CHARLIST deserialize(ByteArrayInputStream stream) throws IOException {
         return SDHP_CHARLIST.create(
                 EndianUtils.readByte(stream),
-                new String(EndianUtils.readBytes(stream, GlobalDefinitions.MAX_IDSTRING)),
+                new String(EndianUtils.readBytes(stream, Globals.MAX_IDSTRING)),
                 EndianUtils.readShortLE(stream),
                 EndianUtils.readByte(stream),
                 EndianUtils.readBytes(stream, 24)
@@ -58,7 +58,7 @@ public abstract class SDHP_CHARLIST extends AbstractPacket<SDHP_CHARLIST> {
     @Override
     public byte[] serialize(ByteArrayOutputStream stream) throws IOException {
         EndianUtils.writeByte(stream, index());
-        EndianUtils.writeString(stream, name(), GlobalDefinitions.MAX_IDSTRING);
+        EndianUtils.writeString(stream, name(), Globals.MAX_IDSTRING);
         EndianUtils.writeShortLE(stream, level());
         EndianUtils.writeByte(stream, clazz());
         EndianUtils.writeBytes(stream, dbInventory());

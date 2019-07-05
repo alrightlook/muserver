@@ -14,7 +14,7 @@ typedef struct
 
 import com.google.auto.value.AutoValue;
 import muserver.common.AbstractPacket;
-import muserver.common.GlobalDefinitions;
+import muserver.common.Globals;
 import muserver.common.messages.PBMSG_HEAD;
 import muserver.utils.EndianUtils;
 
@@ -45,9 +45,9 @@ public abstract class SDHP_GAME_BLOCK extends AbstractPacket<SDHP_GAME_BLOCK> {
   return SDHP_GAME_BLOCK.create(
       header,
       EndianUtils.readIntegerLE(stream),
-      new String(EndianUtils.readBytes(stream, GlobalDefinitions.MAX_IDSTRING)),
+      new String(EndianUtils.readBytes(stream, Globals.MAX_IDSTRING)),
       EndianUtils.readByte(stream),
-      new String(EndianUtils.readBytes(stream, GlobalDefinitions.MAX_IDSTRING)),
+      new String(EndianUtils.readBytes(stream, Globals.MAX_IDSTRING)),
       EndianUtils.readByte(stream)
   );
  }
@@ -68,9 +68,9 @@ public abstract class SDHP_GAME_BLOCK extends AbstractPacket<SDHP_GAME_BLOCK> {
  public byte[] serialize(ByteArrayOutputStream stream) throws IOException {
   header().serialize(stream);
   EndianUtils.writeIntegerLE(stream, clientIndex());
-  EndianUtils.writeString(stream, accountId(), GlobalDefinitions.MAX_IDSTRING);
+  EndianUtils.writeString(stream, accountId(), Globals.MAX_IDSTRING);
   EndianUtils.writeByte(stream, serverNum());
-  EndianUtils.writeString(stream, charName(), GlobalDefinitions.MAX_IDSTRING);
+  EndianUtils.writeString(stream, charName(), Globals.MAX_IDSTRING);
   EndianUtils.writeByte(stream, type());
   return stream.toByteArray();
  }

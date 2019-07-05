@@ -12,7 +12,7 @@ typedef struct
 
 import com.google.auto.value.AutoValue;
 import muserver.common.AbstractPacket;
-import muserver.common.GlobalDefinitions;
+import muserver.common.Globals;
 import muserver.common.messages.PBMSG_HEAD;
 import muserver.utils.EndianUtils;
 
@@ -40,8 +40,8 @@ public abstract class SDHP_DBCHARINFOREQUEST extends AbstractPacket<SDHP_DBCHARI
 
   return SDHP_DBCHARINFOREQUEST.create(
       header,
-      new String(EndianUtils.readBytes(stream, GlobalDefinitions.MAX_IDSTRING + 1)),
-      new String(EndianUtils.readBytes(stream, GlobalDefinitions.MAX_IDSTRING + 1)),
+      new String(EndianUtils.readBytes(stream, Globals.MAX_IDSTRING + 1)),
+      new String(EndianUtils.readBytes(stream, Globals.MAX_IDSTRING + 1)),
       EndianUtils.readShortLE(stream)
   );
  }
@@ -57,7 +57,7 @@ public abstract class SDHP_DBCHARINFOREQUEST extends AbstractPacket<SDHP_DBCHARI
  @Override
  public byte[] serialize(ByteArrayOutputStream stream) throws IOException {
   header().serialize(stream);
-  EndianUtils.writeString(stream, accountId(), GlobalDefinitions.MAX_IDSTRING + 1);
+  EndianUtils.writeString(stream, accountId(), Globals.MAX_IDSTRING + 1);
   EndianUtils.writeShortLE(stream, number());
   return stream.toByteArray();
  }

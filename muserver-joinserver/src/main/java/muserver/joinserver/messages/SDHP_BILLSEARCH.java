@@ -2,7 +2,7 @@ package muserver.joinserver.messages;
 
 import com.google.auto.value.AutoValue;
 import muserver.common.AbstractPacket;
-import muserver.common.GlobalDefinitions;
+import muserver.common.Globals;
 import muserver.common.messages.PBMSG_HEAD;
 import muserver.utils.EndianUtils;
 
@@ -38,7 +38,7 @@ public abstract class SDHP_BILLSEARCH extends AbstractPacket<SDHP_BILLSEARCH> {
 
         return SDHP_BILLSEARCH.create(
                 header,
-                new String(EndianUtils.readBytes(stream, GlobalDefinitions.MAX_IDSTRING)),
+                new String(EndianUtils.readBytes(stream, Globals.MAX_IDSTRING)),
                 EndianUtils.readShortLE(stream)
         );
     }
@@ -52,7 +52,7 @@ public abstract class SDHP_BILLSEARCH extends AbstractPacket<SDHP_BILLSEARCH> {
     @Override
     public byte[] serialize(ByteArrayOutputStream stream) throws IOException {
         header().serialize(stream);
-        EndianUtils.writeString(stream, id(), GlobalDefinitions.MAX_IDSTRING);
+        EndianUtils.writeString(stream, id(), Globals.MAX_IDSTRING);
         EndianUtils.writeShortLE(stream, number());
         return stream.toByteArray();
     }

@@ -2,7 +2,7 @@ package muserver.joinserver.messages;
 
 import com.google.auto.value.AutoValue;
 import muserver.common.AbstractPacket;
-import muserver.common.GlobalDefinitions;
+import muserver.common.Globals;
 import muserver.common.messages.PBMSG_HEAD;
 import muserver.utils.EndianUtils;
 
@@ -44,10 +44,10 @@ public abstract class SDHP_CHARDELETE extends AbstractPacket<SDHP_CHARDELETE> {
         return SDHP_CHARDELETE.create(
                 header,
                 EndianUtils.readShortLE(stream),
-                new String(EndianUtils.readBytes(stream, GlobalDefinitions.MAX_IDSTRING)),
-                new String(EndianUtils.readBytes(stream, GlobalDefinitions.MAX_IDSTRING)),
+                new String(EndianUtils.readBytes(stream, Globals.MAX_IDSTRING)),
+                new String(EndianUtils.readBytes(stream, Globals.MAX_IDSTRING)),
                 EndianUtils.readByte(stream),
-                new String(EndianUtils.readBytes(stream, GlobalDefinitions.MAX_GUILDNAMESTRING))
+                new String(EndianUtils.readBytes(stream, Globals.MAX_GUILDNAMESTRING))
         );
     }
 
@@ -67,10 +67,10 @@ public abstract class SDHP_CHARDELETE extends AbstractPacket<SDHP_CHARDELETE> {
     public byte[] serialize(ByteArrayOutputStream stream) throws IOException {
         header().serialize(stream);
         EndianUtils.writeShortLE(stream, number());
-        EndianUtils.writeString(stream, accountId(), GlobalDefinitions.MAX_IDSTRING);
-        EndianUtils.writeString(stream, name(), GlobalDefinitions.MAX_IDSTRING);
+        EndianUtils.writeString(stream, accountId(), Globals.MAX_IDSTRING);
+        EndianUtils.writeString(stream, name(), Globals.MAX_IDSTRING);
         EndianUtils.writeByte(stream, guild());
-        EndianUtils.writeString(stream, guildName(), GlobalDefinitions.MAX_GUILDNAMESTRING);
+        EndianUtils.writeString(stream, guildName(), Globals.MAX_GUILDNAMESTRING);
         return stream.toByteArray();
     }
 

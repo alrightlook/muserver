@@ -2,7 +2,7 @@ package muserver.joinserver.messages;
 
 import com.google.auto.value.AutoValue;
 import muserver.common.AbstractPacket;
-import muserver.common.GlobalDefinitions;
+import muserver.common.Globals;
 import muserver.common.messages.PBMSG_HEAD;
 import muserver.utils.EndianUtils;
 
@@ -42,7 +42,7 @@ public abstract class SDHP_CHARDELETERESULT extends AbstractPacket<SDHP_CHARDELE
                 header,
                 EndianUtils.readByte(stream),
                 EndianUtils.readShortLE(stream),
-                new String(EndianUtils.readBytes(stream, GlobalDefinitions.MAX_IDSTRING))
+                new String(EndianUtils.readBytes(stream, Globals.MAX_IDSTRING))
         );
     }
 
@@ -59,7 +59,7 @@ public abstract class SDHP_CHARDELETERESULT extends AbstractPacket<SDHP_CHARDELE
         header().serialize(stream);
         EndianUtils.writeByte(stream, result());
         EndianUtils.writeShortLE(stream, number());
-        EndianUtils.writeString(stream, accountId(), GlobalDefinitions.MAX_IDSTRING);
+        EndianUtils.writeString(stream, accountId(), Globals.MAX_IDSTRING);
         return stream.toByteArray();
     }
 

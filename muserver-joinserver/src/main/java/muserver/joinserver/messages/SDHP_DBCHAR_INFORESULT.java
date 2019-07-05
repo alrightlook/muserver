@@ -2,7 +2,7 @@ package muserver.joinserver.messages;
 
 import com.google.auto.value.AutoValue;
 import muserver.common.AbstractPacket;
-import muserver.common.GlobalDefinitions;
+import muserver.common.Globals;
 import muserver.common.messages.PWMSG_HEAD;
 import muserver.utils.EndianUtils;
 
@@ -89,8 +89,8 @@ public abstract class SDHP_DBCHAR_INFORESULT extends AbstractPacket<SDHP_DBCHAR_
                 header,
                 EndianUtils.readByte(stream),
                 EndianUtils.readShortLE(stream),
-                new String(EndianUtils.readBytes(stream, GlobalDefinitions.MAX_IDSTRING)),
-                new String(EndianUtils.readBytes(stream, GlobalDefinitions.MAX_IDSTRING + 1)),
+                new String(EndianUtils.readBytes(stream, Globals.MAX_IDSTRING)),
+                new String(EndianUtils.readBytes(stream, Globals.MAX_IDSTRING + 1)),
                 EndianUtils.readByte(stream),
                 EndianUtils.readShortLE(stream),
                 EndianUtils.readIntegerLE(stream),
@@ -106,8 +106,8 @@ public abstract class SDHP_DBCHAR_INFORESULT extends AbstractPacket<SDHP_DBCHAR_
                 EndianUtils.readShortLE(stream),
                 EndianUtils.readShortLE(stream),
                 EndianUtils.readShortLE(stream),
-                EndianUtils.readBytes(stream, GlobalDefinitions.MAX_DBINVENTORY),
-                EndianUtils.readBytes(stream, GlobalDefinitions.MAX_DBMAGIC),
+                EndianUtils.readBytes(stream, Globals.MAX_DBINVENTORY),
+                EndianUtils.readBytes(stream, Globals.MAX_DBMAGIC),
                 EndianUtils.readByte(stream),
                 EndianUtils.readByte(stream),
                 EndianUtils.readByte(stream),
@@ -179,8 +179,8 @@ public abstract class SDHP_DBCHAR_INFORESULT extends AbstractPacket<SDHP_DBCHAR_
         header().serialize(stream);
         EndianUtils.writeByte(stream, result());
         EndianUtils.writeShortLE(stream, number());
-        EndianUtils.writeString(stream, accountId(), GlobalDefinitions.MAX_IDSTRING);
-        EndianUtils.writeString(stream, name(), GlobalDefinitions.MAX_IDSTRING + 1);
+        EndianUtils.writeString(stream, accountId(), Globals.MAX_IDSTRING);
+        EndianUtils.writeString(stream, name(), Globals.MAX_IDSTRING + 1);
         EndianUtils.writeByte(stream, clazz());
         EndianUtils.writeShortLE(stream, level());
         EndianUtils.writeIntegerLE(stream, levelUpPoint());

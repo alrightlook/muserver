@@ -33,7 +33,7 @@ typedef struct
 
 import com.google.auto.value.AutoValue;
 import muserver.common.AbstractPacket;
-import muserver.common.GlobalDefinitions;
+import muserver.common.Globals;
 import muserver.common.messages.PWMSG_HEAD;
 import muserver.utils.EndianUtils;
 
@@ -82,7 +82,7 @@ public abstract class SDHP_DBCHAR_INFOSAVE extends AbstractPacket<SDHP_DBCHAR_IN
 
   return SDHP_DBCHAR_INFOSAVE.create(
       header,
-      new String(EndianUtils.readBytes(stream, GlobalDefinitions.MAX_IDSTRING + 1)),
+      new String(EndianUtils.readBytes(stream, Globals.MAX_IDSTRING + 1)),
       EndianUtils.readShortLE(stream),
       EndianUtils.readByte(stream),
       EndianUtils.readIntegerLE(stream),
@@ -97,8 +97,8 @@ public abstract class SDHP_DBCHAR_INFOSAVE extends AbstractPacket<SDHP_DBCHAR_IN
       EndianUtils.readShortLE(stream),
       EndianUtils.readShortLE(stream),
       EndianUtils.readShortLE(stream),
-      EndianUtils.readBytes(stream, GlobalDefinitions.MAX_DBINVENTORY),
-      EndianUtils.readBytes(stream, GlobalDefinitions.MAX_DBMAGIC),
+      EndianUtils.readBytes(stream, Globals.MAX_DBINVENTORY),
+      EndianUtils.readBytes(stream, Globals.MAX_DBMAGIC),
       EndianUtils.readByte(stream),
       EndianUtils.readByte(stream),
       EndianUtils.readByte(stream),
@@ -163,7 +163,7 @@ public abstract class SDHP_DBCHAR_INFOSAVE extends AbstractPacket<SDHP_DBCHAR_IN
  @Override
  public byte[] serialize(ByteArrayOutputStream stream) throws IOException {
   header().serialize(stream);
-  EndianUtils.writeString(stream, name(), GlobalDefinitions.MAX_IDSTRING + 1);
+  EndianUtils.writeString(stream, name(), Globals.MAX_IDSTRING + 1);
   EndianUtils.writeByte(stream, clazz());
   EndianUtils.writeShortLE(stream, level());
   EndianUtils.writeIntegerLE(stream, levelUpPoint());

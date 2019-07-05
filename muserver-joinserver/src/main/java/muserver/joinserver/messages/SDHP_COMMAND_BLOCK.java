@@ -2,7 +2,7 @@ package muserver.joinserver.messages;
 
 import com.google.auto.value.AutoValue;
 import muserver.common.AbstractPacket;
-import muserver.common.GlobalDefinitions;
+import muserver.common.Globals;
 import muserver.common.messages.PBMSG_HEAD;
 import muserver.utils.EndianUtils;
 
@@ -45,7 +45,7 @@ public abstract class SDHP_COMMAND_BLOCK extends AbstractPacket<SDHP_COMMAND_BLO
         return SDHP_COMMAND_BLOCK.create(
                 header,
                 EndianUtils.readShortLE(stream),
-                new String(EndianUtils.readBytes(stream, GlobalDefinitions.MAX_IDSTRING + 1)),
+                new String(EndianUtils.readBytes(stream, Globals.MAX_IDSTRING + 1)),
                 EndianUtils.readIntegerLE(stream),
                 EndianUtils.readIntegerLE(stream),
                 EndianUtils.readByte(stream)
@@ -68,7 +68,7 @@ public abstract class SDHP_COMMAND_BLOCK extends AbstractPacket<SDHP_COMMAND_BLO
     public byte[] serialize(ByteArrayOutputStream stream) throws IOException {
         header().serialize(stream);
         EndianUtils.writeShortLE(stream, number());
-        EndianUtils.writeString(stream, id(), GlobalDefinitions.MAX_IDSTRING + 1);
+        EndianUtils.writeString(stream, id(), Globals.MAX_IDSTRING + 1);
         EndianUtils.writeIntegerLE(stream, userNumber());
         EndianUtils.writeIntegerLE(stream, dbNumber());
         EndianUtils.writeByte(stream, blockCode());

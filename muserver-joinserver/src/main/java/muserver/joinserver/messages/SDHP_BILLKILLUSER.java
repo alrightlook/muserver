@@ -2,7 +2,7 @@ package muserver.joinserver.messages;
 
 import com.google.auto.value.AutoValue;
 import muserver.common.AbstractPacket;
-import muserver.common.GlobalDefinitions;
+import muserver.common.Globals;
 import muserver.common.messages.PBMSG_HEAD;
 import muserver.utils.EndianUtils;
 
@@ -36,7 +36,7 @@ public abstract class SDHP_BILLKILLUSER extends AbstractPacket<SDHP_BILLKILLUSER
 
     public static SDHP_BILLKILLUSER deserialize(ByteArrayInputStream stream) throws IOException {
         PBMSG_HEAD header = PBMSG_HEAD.deserialize(stream);
-        return SDHP_BILLKILLUSER.create(header, new String(EndianUtils.readBytes(stream, GlobalDefinitions.MAX_IDSTRING)), EndianUtils.readShortLE(stream));
+        return SDHP_BILLKILLUSER.create(header, new String(EndianUtils.readBytes(stream, Globals.MAX_IDSTRING)), EndianUtils.readShortLE(stream));
     }
 
     public abstract PBMSG_HEAD header();
@@ -48,7 +48,7 @@ public abstract class SDHP_BILLKILLUSER extends AbstractPacket<SDHP_BILLKILLUSER
     @Override
     public byte[] serialize(ByteArrayOutputStream stream) throws IOException {
         header().serialize(stream);
-        EndianUtils.writeString(stream, id(), GlobalDefinitions.MAX_IDSTRING);
+        EndianUtils.writeString(stream, id(), Globals.MAX_IDSTRING);
         EndianUtils.writeShortLE(stream, number());
         return stream.toByteArray();
     }
