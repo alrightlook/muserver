@@ -1,5 +1,16 @@
 package muserver.joinserver.messages;
 
+import com.google.auto.value.AutoValue;
+import muserver.common.AbstractPacket;
+import muserver.common.Globals;
+import muserver.common.messages.PBMSG_HEAD;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+
+import static muserver.utils.EndianUtils.*;
+
 /*
 typedef struct
 {
@@ -13,5 +24,74 @@ typedef struct
 	char		JoominNumber[13];	// БЦ№О№шИЈ µЮАЪё®
 } SDHP_IDPASSRESULT, *LPSDHP_IDPASSRESULT;
  */
-public class SDHP_IDPASSRESULT {
+
+@AutoValue
+public abstract class SDHP_IDPASSRESULT extends AbstractPacket<SDHP_IDPASSRESULT> {
+ public static Builder builder() {
+  return new AutoValue_SDHP_IDPASSRESULT.Builder();
+ }
+
+ public static SDHP_IDPASSRESULT create(PBMSG_HEAD header, Byte result, String id, Integer userNumber, Integer dbNumber, String joominNumber) {
+  return builder()
+      .header(header)
+      .result(result)
+      .id(id)
+      .userNumber(userNumber)
+      .dbNumber(dbNumber)
+      .joominNumber(joominNumber)
+      .build();
+ }
+
+ public static SDHP_IDPASSRESULT deserialize(ByteArrayInputStream stream) throws IOException {
+  PBMSG_HEAD header = PBMSG_HEAD.deserialize(stream);
+
+  return SDHP_IDPASSRESULT.create(
+      header,
+      readByte(stream),
+      new String(readBytes(stream, Globals.MAX_IDSTRING)),
+      readIntegerLE(stream),
+      readIntegerLE(stream),
+      new String(readBytes(stream, Globals.MAX_JOOMINNUMBERSTR))
+  );
+ }
+
+ public abstract PBMSG_HEAD header();
+
+ public abstract Byte result();
+
+ public abstract String id();
+
+ public abstract Integer userNumber();
+
+ public abstract Integer dbNumber();
+
+ public abstract String joominNumber();
+
+ @Override
+ public byte[] serialize(ByteArrayOutputStream stream) throws IOException {
+  header().serialize(stream);
+  writeByte(stream, result());
+  writeString(stream, id(), Globals.MAX_IDSTRING);
+  writeIntegerLE(stream, userNumber());
+  writeIntegerLE(stream, dbNumber());
+  writeString(stream, joominNumber(), Globals.MAX_JOOMINNUMBERSTR);
+  return stream.toByteArray();
+ }
+
+ @AutoValue.Builder
+ public abstract static class Builder {
+  public abstract Builder header(PBMSG_HEAD header);
+
+  public abstract Builder result(Byte result);
+
+  public abstract Builder id(String id);
+
+  public abstract Builder userNumber(Integer userNumber);
+
+  public abstract Builder dbNumber(Integer dbNumber);
+
+  public abstract Builder joominNumber(String joominNumber);
+
+  public abstract SDHP_IDPASSRESULT build();
+ }
 }
