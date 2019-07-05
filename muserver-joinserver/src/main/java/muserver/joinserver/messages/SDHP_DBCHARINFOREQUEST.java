@@ -10,5 +10,68 @@ typedef struct
 } SDHP_DBCHARINFOREQUEST, *LPSDHP_DBCHARINFOREQUEST;
  */
 
-public class SDHP_DBCHARINFOREQUEST {
+import com.google.auto.value.AutoValue;
+import muserver.common.AbstractPacket;
+import muserver.common.GlobalDefinitions;
+import muserver.common.messages.PBMSG_HEAD;
+import muserver.utils.EndianUtils;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+
+@AutoValue
+public abstract class SDHP_DBCHARINFOREQUEST extends AbstractPacket<SDHP_DBCHARINFOREQUEST> {
+ public static Builder builder() {
+  return new AutoValue_SDHP_DBCHARINFOREQUEST.Builder();
+ }
+
+ public static SDHP_DBCHARINFOREQUEST create(PBMSG_HEAD header, String accountId, String name, Short number) {
+  return builder()
+      .header(header)
+      .accountId(accountId)
+      .name(name)
+      .number(number)
+      .build();
+ }
+
+ public static SDHP_DBCHARINFOREQUEST deserialize(ByteArrayInputStream stream) throws IOException {
+  PBMSG_HEAD header = PBMSG_HEAD.deserialize(stream);
+
+  return SDHP_DBCHARINFOREQUEST.create(
+      header,
+      new String(EndianUtils.readBytes(stream, GlobalDefinitions.MAX_IDSTRING + 1)),
+      new String(EndianUtils.readBytes(stream, GlobalDefinitions.MAX_IDSTRING + 1)),
+      EndianUtils.readShortLE(stream)
+  );
+ }
+
+ public abstract PBMSG_HEAD header();
+
+ public abstract String accountId();
+
+ public abstract String name();
+
+ public abstract Short number();
+
+ @Override
+ public byte[] serialize(ByteArrayOutputStream stream) throws IOException {
+  header().serialize(stream);
+  EndianUtils.writeString(stream, accountId(), GlobalDefinitions.MAX_IDSTRING + 1);
+  EndianUtils.writeShortLE(stream, number());
+  return stream.toByteArray();
+ }
+
+ @AutoValue.Builder
+ public abstract static class Builder {
+  public abstract Builder header(PBMSG_HEAD header);
+
+  public abstract Builder accountId(String accountId);
+
+  public abstract Builder name(String name);
+
+  public abstract Builder number(Short number);
+
+  public abstract SDHP_DBCHARINFOREQUEST build();
+ }
 }
