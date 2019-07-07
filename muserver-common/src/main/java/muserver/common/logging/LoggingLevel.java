@@ -1,4 +1,4 @@
-package muserver.connectserver.enums;
+package muserver.common.logging;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

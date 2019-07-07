@@ -1,4 +1,4 @@
-package muserver.common;
+package muserver.common.messages;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
