@@ -1,4 +1,4 @@
-package muserver.connectserver.configs;
+package muserver.common.configs;
 
 public abstract class AbstractConfigs {
 }

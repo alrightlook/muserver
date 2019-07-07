@@ -1,4 +1,4 @@
-package muserver.connectserver.configs;
+package muserver.common.configs;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

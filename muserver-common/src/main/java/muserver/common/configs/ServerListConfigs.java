@@ -1,9 +1,9 @@
-package muserver.connectserver.configs;
+package muserver.common.configs;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.auto.value.AutoValue;
-import muserver.connectserver.enums.ServerType;
+import muserver.common.types.ServerType;
 
 @AutoValue
 public abstract class ServerListConfigs extends AbstractConfigs {
