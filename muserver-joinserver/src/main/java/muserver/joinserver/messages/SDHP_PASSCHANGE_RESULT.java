@@ -1,7 +1,7 @@
 package muserver.joinserver.messages;
 
 import com.google.auto.value.AutoValue;
-import muserver.common.AbstractPacket;
+import muserver.common.messages.AbstractPacket;
 import muserver.common.messages.PBMSG_HEAD;
 
 import java.io.ByteArrayInputStream;

@@ -15,6 +15,7 @@
   <module>muserver-tests</module>
   <module>muserver-utils</module>
   <module>muserver-common</module>
+  <module>muserver-logger</module>
  </modules>
 
  <build>
