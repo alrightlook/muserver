@@ -2,9 +2,9 @@ package muserver.connectserver;
 
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import muserver.connectserver.configs.AppenderConfigs;
-import muserver.connectserver.configs.CommonConfigs;
-import muserver.connectserver.configs.ServerListConfigs;
+import muserver.common.configs.AppenderConfigs;
+import muserver.common.configs.CommonConfigs;
+import muserver.common.configs.ServerListConfigs;
 import muserver.connectserver.exceptions.ConnectServerException;
 import muserver.connectserver.intializers.TcpConnectServerInitializer;
 import muserver.connectserver.intializers.UdpConnectServerInitializer;

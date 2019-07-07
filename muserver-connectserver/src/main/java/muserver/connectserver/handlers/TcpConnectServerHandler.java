@@ -1,10 +1,11 @@
 package muserver.connectserver.handlers;
 
+import muserver.common.Globals;
 import muserver.common.messages.PBMSG_HEAD;
 import muserver.common.messages.PBMSG_HEAD2;
 import muserver.common.messages.PWMSG_HEAD2;
-import muserver.connectserver.configs.ServerListConfigs;
-import muserver.connectserver.enums.ServerType;
+import muserver.common.configs.ServerListConfigs;
+import muserver.common.types.ServerType;
 import muserver.connectserver.exceptions.ConnectServerException;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -86,7 +87,7 @@ public class TcpConnectServerHandler extends SimpleChannelInboundHandler<ByteBuf
    }
 
    switch (buffer[0]) {
-    case (byte) 0xC1: {
+    case Globals.C1_PACKET: {
      switch (buffer[2]) {
       case (byte) 0xF4: {
        switch (buffer[3]) {
@@ -103,9 +104,9 @@ public class TcpConnectServerHandler extends SimpleChannelInboundHandler<ByteBuf
          byte sizeOf = (byte) PMSG_SERVER_CONNECTION.sizeOf();
 
          PMSG_SERVER_CONNECTION serverConnection = PMSG_SERVER_CONNECTION.create(
-                 PBMSG_HEAD2.create((byte) 0xC1, sizeOf, serverCode.header().headCode(), serverCode.header().subCode()),
-                 serverListConfigs.serverAddress(),
-                 serverListConfigs.serverPort().shortValue()
+             PBMSG_HEAD2.create((byte) 0xC1, sizeOf, serverCode.header().headCode(), serverCode.header().subCode()),
+             serverListConfigs.serverAddress(),
+             serverListConfigs.serverPort().shortValue()
          );
 
          ctx.writeAndFlush(Unpooled.wrappedBuffer(serverConnection.serialize(new ByteArrayOutputStream())));
@@ -132,9 +133,9 @@ public class TcpConnectServerHandler extends SimpleChannelInboundHandler<ByteBuf
          short sizeOf = (short) (PWMSG_HEAD2.sizeOf() + 2 + (servers.size() * 4));
 
          PMSG_SERVER_LIST serverList = PMSG_SERVER_LIST.create(
-                 PWMSG_HEAD2.create((byte) 0xC2, sizeOf, header.headCode(), header.subCode()),
-                 (short) servers.size(),
-                 servers
+             PWMSG_HEAD2.create((byte) 0xC2, sizeOf, header.headCode(), header.subCode()),
+             (short) servers.size(),
+             servers
          );
 
          ctx.writeAndFlush(Unpooled.wrappedBuffer(serverList.serialize(new ByteArrayOutputStream())));

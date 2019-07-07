@@ -1,6 +1,6 @@
 package muserver.connectserver.intializers;
 
-import muserver.connectserver.configs.ServerListConfigs;
+import muserver.common.configs.ServerListConfigs;
 import muserver.connectserver.handlers.TcpConnectServerHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.SocketChannel;

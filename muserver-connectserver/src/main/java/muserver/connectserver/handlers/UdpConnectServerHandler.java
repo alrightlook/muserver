@@ -4,9 +4,10 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.DatagramPacket;
-import muserver.common.AbstractPacket;
+import muserver.common.Globals;
+import muserver.common.messages.AbstractPacket;
 import muserver.common.messages.PBMSG_HEAD;
-import muserver.connectserver.configs.ServerListConfigs;
+import muserver.common.configs.ServerListConfigs;
 import muserver.connectserver.exceptions.UdpConnectServerHandlerException;
 import muserver.connectserver.messages.PMSG_GAMESERVER_INFO;
 import muserver.connectserver.messages.PMSG_JOINSERVER_INFO;
@@ -106,7 +107,7 @@ public class UdpConnectServerHandler extends SimpleChannelInboundHandler<Datagra
    PBMSG_HEAD header = PBMSG_HEAD.deserialize(new ByteArrayInputStream(buffer));
 
    switch (header.type()) {
-    case (byte) 0xC1: {
+    case Globals.C1_PACKET: {
      switch (header.headCode() ) {
       case 1: {
        PMSG_GAMESERVER_INFO gameServerInfo = PMSG_GAMESERVER_INFO.deserialize(new ByteArrayInputStream(buffer));
@@ -118,7 +119,7 @@ public class UdpConnectServerHandler extends SimpleChannelInboundHandler<Datagra
        }
 
        if (!abstractPackets.containsKey(gameServerInfo.serverCode())) {
-        logger.info(String.format("Game server connection is up and run. Server code: %d", gameServerInfo.serverCode()));
+        logger.info(String.format("Game server connection established. Server code: %d", gameServerInfo.serverCode()));
        }
 
        abstractPackets.put(gameServerInfo.serverCode(), gameServerInfo);
@@ -127,7 +128,7 @@ public class UdpConnectServerHandler extends SimpleChannelInboundHandler<Datagra
       case 2: {
        PMSG_JOINSERVER_INFO joinServerInfo = PMSG_JOINSERVER_INFO.deserialize(new ByteArrayInputStream(buffer));
        if (joinServerInfoReference.get() == null) {
-        logger.info("Join server connection is up and run");
+        logger.info("Join server connection established");
        }
        joinServerInfoReference.set(joinServerInfo);
       }
