@@ -9,8 +9,8 @@ public abstract class JoinServerConfigs extends AbstractConfigs {
  @JsonProperty("connectServerIp")
  public abstract String connectServerIp();
 
- @JsonProperty("connectServerPort")
- public abstract Integer connectServerPort();
+ @JsonProperty("connectServerUdpPort")
+ public abstract Integer connectServerUdpPort();
 
  @JsonProperty("connectionString")
  public abstract String connectionString();
@@ -18,12 +18,12 @@ public abstract class JoinServerConfigs extends AbstractConfigs {
  @JsonCreator
  public static JoinServerConfigs create(
      @JsonProperty("connectServerIp") String connectServerIp,
-     @JsonProperty("connectServerPort") Integer connectServerPort,
+     @JsonProperty("connectServerUdpPort") Integer connectServerUdpPort,
      @JsonProperty("connectionString") String connectionString
  ) {
   return builder()
       .connectServerIp(connectServerIp)
-      .connectServerPort(connectServerPort)
+      .connectServerUdpPort(connectServerUdpPort)
       .connectionString(connectionString)
       .build();
  }
@@ -36,9 +36,9 @@ public abstract class JoinServerConfigs extends AbstractConfigs {
  public abstract static class Builder {
   public abstract Builder connectServerIp(String connectServerIp);
 
-  public abstract Builder connectServerPort(Integer connectServerPort);
-
   public abstract Builder connectionString(String connectionString);
+
+  public abstract Builder connectServerUdpPort(Integer connectServerUdpPort);
 
   public abstract JoinServerConfigs build();
  }
