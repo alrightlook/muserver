@@ -19,14 +19,10 @@ muserver-joinserver/target/
 muserver-joinserver/*.iml
 muserver-joinserver/dependency-reduced-pom.xml
 
-muserver-logger/target/
-muserver-logger/*.iml
-muserver-logger/dependency-reduced-pom.xml
+muserver-startup/target/
+muserver-startup/*.iml
+muserver-startup/dependency-reduced-pom.xml
 
 muserver-tests/target/
 muserver-tests/*.iml
 muserver-tests/dependency-reduced-pom.xml
-
-muserver-utils/target/
-muserver-utils/*.iml
-muserver-utils/dependency-reduced-pom.xml
