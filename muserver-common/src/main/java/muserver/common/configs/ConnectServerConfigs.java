@@ -8,49 +8,47 @@ import java.util.List;
 
 @AutoValue
 public abstract class ConnectServerConfigs extends AbstractConfigs {
+    public static Builder builder() {
+        return new AutoValue_ConnectServerConfigs.Builder();
+    }
 
- public static Builder builder() {
-  return new AutoValue_ConnectServerConfigs.Builder();
- }
+    @JsonProperty("hostname")
+    public abstract String hostname();
 
- @JsonProperty("hostname")
- public abstract String hostname();
+    @JsonProperty("tcpPort")
+    public abstract Integer tcpPort();
 
- @JsonProperty("tcpPort")
- public abstract Integer tcpPort();
+    @JsonProperty("udpPort")
+    public abstract Integer udpPort();
 
- @JsonProperty("udpPort")
- public abstract Integer udpPort();
+    @JsonProperty("servers")
+    public abstract List<ServerConfigs> serversConfigs();
 
- @JsonProperty("serverList")
- public abstract List<ServerListConfigs> serverListConfigs();
+    @JsonCreator
+    public static ConnectServerConfigs create(
+            @JsonProperty("hostname") String hostname,
+            @JsonProperty("tcpPort") Integer tcpPort,
+            @JsonProperty("udpPort") Integer udpPort,
+            @JsonProperty("servers") List<ServerConfigs> serversConfigs
+    ) {
+        return builder()
+                .hostname(hostname)
+                .tcpPort(tcpPort)
+                .udpPort(udpPort)
+                .serversConfigs(serversConfigs)
+                .build();
+    }
 
- @JsonCreator
- public static ConnectServerConfigs create(
-         @JsonProperty("hostname") String hostname,
-         @JsonProperty("tcpPort") Integer tcpPort,
-         @JsonProperty("udpPort") Integer udpPort,
-         @JsonProperty("serverList") List<ServerListConfigs> serverListConfigs
- ) {
-  return builder()
-          .hostname(hostname)
-          .tcpPort(tcpPort)
-          .udpPort(udpPort)
-          .serverListConfigs(serverListConfigs)
-          .build();
- }
+    @AutoValue.Builder
+    public abstract static class Builder {
+        public abstract Builder tcpPort(Integer tcpPort);
 
- @AutoValue.Builder
- public abstract static class Builder {
+        public abstract Builder udpPort(Integer udpPort);
 
-  public abstract Builder serverListConfigs(List<ServerListConfigs> serverListConfigs);
+        public abstract Builder hostname(String hostname);
 
-  public abstract Builder tcpPort(Integer tcpPort);
+        public abstract Builder serversConfigs(List<ServerConfigs> serversConfigs);
 
-  public abstract Builder udpPort(Integer udpPort);
-
-  public abstract Builder hostname(String hostname);
-
-  public abstract ConnectServerConfigs build();
- }
+        public abstract ConnectServerConfigs build();
+    }
 }

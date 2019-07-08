@@ -12,7 +12,7 @@ import org.apache.logging.log4j.core.config.builder.api.RootLoggerComponentBuild
 import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
 
 public class LoggerUtils {
-    public static void updateLoggerConfiguration(String appenderName, AppenderType appenderType, String appenderFormat, LoggingLevel loggingLevel) throws Exception {
+    public static void updateLoggerConfiguration(String appenderName, AppenderType appenderType, String appenderFormat, LoggingLevel loggingLevel) {
         ConfigurationBuilder<BuiltConfiguration> builder = ConfigurationBuilderFactory.newConfigurationBuilder();
         Level level = Level.getLevel(loggingLevel.loggingLevel());
         builder.setStatusLevel(level);
