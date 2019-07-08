@@ -98,12 +98,12 @@ public class ConnectServer implements IServer {
   UdpConnectServerInitializer udpConnectServerInitializer = new UdpConnectServerInitializer(connectServerContext);
 
   logger.info(String.format("Start connect server udp channel on port %d", commonConfigs.connectServer().udpPort()));
-  ChannelFuture udpChannel = new Bootstrap().group(udpEventLoopGroup).channel(NioDatagramChannel.class).handler(udpConnectServerInitializer).bind(commonConfigs.connectServer().udpPort());
+  new Bootstrap().group(udpEventLoopGroup).channel(NioDatagramChannel.class).handler(udpConnectServerInitializer).bind(commonConfigs.connectServer().udpPort());
 
   TcpConnectServerInitializer tcpConnectServerInitializer = new TcpConnectServerInitializer(connectServerContext);
 
   logger.info(String.format("Start connect server tcp channel on port %d", commonConfigs.connectServer().tcpPort()));
-  ChannelFuture tcpChannel = new ServerBootstrap().group(tcpParentLoopGroup, tcpChildLoopGroup).channel(NioServerSocketChannel.class).childHandler(tcpConnectServerInitializer).bind(commonConfigs.joinServer().tcpPort());
+  new ServerBootstrap().group(tcpParentLoopGroup, tcpChildLoopGroup).channel(NioServerSocketChannel.class).childHandler(tcpConnectServerInitializer).bind(commonConfigs.joinServer().tcpPort());
  }
 
  public void shutdown() {

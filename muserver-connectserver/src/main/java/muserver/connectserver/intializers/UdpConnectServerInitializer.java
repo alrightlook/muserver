@@ -6,14 +6,14 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.socket.DatagramChannel;
 
 public class UdpConnectServerInitializer extends ChannelInitializer<DatagramChannel> {
- private final ConnectServerContext ctx;
+ private final ConnectServerContext connectServerContext;
 
- public UdpConnectServerInitializer(ConnectServerContext ctx) {
-  this.ctx = ctx;
+ public UdpConnectServerInitializer(ConnectServerContext connectServerContext) {
+  this.connectServerContext = connectServerContext;
  }
 
  @Override
  protected void initChannel(DatagramChannel datagramChannel) {
-  datagramChannel.pipeline().addLast(new UdpConnectServerHandler(ctx));
+  datagramChannel.pipeline().addLast(new UdpConnectServerHandler(connectServerContext));
  }
 }

@@ -10,7 +10,7 @@ import java.io.IOException;
 
 @AutoValue
 public abstract class PMSG_SERVER_CONNECTION extends AbstractPacket<PMSG_SERVER_CONNECTION> {
- public static int sizeOf() {
+ public static byte sizeOf() {
   return 22;
  }
 

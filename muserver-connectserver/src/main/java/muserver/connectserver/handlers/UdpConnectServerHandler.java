@@ -20,7 +20,6 @@ import java.io.ByteArrayInputStream;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class UdpConnectServerHandler extends SimpleChannelInboundHandler<DatagramPacket> {
@@ -30,29 +29,24 @@ public class UdpConnectServerHandler extends SimpleChannelInboundHandler<Datagra
  private final static Timer scheduler = new Timer();
  private final static Logger logger = LogManager.getLogger(UdpConnectServerHandler.class);
  private final static AtomicReference<PMSG_JOINSERVER_INFO> joinServerInfoReference = new AtomicReference<>();
- private final static ConcurrentHashMap<Short, AbstractPacket> abstractPackets = new ConcurrentHashMap<>();
 
- private final ConnectServerContext ctx;
+ private final ConnectServerContext connectServerContext;
 
- public UdpConnectServerHandler(ConnectServerContext ctx) {
-  this.ctx = ctx;
- }
-
- public static ConcurrentHashMap<Short, AbstractPacket> getAbstractPackets() {
-  return abstractPackets;
+ public UdpConnectServerHandler(ConnectServerContext connectServerContext) {
+  this.connectServerContext = connectServerContext;
  }
 
  @Override
- public void channelActive(ChannelHandlerContext ctx) throws Exception {
+ public void channelActive(ChannelHandlerContext ctx) {
   scheduler.schedule(new TimerTask() {
    @Override
    public void run() {
-    for (Short serverCode : abstractPackets.keySet()) {
-     AbstractPacket abstractPacket = abstractPackets.getOrDefault(serverCode, null);
+    for (Short serverCode : connectServerContext.packets().keySet()) {
+     AbstractPacket abstractPacket = connectServerContext.packets().getOrDefault(serverCode, null);
      if (abstractPacket != null) {
       if (new Date().getTime() - abstractPacket.packetTime().getTime() > PACKET_TIMEOUT_IN_MILLIS) {
        logger.warn(String.format("Game server connection has been interrupted. Server code: %d", serverCode));
-       abstractPackets.remove(serverCode);
+       connectServerContext.packets().remove(serverCode);
       }
      }
     }
@@ -68,21 +62,21 @@ public class UdpConnectServerHandler extends SimpleChannelInboundHandler<Datagra
  }
 
  @Override
- public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+ public void channelInactive(ChannelHandlerContext ctx) {
   scheduler.cancel();
   scheduler.purge();
-  abstractPackets.clear();
+  connectServerContext.packets().clear();
   joinServerInfoReference.set(null);
  }
 
  @Override
- public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+ public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
   logger.error(cause.getMessage(), cause);
   ctx.close();
  }
 
  @Override
- public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
+ public void channelReadComplete(ChannelHandlerContext ctx) {
   ctx.flush();
  }
 
@@ -104,21 +98,21 @@ public class UdpConnectServerHandler extends SimpleChannelInboundHandler<Datagra
 
    switch (header.type()) {
     case Globals.C1_PACKET: {
-     switch (header.headCode() ) {
+     switch (header.headCode()) {
       case 1: {
        PMSG_GAMESERVER_INFO gameServerInfo = PMSG_GAMESERVER_INFO.deserialize(new ByteArrayInputStream(buffer));
 
-       ServerConfigs ServerConfigs = this.ctx.getServersConfigsMap().getOrDefault(gameServerInfo.serverCode(), null);
+       ServerConfigs serverConfigs = this.connectServerContext.serversConfigsMap().getOrDefault(gameServerInfo.serverCode(), null);
 
-       if (ServerConfigs == null) {
+       if (serverConfigs == null) {
         throw new UdpConnectServerHandlerException(String.format("Server code %d mismatching configuration", gameServerInfo.serverCode()));
        }
 
-       if (!abstractPackets.containsKey(gameServerInfo.serverCode())) {
+       if (!connectServerContext.packets().containsKey(gameServerInfo.serverCode())) {
         logger.info(String.format("Game server connection established. Server code: %d", gameServerInfo.serverCode()));
        }
 
-       abstractPackets.put(gameServerInfo.serverCode(), gameServerInfo);
+       connectServerContext.packets().put(gameServerInfo.serverCode(), gameServerInfo);
       }
       break;
       case 2: {
