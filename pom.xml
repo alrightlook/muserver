@@ -14,6 +14,7 @@
   <module>muserver-joinserver</module>
   <module>muserver-tests</module>
   <module>muserver-common</module>
+  <module>muserver-startup</module>
  </modules>
 
  <build>
