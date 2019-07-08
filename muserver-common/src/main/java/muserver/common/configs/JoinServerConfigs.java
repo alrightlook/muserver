@@ -6,26 +6,26 @@ import com.google.auto.value.AutoValue;
 
 @AutoValue
 public abstract class JoinServerConfigs extends AbstractConfigs {
- @JsonProperty("connectServerIp")
- public abstract String connectServerIp();
+ @JsonProperty("hostname")
+ public abstract String hostname();
 
- @JsonProperty("connectServerUdpPort")
- public abstract Integer connectServerUdpPort();
+ @JsonProperty("tcpPort")
+ public abstract Integer tcpPort();
 
  @JsonProperty("connectionString")
  public abstract String connectionString();
 
  @JsonCreator
  public static JoinServerConfigs create(
-     @JsonProperty("connectServerIp") String connectServerIp,
-     @JsonProperty("connectServerUdpPort") Integer connectServerUdpPort,
-     @JsonProperty("connectionString") String connectionString
+         @JsonProperty("hostname") String hostname,
+         @JsonProperty("tcpPort") Integer tcpPort,
+         @JsonProperty("connectionString") String connectionString
  ) {
   return builder()
-      .connectServerIp(connectServerIp)
-      .connectServerUdpPort(connectServerUdpPort)
-      .connectionString(connectionString)
-      .build();
+          .hostname(hostname)
+          .tcpPort(tcpPort)
+          .connectionString(connectionString)
+          .build();
  }
 
  public static Builder builder() {
@@ -34,11 +34,12 @@ public abstract class JoinServerConfigs extends AbstractConfigs {
 
  @AutoValue.Builder
  public abstract static class Builder {
-  public abstract Builder connectServerIp(String connectServerIp);
 
   public abstract Builder connectionString(String connectionString);
 
-  public abstract Builder connectServerUdpPort(Integer connectServerUdpPort);
+  public abstract Builder hostname(String hostname);
+
+  public abstract Builder tcpPort(Integer tcpPort);
 
   public abstract JoinServerConfigs build();
  }

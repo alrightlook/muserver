@@ -6,41 +6,33 @@ import com.google.auto.value.AutoValue;
 
 @AutoValue
 public abstract class CommonConfigs extends AbstractConfigs {
+    public static Builder builder() {
+        return new AutoValue_CommonConfigs.Builder();
+    }
 
- public static Builder builder() {
-  return new AutoValue_CommonConfigs.Builder();
- }
+    @JsonProperty("joinServer")
+    public abstract JoinServerConfigs joinServer();
 
- @JsonProperty("logging")
- public abstract LoggingConfigs logging();
+    @JsonProperty("connectServer")
+    public abstract ConnectServerConfigs connectServer();
 
- @JsonProperty("joinServer")
- public abstract JoinServerConfigs joinServer();
+    @JsonCreator
+    public static CommonConfigs create(
+            @JsonProperty("joinServer") JoinServerConfigs joinServer,
+            @JsonProperty("connectServer") ConnectServerConfigs connectServer
+    ) {
+        return builder()
+                .joinServer(joinServer)
+                .connectServer(connectServer)
+                .build();
+    }
 
- @JsonProperty("connectServer")
- public abstract ConnectServerConfigs connectServer();
+    @AutoValue.Builder
+    public abstract static class Builder {
+        public abstract Builder joinServer(JoinServerConfigs joinServer);
 
- @JsonCreator
- public static CommonConfigs create(
-     @JsonProperty("logging") LoggingConfigs logging,
-     @JsonProperty("joinServer") JoinServerConfigs joinServer,
-     @JsonProperty("connectServer") ConnectServerConfigs connectServer
- ) {
-  return builder()
-      .logging(logging)
-      .joinServer(joinServer)
-      .connectServer(connectServer)
-      .build();
- }
+        public abstract Builder connectServer(ConnectServerConfigs connectServer);
 
- @AutoValue.Builder
- public abstract static class Builder {
-  public abstract Builder logging(LoggingConfigs loggingConfigs);
-
-  public abstract Builder connectServer(ConnectServerConfigs connectServer);
-
-  public abstract Builder joinServer(JoinServerConfigs joinServer);
-
-  public abstract CommonConfigs build();
- }
+        public abstract CommonConfigs build();
+    }
 }
