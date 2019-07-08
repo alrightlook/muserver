@@ -1,6 +1,8 @@
 package muserver.connectserver.exceptions;
 
-public class ConnectServerException extends Exception {
+import muserver.common.exceptions.ServerException;
+
+public class ConnectServerException extends ServerException {
  public ConnectServerException() {
  }
 
