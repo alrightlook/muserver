@@ -8,20 +8,20 @@
   "hostname": "127.0.0.1",
   "tcpPort": 44405,
   "udpPort": 55557,
-  "serverList": [
+  "servers": [
    {
-    "serverCode": 0,
-    "serverName": "GameServer",
-    "serverAddress": "192.168.1.139",
-    "serverPort": 55901,
-    "serverType": "visible"
+    "code": 0,
+    "name": "GameServer",
+    "address": "192.168.1.139",
+    "port": 55901,
+    "type": "visible"
    },
    {
-    "serverCode": 19,
-    "serverName": "GameServerCS",
-    "serverAddress": "192.168.1.139",
-    "serverPort": 55919,
-    "serverType": "hidden"
+    "code": 19,
+    "name": "GameServerCS",
+    "address": "192.168.1.139",
+    "port": 55919,
+    "type": "hidden"
    }
   ]
  }
