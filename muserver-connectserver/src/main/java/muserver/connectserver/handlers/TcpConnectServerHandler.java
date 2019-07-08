@@ -1,19 +1,20 @@
 package muserver.connectserver.handlers;
 
-import muserver.common.Globals;
-import muserver.common.messages.PBMSG_HEAD;
-import muserver.common.messages.PBMSG_HEAD2;
-import muserver.common.messages.PWMSG_HEAD2;
-import muserver.common.configs.ServerListConfigs;
-import muserver.common.types.ServerType;
-import muserver.connectserver.exceptions.ConnectServerException;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelId;
 import io.netty.channel.SimpleChannelInboundHandler;
-import muserver.connectserver.messages.*;
+import muserver.common.Globals;
+import muserver.common.configs.ServerConfigs;
+import muserver.common.messages.PBMSG_HEAD;
+import muserver.common.messages.PBMSG_HEAD2;
+import muserver.common.messages.PWMSG_HEAD2;
+import muserver.common.types.ServerType;
 import muserver.common.utils.NettyUtils;
+import muserver.connectserver.contexts.ConnectServerContext;
+import muserver.connectserver.exceptions.ConnectServerException;
+import muserver.connectserver.messages.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -22,17 +23,16 @@ import java.io.ByteArrayOutputStream;
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class TcpConnectServerHandler extends SimpleChannelInboundHandler<ByteBuf> {
  private final static Logger logger = LogManager.getLogger(TcpConnectServerHandler.class);
  private final static ConcurrentHashMap<ChannelId, ChannelHandlerContext> clients = new ConcurrentHashMap<>();
 
- private final Map<Short, ServerListConfigs> serverListConfigsMap;
+ private final ConnectServerContext connectServerContext;
 
- public TcpConnectServerHandler(Map<Short, ServerListConfigs> serverListConfigsMap) {
-  this.serverListConfigsMap = serverListConfigsMap;
+ public TcpConnectServerHandler(ConnectServerContext connectServerContext) {
+  this.connectServerContext = connectServerContext;
  }
 
  @Override
@@ -94,9 +94,9 @@ public class TcpConnectServerHandler extends SimpleChannelInboundHandler<ByteBuf
         case 3: {
          PMSG_SERVER_CODE serverCode = PMSG_SERVER_CODE.deserialize(new ByteArrayInputStream(buffer));
 
-         ServerListConfigs serverListConfigs = serverListConfigsMap.getOrDefault(serverCode.serverCode().shortValue(), null);
+         ServerConfigs serverConfigs = this.connectServerContext.getServersConfigsMap().getOrDefault(serverCode.serverCode().shortValue(), null);
 
-         if (serverListConfigs == null) {
+         if (serverConfigs == null) {
           NettyUtils.closeConnection(ctx);
           throw new ConnectServerException(String.format("Server code: %d mismatch configuration", serverCode.serverCode()));
          }
@@ -105,8 +105,8 @@ public class TcpConnectServerHandler extends SimpleChannelInboundHandler<ByteBuf
 
          PMSG_SERVER_CONNECTION serverConnection = PMSG_SERVER_CONNECTION.create(
              PBMSG_HEAD2.create((byte) 0xC1, sizeOf, serverCode.header().headCode(), serverCode.header().subCode()),
-             serverListConfigs.serverAddress(),
-             serverListConfigs.serverPort().shortValue()
+             serverConfigs.address(),
+             serverConfigs.port().shortValue()
          );
 
          ctx.writeAndFlush(Unpooled.wrappedBuffer(serverConnection.serialize(new ByteArrayOutputStream())));
@@ -117,16 +117,16 @@ public class TcpConnectServerHandler extends SimpleChannelInboundHandler<ByteBuf
 
          List<PMSG_SERVER> servers = new ArrayList<>();
 
-         for (ServerListConfigs serverListConfigs : serverListConfigsMap.values()) {
-          if (serverListConfigs.serverType() == ServerType.VISIBLE) {
-           PMSG_GAMESERVER_INFO gameServerInfo = (PMSG_GAMESERVER_INFO) UdpConnectServerHandler.getAbstractPackets().getOrDefault(serverListConfigs.serverCode().shortValue(), null);
+         for (ServerConfigs serverConfigs : this.connectServerContext.getServersConfigsMap().values()) {
+          if (serverConfigs.type() == ServerType.VISIBLE) {
+           PMSG_GAMESERVER_INFO gameServerInfo = (PMSG_GAMESERVER_INFO) UdpConnectServerHandler.getAbstractPackets().getOrDefault(serverConfigs.code().shortValue(), null);
 
            if (gameServerInfo == null) {
             NettyUtils.closeConnection(ctx);
-            throw new ConnectServerException(String.format("Game server connection has been interrupted. Server code: %d", serverListConfigs.serverCode()));
+            throw new ConnectServerException(String.format("Game server connection has been interrupted. Server code: %d", serverConfigs.code()));
            }
 
-           servers.add(PMSG_SERVER.create(serverListConfigs.serverCode(), gameServerInfo.percent(), (byte) 0xCC));
+           servers.add(PMSG_SERVER.create(serverConfigs.code(), gameServerInfo.percent(), (byte) 0xCC));
           }
          }
 

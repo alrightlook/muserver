@@ -2,11 +2,13 @@ package muserver.connectserver;
 
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.netty.channel.ChannelFuture;
 import muserver.common.IServer;
 import muserver.common.configs.CommonConfigs;
-import muserver.common.configs.ServerListConfigs;
+import muserver.common.configs.ServerConfigs;
 import muserver.common.logging.LoggingLevel;
 import muserver.common.types.AppenderType;
+import muserver.connectserver.contexts.ConnectServerContext;
 import muserver.connectserver.exceptions.ConnectServerException;
 import muserver.connectserver.intializers.TcpConnectServerInitializer;
 import muserver.connectserver.intializers.UdpConnectServerInitializer;
@@ -26,6 +28,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
@@ -75,32 +78,36 @@ public class ConnectServer implements IServer {
  }
 
  public void startup() throws ConnectServerException {
+  CommonConfigs commonConfigs;
   try {
-   CommonConfigs commonConfigs = mapper.readValue(IOUtils.toString(new FileInputStream(path), StandardCharsets.UTF_8), CommonConfigs.class);
-
-   LoggerUtils.updateLoggerConfiguration(ConnectServer.class.getCanonicalName(), AppenderType.CONSOLE, "%d{DEFAULT} [%t] %-5level %logger{36} - %msg%n", LoggingLevel.INFO);
-
-   Map<Short, ServerListConfigs> serverListConfigsMap = new HashMap<>();
-   Map<Short, List<ServerListConfigs>> serverListConfigsGroupingBy = commonConfigs.connectServer().serverListConfigs().stream().collect(Collectors.groupingBy(x -> x.serverCode()));
-
-   for (Map.Entry<Short, List<ServerListConfigs>> entry : serverListConfigsGroupingBy.entrySet()) {
-    serverListConfigsMap.put(entry.getKey(), entry.getValue().get(0));
-   }
-
-   logger.info(String.format("Start connect server UDP channel on port %d", commonConfigs.connectServer().udpPort()));
-   UdpConnectServerInitializer udpConnectServerInitializer = new UdpConnectServerInitializer(serverListConfigsMap);
-   new Bootstrap().group(udpEventLoopGroup).channel(NioDatagramChannel.class).handler(udpConnectServerInitializer).bind(commonConfigs.connectServer().udpPort());
-
-   logger.info(String.format("Start connect server TCP channel on port %d", commonConfigs.connectServer().tcpPort()));
-   TcpConnectServerInitializer tcpConnectServerInitializer = new TcpConnectServerInitializer(serverListConfigsMap);
-   new ServerBootstrap().group(tcpParentLoopGroup, tcpChildLoopGroup).channel(NioServerSocketChannel.class).childHandler(tcpConnectServerInitializer).bind(commonConfigs.joinServer().tcpPort());
-  } catch (Exception e) {
+   commonConfigs = mapper.readValue(IOUtils.toString(new FileInputStream(path), StandardCharsets.UTF_8), CommonConfigs.class);
+  } catch (IOException e) {
    throw new ConnectServerException(e.getMessage(), e);
   }
+
+  LoggerUtils.updateLoggerConfiguration(ConnectServer.class.getCanonicalName(), AppenderType.CONSOLE, "%d{DEFAULT} [%t] %-5level %logger{36} - %msg%n", LoggingLevel.INFO);
+
+  Map<Short, ServerConfigs> serversConfigsMap = new HashMap<>();
+
+  for (Map.Entry<Short, List<ServerConfigs>> entry : commonConfigs.connectServer().serversConfigs().stream().collect(Collectors.groupingBy(x -> x.code())).entrySet()) {
+   serversConfigsMap.put(entry.getKey(), entry.getValue().get(0));
+  }
+
+  ConnectServerContext connectServerContext = new ConnectServerContext(serversConfigsMap);
+
+  UdpConnectServerInitializer udpConnectServerInitializer = new UdpConnectServerInitializer(connectServerContext);
+
+  logger.info(String.format("Start connect server udp channel on port %d", commonConfigs.connectServer().udpPort()));
+  ChannelFuture udpChannel = new Bootstrap().group(udpEventLoopGroup).channel(NioDatagramChannel.class).handler(udpConnectServerInitializer).bind(commonConfigs.connectServer().udpPort());
+
+  TcpConnectServerInitializer tcpConnectServerInitializer = new TcpConnectServerInitializer(connectServerContext);
+
+  logger.info(String.format("Start connect server tcp channel on port %d", commonConfigs.connectServer().tcpPort()));
+  ChannelFuture tcpChannel = new ServerBootstrap().group(tcpParentLoopGroup, tcpChildLoopGroup).channel(NioServerSocketChannel.class).childHandler(tcpConnectServerInitializer).bind(commonConfigs.joinServer().tcpPort());
  }
 
  public void shutdown() {
-  logger.info("Shutdown connect server");
+  logger.info("Shutdown connect server gracefully");
   udpEventLoopGroup.shutdownGracefully();
   tcpChildLoopGroup.shutdownGracefully();
   tcpParentLoopGroup.shutdownGracefully();

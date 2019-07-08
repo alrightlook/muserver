@@ -5,19 +5,19 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.DatagramPacket;
 import muserver.common.Globals;
+import muserver.common.configs.ServerConfigs;
 import muserver.common.messages.AbstractPacket;
 import muserver.common.messages.PBMSG_HEAD;
-import muserver.common.configs.ServerListConfigs;
+import muserver.common.utils.NettyUtils;
+import muserver.connectserver.contexts.ConnectServerContext;
 import muserver.connectserver.exceptions.UdpConnectServerHandlerException;
 import muserver.connectserver.messages.PMSG_GAMESERVER_INFO;
 import muserver.connectserver.messages.PMSG_JOINSERVER_INFO;
-import muserver.common.utils.NettyUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.ByteArrayInputStream;
 import java.util.Date;
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ConcurrentHashMap;
@@ -32,14 +32,10 @@ public class UdpConnectServerHandler extends SimpleChannelInboundHandler<Datagra
  private final static AtomicReference<PMSG_JOINSERVER_INFO> joinServerInfoReference = new AtomicReference<>();
  private final static ConcurrentHashMap<Short, AbstractPacket> abstractPackets = new ConcurrentHashMap<>();
 
- private final Map<Short, ServerListConfigs> serverListConfigsMap;
+ private final ConnectServerContext ctx;
 
- public UdpConnectServerHandler(Map<Short, ServerListConfigs> serverListConfigsMap) {
-  this.serverListConfigsMap = serverListConfigsMap;
- }
-
- public static AtomicReference<PMSG_JOINSERVER_INFO> getJoinServerInfoReference() {
-  return joinServerInfoReference;
+ public UdpConnectServerHandler(ConnectServerContext ctx) {
+  this.ctx = ctx;
  }
 
  public static ConcurrentHashMap<Short, AbstractPacket> getAbstractPackets() {
@@ -112,9 +108,9 @@ public class UdpConnectServerHandler extends SimpleChannelInboundHandler<Datagra
       case 1: {
        PMSG_GAMESERVER_INFO gameServerInfo = PMSG_GAMESERVER_INFO.deserialize(new ByteArrayInputStream(buffer));
 
-       ServerListConfigs ServerListConfigs = serverListConfigsMap.getOrDefault(gameServerInfo.serverCode(), null);
+       ServerConfigs ServerConfigs = this.ctx.getServersConfigsMap().getOrDefault(gameServerInfo.serverCode(), null);
 
-       if (ServerListConfigs == null) {
+       if (ServerConfigs == null) {
         throw new UdpConnectServerHandlerException(String.format("Server code %d mismatching configuration", gameServerInfo.serverCode()));
        }
 
