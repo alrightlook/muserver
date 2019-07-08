@@ -13,7 +13,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelId;
 import io.netty.channel.SimpleChannelInboundHandler;
 import muserver.connectserver.messages.*;
-import muserver.utils.NettyUtils;
+import muserver.common.utils.NettyUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

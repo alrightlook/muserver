@@ -11,7 +11,7 @@ import muserver.common.configs.ServerListConfigs;
 import muserver.connectserver.exceptions.UdpConnectServerHandlerException;
 import muserver.connectserver.messages.PMSG_GAMESERVER_INFO;
 import muserver.connectserver.messages.PMSG_JOINSERVER_INFO;
-import muserver.utils.NettyUtils;
+import muserver.common.utils.NettyUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

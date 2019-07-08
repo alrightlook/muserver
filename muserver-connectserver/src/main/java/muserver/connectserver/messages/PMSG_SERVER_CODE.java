@@ -3,7 +3,7 @@ package muserver.connectserver.messages;
 import com.google.auto.value.AutoValue;
 import muserver.common.messages.AbstractPacket;
 import muserver.common.messages.PBMSG_HEAD2;
-import muserver.utils.EndianUtils;
+import muserver.common.utils.EndianUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
