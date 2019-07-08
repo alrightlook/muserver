@@ -1,29 +1,11 @@
 {
- "logging": {
-  "level": "INFO",
-  "appenders": [
-   {
-    "name": "Stdout",
-    "type": "CONSOLE",
-    "format": "%d{DEFAULT} [%t] %-5level %logger{36} - %msg%n"
-   }, {
-    "name": "RollingFile",
-    "type": "ROLLING_FILE",
-    "format": "%d{DEFAULT} [%t] %-5level %logger{36} - %msg%n",
-    "fileName": "connect-server.log",
-    "filePattern": "connect-server-%i.log",
-    "sizeBasedTriggeringPolicy": {
-     "size": "10M"
-    }
-   }
-  ]
- },
  "joinServer": {
-  "connectServerIp": "127.0.0.1",
-  "connectServerUdpPort": 55557,
+  "hostname": "127.0.0.1",
+  "tcpPort":  55970,
   "connectionString": "jdbc:sqlserver://127.0.0.1:1444;instanceName=MSSQLSERVER;databaseName=MuOnline;username=test;password=test"
  },
  "connectServer": {
+  "hostname": "127.0.0.1",
   "tcpPort": 44405,
   "udpPort": 55557,
   "serverList": [
@@ -32,14 +14,14 @@
     "serverName": "GameServer",
     "serverAddress": "192.168.1.139",
     "serverPort": 55901,
-    "serverType": "VISIBLE"
+    "serverType": "visible"
    },
    {
     "serverCode": 19,
     "serverName": "GameServerCS",
     "serverAddress": "192.168.1.139",
     "serverPort": 55919,
-    "serverType": "HIDDEN"
+    "serverType": "hidden"
    }
   ]
  }
