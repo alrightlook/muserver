@@ -23,7 +23,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import static muserver.utils.EndianUtils.*;
+import static muserver.common.utils.EndianUtils.*;
 
 @AutoValue
 public abstract class SDHP_CREATECHARRESULT extends AbstractPacket<SDHP_CREATECHARRESULT> {

@@ -21,7 +21,7 @@ typedef struct
 } SDHP_IDPASS, *LPSDHP_IDPASS;
  */
 
-import static muserver.utils.EndianUtils.*;
+import static muserver.common.utils.EndianUtils.*;
 
 @AutoValue
 public abstract class SDHP_IDPASS extends AbstractPacket<SDHP_IDPASS> {

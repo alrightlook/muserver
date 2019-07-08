@@ -1,6 +1,6 @@
 package muserver.joinserver.messages;
 
-import static muserver.utils.EndianUtils.*;
+import static muserver.common.utils.EndianUtils.*;
 
 /*
 typedef struct

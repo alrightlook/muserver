@@ -8,7 +8,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import static muserver.utils.EndianUtils.*;
+import static muserver.common.utils.EndianUtils.*;
 
 /*
 typedef struct

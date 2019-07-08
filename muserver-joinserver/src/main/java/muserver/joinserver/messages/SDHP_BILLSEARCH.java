@@ -4,7 +4,7 @@ import com.google.auto.value.AutoValue;
 import muserver.common.messages.AbstractPacket;
 import muserver.common.Globals;
 import muserver.common.messages.PBMSG_HEAD;
-import muserver.utils.EndianUtils;
+import muserver.common.utils.EndianUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
