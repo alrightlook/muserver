@@ -3,6 +3,7 @@ package muserver.startup;
 import muserver.common.IServer;
 import muserver.common.exceptions.ServerException;
 import muserver.connectserver.ConnectServer;
+import muserver.connectserver.exceptions.ConnectServerException;
 import muserver.joinserver.JoinServer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,13 +20,13 @@ public class Startup {
 
         CompletableFuture<Void> startupFeature = CompletableFuture.runAsync(() -> {
             try {
-                joinServer.startup();
+                connectServer.startup();
             } catch (ServerException e) {
                 logger.error(e.getMessage(), e);
             }
         }).thenRun(() -> {
             try {
-                connectServer.startup();
+                joinServer.startup();
             } catch (ServerException e) {
                 logger.error(e.getMessage(), e);
             }
