@@ -1,4 +1,4 @@
-package muserver.utils;
+package muserver.common.utils;
 
 import java.io.EOFException;
 import java.io.IOException;

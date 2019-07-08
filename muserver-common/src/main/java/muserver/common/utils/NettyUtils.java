@@ -1,4 +1,4 @@
-package muserver.utils;
+package muserver.common.utils;
 
 import io.netty.channel.ChannelHandlerContext;
 import org.apache.logging.log4j.LogManager;
