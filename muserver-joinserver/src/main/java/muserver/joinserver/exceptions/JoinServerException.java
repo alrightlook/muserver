@@ -1,6 +1,8 @@
 package muserver.joinserver.exceptions;
 
-public class JoinServerException extends Exception {
+import muserver.common.exceptions.ServerException;
+
+public class JoinServerException extends ServerException {
     public JoinServerException() {
     }
 

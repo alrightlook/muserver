@@ -2,17 +2,17 @@ package muserver.joinserver;
 
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.nio.NioDatagramChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import muserver.common.IServer;
 import muserver.common.configs.CommonConfigs;
 import muserver.common.configs.ServerListConfigs;
+import muserver.common.logging.LoggingLevel;
+import muserver.common.types.AppenderType;
 import muserver.joinserver.exceptions.JoinServerException;
 import muserver.joinserver.initializers.TcpJoinServerInitializer;
-import muserver.joinserver.initializers.UdpJoinServerInitializer;
 import muserver.common.utils.LoggerUtils;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class JoinServer {
+public class JoinServer implements IServer {
  private final static Logger logger = LogManager.getLogger(JoinServer.class);
  private final String path;
  private final ObjectMapper mapper = new ObjectMapper();
@@ -75,7 +75,7 @@ public class JoinServer {
   try {
    CommonConfigs commonConfigs = mapper.readValue(IOUtils.toString(new FileInputStream(path), StandardCharsets.UTF_8), CommonConfigs.class);
 
-   LoggerUtils.updateLoggerConfiguration(commonConfigs);
+   LoggerUtils.updateLoggerConfiguration(JoinServer.class.getCanonicalName(), AppenderType.CONSOLE, "%d{DEFAULT} [%t] %-5level %logger{36} - %msg%n", LoggingLevel.INFO);
 
    Map<Short, ServerListConfigs> serverListConfigsMap = new HashMap<>();
 
@@ -85,22 +85,16 @@ public class JoinServer {
     serverListConfigsMap.put(entry.getKey(), entry.getValue().get(0));
    }
 
-   logger.info(String.format("Start UDP channel on port %d", commonConfigs.connectServer().udpPort()));
-   UdpJoinServerInitializer udpJoinServerInitializer = new UdpJoinServerInitializer();
-   new Bootstrap().group(udpEventLoopGroup).channel(NioDatagramChannel.class).handler(udpJoinServerInitializer).bind(commonConfigs.connectServer().udpPort());
-
-   logger.info(String.format("Start TCP channel on port %d", commonConfigs.connectServer().tcpPort()));
+   logger.info(String.format("Start join server TCP channel on port %d", commonConfigs.connectServer().tcpPort()));
    TcpJoinServerInitializer tcpJoinServerInitializer = new TcpJoinServerInitializer();
-   new ServerBootstrap().group(tcpParentLoopGroup, tcpChildLoopGroup).channel(NioServerSocketChannel.class).childHandler(tcpJoinServerInitializer).bind(commonConfigs.connectServer().tcpPort());
+   new ServerBootstrap().group(tcpParentLoopGroup, tcpChildLoopGroup).channel(NioServerSocketChannel.class).childHandler(tcpJoinServerInitializer).bind(commonConfigs.joinServer().tcpPort());
   } catch (Exception e) {
    throw new JoinServerException(e.getMessage(), e);
   }
-
-
  }
 
  public void shutdown() {
-  logger.info("Shutdown connect server");
+  logger.info("Shutdown join server");
   udpEventLoopGroup.shutdownGracefully();
   tcpChildLoopGroup.shutdownGracefully();
   tcpParentLoopGroup.shutdownGracefully();
