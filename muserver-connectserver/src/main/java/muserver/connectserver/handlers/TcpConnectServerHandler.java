@@ -37,12 +37,12 @@ public class TcpConnectServerHandler extends SimpleChannelInboundHandler<ByteBuf
   InetSocketAddress remoteAddress = (InetSocketAddress) ctx.channel().remoteAddress();
 
   if (remoteAddress != null) {
-   logger.info(String.format("Accepted new connection from: %s", remoteAddress.getAddress().getHostName()));
+   logger.info(String.format("Connection with: {} is accepted", remoteAddress.getAddress().getHostName()));
   }
 
   connectServerContext.clients().put(ctx.channel().id(), ctx);
 
-  PMSG_HANDSHAKE handshake = PMSG_HANDSHAKE.create(PBMSG_HEAD.create(Globals.C1_PACKET, (byte) 4, (byte) 0), (byte) 1);
+  PMSG_HANDSHAKE handshake = PMSG_HANDSHAKE.create(PBMSG_HEAD.create(Globals.PMHC_BYTE, (byte) 4, (byte) 0), (byte) 1);
 
   byte[] buffer = handshake.serialize(new ByteArrayOutputStream());
 
@@ -54,7 +54,7 @@ public class TcpConnectServerHandler extends SimpleChannelInboundHandler<ByteBuf
   InetSocketAddress remoteAddress = (InetSocketAddress) ctx.channel().remoteAddress();
 
   if (remoteAddress != null) {
-   logger.info(String.format("Connection from: %s has been interrupted", remoteAddress.getAddress().getHostName()));
+   logger.info(String.format("Connection with: {} is interrupted", remoteAddress.getAddress().getHostName()));
   }
 
   connectServerContext.clients().remove(ctx.channel().id());
@@ -73,86 +73,77 @@ public class TcpConnectServerHandler extends SimpleChannelInboundHandler<ByteBuf
 
  @Override
  protected void channelRead0(ChannelHandlerContext ctx, ByteBuf byteBuf) throws Exception {
-  if (byteBuf.readableBytes() > 0) {
-   byte[] buffer = new byte[byteBuf.readableBytes()];
+  if (byteBuf.readableBytes() < 4) {
+   logger.warn(String.format("Invalid buffer length: %d", byteBuf.readableBytes()));
+   NettyUtils.closeConnection(ctx);
+  }
 
-   byteBuf.getBytes(0, buffer);
+  byte[] buffer = new byte[byteBuf.readableBytes()];
 
-   if (buffer.length < 4) {
-    logger.warn(String.format("Invalid buffer length: %d", buffer.length));
-    NettyUtils.closeConnection(ctx);
-   }
+  byteBuf.getBytes(0, buffer);
 
-   switch (buffer[0]) {
-    case Globals.C1_PACKET: {
-     switch (buffer[2]) {
-      case (byte) 0xF4: {
-       switch (buffer[3]) {
-        case 3: {
-         PMSG_REQ_SERVER_INFO serverInfoRequest = PMSG_REQ_SERVER_INFO.deserialize(new ByteArrayInputStream(buffer));
+  if (buffer[0] != Globals.PMHC_BYTE) {
+   logger.warn(String.format("Invalid protocol type: %d", buffer[0]));
+   NettyUtils.closeConnection(ctx);
+  }
 
-         ServerConfigs serverConfigs = this.connectServerContext.serversConfigsMap().getOrDefault(serverInfoRequest.serverCode().shortValue(), null);
+  switch (buffer[2]) {
+   case (byte) 0xF4: {
+    switch (buffer[3]) {
+     case 3: {
+      PMSG_REQ_SERVER_INFO serverInfoRequest = PMSG_REQ_SERVER_INFO.deserialize(new ByteArrayInputStream(buffer));
 
-         if (serverConfigs == null) {
-          NettyUtils.closeConnection(ctx);
-          throw new ConnectServerException(String.format("Server code: %d mismatch configuration", serverInfoRequest.serverCode()));
-         }
+      ServerConfigs serverConfigs = this.connectServerContext.serversConfigsMap().getOrDefault(serverInfoRequest.serverCode().shortValue(), null);
 
-         PMSG_ANS_SERVER_INFO serverConnection = PMSG_ANS_SERVER_INFO.create(
-                 PBMSG_HEAD2.create(Globals.C1_PACKET, (byte) PMSG_ANS_SERVER_INFO.sizeOf(), serverInfoRequest.header().headCode(), serverInfoRequest.header().subCode()),
-                 serverConfigs.address(),
-                 serverConfigs.port().shortValue()
-         );
+      if (serverConfigs == null) {
+       NettyUtils.closeConnection(ctx);
+       throw new ConnectServerException(String.format("Server code: %d mismatch configuration", serverInfoRequest.serverCode()));
+      }
 
-         ctx.writeAndFlush(Unpooled.wrappedBuffer(serverConnection.serialize(new ByteArrayOutputStream())));
-        }
-        break;
-        case 6: {
-         PBMSG_HEAD2 header = PBMSG_HEAD2.deserialize(new ByteArrayInputStream(buffer));
+      PMSG_ANS_SERVER_INFO serverConnection = PMSG_ANS_SERVER_INFO.create(
+          PBMSG_HEAD2.create(Globals.PMHC_BYTE, (byte) PMSG_ANS_SERVER_INFO.sizeOf(), serverInfoRequest.header().headCode(), serverInfoRequest.header().subCode()),
+          serverConfigs.address(),
+          serverConfigs.port().shortValue()
+      );
 
-         List<PMSG_SERVER> servers = new ArrayList<>();
+      ctx.writeAndFlush(Unpooled.wrappedBuffer(serverConnection.serialize(new ByteArrayOutputStream())));
+     }
+     break;
 
-         for (ServerConfigs serverConfigs : this.connectServerContext.serversConfigsMap().values()) {
-          if (serverConfigs.type() == ServerType.VISIBLE) {
-           PMSG_SERVERINFO gameServerInfo = (PMSG_SERVERINFO) connectServerContext.packets().getOrDefault(serverConfigs.code().shortValue(), null);
+     case 6: {
+      PBMSG_HEAD2 header = PBMSG_HEAD2.deserialize(new ByteArrayInputStream(buffer));
 
-           if (gameServerInfo == null) {
-            NettyUtils.closeConnection(ctx);
-            throw new ConnectServerException(String.format("Game server connection has been interrupted. Server code: %d", serverConfigs.code()));
-           }
+      List<PMSG_SERVER> servers = new ArrayList<>();
 
-           servers.add(PMSG_SERVER.create(serverConfigs.code(), gameServerInfo.percent(), (byte) 0xCC));
-          }
-         }
-
-         short sizeOf = (short) (PMSG_SERVERLIST.sizeOf() + (servers.size() * PMSG_SERVER.sizeOf()));
-
-         PMSG_SERVERLIST serverList = PMSG_SERVERLIST.create(
-                 PWMSG_HEAD2.create(Globals.C2_PACKET, sizeOf, header.headCode(), header.subCode()),
-                 (short) servers.size(),
-                 servers
-         );
-
-         ctx.writeAndFlush(Unpooled.wrappedBuffer(serverList.serialize(new ByteArrayOutputStream())));
-        }
-        break;
-        default: {
-         throw new UnsupportedOperationException(String.format("Unsupported sub code: %d", buffer[3]));
-        }
+      for (ServerConfigs serverConfigs : this.connectServerContext.serversConfigsMap().values()) {
+       if (serverConfigs.type() == ServerType.VISIBLE) {
+        //todo: Request players count from GS
+        servers.add(PMSG_SERVER.create(serverConfigs.code(), (byte) 0, (byte) 0xCC));
        }
       }
-      break;
-      default: {
-       throw new UnsupportedOperationException(String.format("Unsupported head code: %d", buffer[2]));
-      }
+
+      short sizeOf = (short) (PMSG_SERVERLIST.sizeOf() + (servers.size() * PMSG_SERVER.sizeOf()));
+
+      PMSG_SERVERLIST serverList = PMSG_SERVERLIST.create(
+          PWMSG_HEAD2.create(Globals.PMHC_WORD, sizeOf, header.headCode(), header.subCode()),
+          (short) servers.size(),
+          servers
+      );
+
+      ctx.writeAndFlush(Unpooled.wrappedBuffer(serverList.serialize(new ByteArrayOutputStream())));
+     }
+     break;
+
+     default: {
+      throw new UnsupportedOperationException(String.format("Unsupported sub code: %d", buffer[3]));
      }
     }
-    break;
-    default:
-     throw new UnsupportedOperationException(String.format("Unsupported protocol type: %s", buffer[0]));
    }
-  } else {
-   NettyUtils.closeConnection(ctx);
+   break;
+
+   default: {
+    throw new UnsupportedOperationException(String.format("Unsupported header code: %d", buffer[2]));
+   }
   }
  }
 }

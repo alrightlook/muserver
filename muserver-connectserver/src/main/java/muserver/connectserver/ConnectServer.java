@@ -2,17 +2,14 @@ package muserver.connectserver;
 
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.netty.channel.ChannelFuture;
 import muserver.common.IServer;
 import muserver.common.configs.CommonConfigs;
 import muserver.common.configs.ServerConfigs;
 import muserver.common.logging.LoggingLevel;
 import muserver.common.types.AppenderType;
-import muserver.common.utils.EndianUtils;
 import muserver.connectserver.contexts.ConnectServerContext;
 import muserver.connectserver.exceptions.ConnectServerException;
 import muserver.connectserver.intializers.TcpConnectServerInitializer;
-import muserver.connectserver.intializers.UdpConnectServerInitializer;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.EventLoopGroup;
@@ -30,8 +27,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
@@ -97,11 +92,6 @@ public class ConnectServer implements IServer {
   }
 
   ConnectServerContext connectServerContext = new ConnectServerContext(serversConfigsMap);
-
-  UdpConnectServerInitializer udpConnectServerInitializer = new UdpConnectServerInitializer(connectServerContext);
-
-  logger.info(String.format("Start connect server udp channel on port %d", commonConfigs.connectServer().udpPort()));
-  new Bootstrap().group(udpEventLoopGroup).channel(NioDatagramChannel.class).handler(udpConnectServerInitializer).bind(commonConfigs.connectServer().udpPort());
 
   TcpConnectServerInitializer tcpConnectServerInitializer = new TcpConnectServerInitializer(connectServerContext);
 
