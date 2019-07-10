@@ -9,7 +9,7 @@ import java.io.IOException;
 
 @AutoValue
 public abstract class PWMSG_HEAD2 extends AbstractPacket<PWMSG_HEAD2> {
- public static byte sizeOf() {
+ public static int sizeOf() {
   return 5;
  }
 
@@ -29,7 +29,7 @@ public abstract class PWMSG_HEAD2 extends AbstractPacket<PWMSG_HEAD2> {
  public static PWMSG_HEAD2 deserialize(ByteArrayInputStream stream) throws IOException {
   return PWMSG_HEAD2.create(
       EndianUtils.readByte(stream),
-      EndianUtils.readShort(stream),
+      EndianUtils.readShortBE(stream),
       EndianUtils.readByte(stream),
       EndianUtils.readByte(stream)
   );
