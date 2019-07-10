@@ -11,7 +11,7 @@ import muserver.common.messages.PBMSG_HEAD;
 import muserver.common.utils.NettyUtils;
 import muserver.connectserver.contexts.ConnectServerContext;
 import muserver.connectserver.exceptions.UdpConnectServerHandlerException;
-import muserver.connectserver.messages.PMSG_GAMESERVER_INFO;
+import muserver.connectserver.messages.PMSG_SERVERINFO;
 import muserver.connectserver.messages.PMSG_JOINSERVER_INFO;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -90,8 +90,8 @@ public class UdpConnectServerHandler extends SimpleChannelInboundHandler<Datagra
    content.getBytes(0, buffer);
 
    if (buffer.length < 3) {
+    logger.warn(String.format("Invalid buffer length: %d", buffer.length));
     NettyUtils.closeConnection(ctx);
-    logger.warn(String.format("Invalid buffer length that equals to: %d", buffer.length));
    }
 
    PBMSG_HEAD header = PBMSG_HEAD.deserialize(new ByteArrayInputStream(buffer));
@@ -100,7 +100,7 @@ public class UdpConnectServerHandler extends SimpleChannelInboundHandler<Datagra
     case Globals.C1_PACKET: {
      switch (header.headCode()) {
       case 1: {
-       PMSG_GAMESERVER_INFO gameServerInfo = PMSG_GAMESERVER_INFO.deserialize(new ByteArrayInputStream(buffer));
+       PMSG_SERVERINFO gameServerInfo = PMSG_SERVERINFO.deserialize(new ByteArrayInputStream(buffer));
 
        ServerConfigs serverConfigs = this.connectServerContext.serversConfigsMap().getOrDefault(gameServerInfo.serverCode(), null);
 

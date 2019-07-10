@@ -35,7 +35,7 @@ public abstract class PMSG_SERVER_CONNECTION extends AbstractPacket<PMSG_SERVER_
  @Override
  public byte[] serialize(ByteArrayOutputStream stream) throws IOException {
   header().serialize(stream);
-  EndianUtils.writeString(stream, serverAddress(), 16); ;
+  EndianUtils.writeString(stream, serverAddress(), 16);
   EndianUtils.writeShortBE(stream, serverPort());
   return stream.toByteArray();
  }

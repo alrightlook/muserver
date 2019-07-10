@@ -28,7 +28,7 @@ public abstract class PMSG_JOINSERVER_INFO extends AbstractPacket<PMSG_JOINSERVE
 
  public static PMSG_JOINSERVER_INFO deserialize(ByteArrayInputStream stream) throws IOException {
   PBMSG_HEAD header = PBMSG_HEAD.deserialize(stream);
-  return PMSG_JOINSERVER_INFO.create(header, EndianUtils.readIntegerLE(stream));
+  return PMSG_JOINSERVER_INFO.create(header, EndianUtils.readInteger(stream));
  }
 
  public abstract PBMSG_HEAD header();

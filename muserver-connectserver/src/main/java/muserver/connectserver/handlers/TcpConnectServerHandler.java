@@ -116,7 +116,7 @@ public class TcpConnectServerHandler extends SimpleChannelInboundHandler<ByteBuf
 
          for (ServerConfigs serverConfigs : this.connectServerContext.serversConfigsMap().values()) {
           if (serverConfigs.type() == ServerType.VISIBLE) {
-           PMSG_GAMESERVER_INFO gameServerInfo = (PMSG_GAMESERVER_INFO) connectServerContext.packets().getOrDefault(serverConfigs.code().shortValue(), null);
+           PMSG_SERVERINFO gameServerInfo = (PMSG_SERVERINFO) connectServerContext.packets().getOrDefault(serverConfigs.code().shortValue(), null);
 
            if (gameServerInfo == null) {
             NettyUtils.closeConnection(ctx);
