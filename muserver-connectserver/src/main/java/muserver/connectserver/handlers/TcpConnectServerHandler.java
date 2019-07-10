@@ -102,7 +102,7 @@ public class TcpConnectServerHandler extends SimpleChannelInboundHandler<ByteBuf
 
       PMSG_ANS_SERVER_INFO serverConnection = PMSG_ANS_SERVER_INFO.create(
           PBMSG_HEAD2.create(Globals.PMHC_BYTE, (byte) PMSG_ANS_SERVER_INFO.sizeOf(), serverInfoRequest.header().headCode(), serverInfoRequest.header().subCode()),
-          serverConfigs.address(),
+          serverConfigs.ip(),
           serverConfigs.port().shortValue()
       );
 
