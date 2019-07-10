@@ -18,8 +18,8 @@ public abstract class ServerConfigs extends AbstractConfigs {
  @JsonProperty("name")
  public abstract String name();
 
- @JsonProperty("address")
- public abstract String address();
+ @JsonProperty("ip")
+ public abstract String ip();
 
  @JsonProperty("port")
  public abstract Integer port();
@@ -31,14 +31,14 @@ public abstract class ServerConfigs extends AbstractConfigs {
  public static ServerConfigs create(
          @JsonProperty("code") Short code,
          @JsonProperty("name") String name,
-         @JsonProperty("address") String address,
+         @JsonProperty("ip") String ip,
          @JsonProperty("port") Integer port,
          @JsonProperty("type") ServerType type
  ) {
   return builder()
           .code(code)
           .name(name)
-          .address(address)
+          .ip(ip)
           .port(port)
           .type(type)
           .build();
@@ -51,7 +51,7 @@ public abstract class ServerConfigs extends AbstractConfigs {
 
   public abstract Builder name(String name);
 
-  public abstract Builder address(String address);
+  public abstract Builder ip(String address);
 
   public abstract Builder port(Integer port);
 

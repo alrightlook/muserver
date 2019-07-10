@@ -198,7 +198,7 @@ public class EndianUtils {
     }
 
     public static short readShortBE(InputStream input) throws IOException {
-        return (short) (((read(input) & 0xFF) << 0) | ((read(input) & 0xFF) << 8));
+        return (short) (((read(input) & 0xFF) << 8) | ((read(input) & 0xFF) << 0));
     }
 
 
@@ -207,7 +207,7 @@ public class EndianUtils {
     }
 
     public static short readShortLE(InputStream input) throws IOException {
-        return (short) (((read(input) & 0xFF) << 8) | ((read(input) & 0xFF) << 0));
+        return (short) (((read(input) & 0xFF) << 0) | ((read(input) & 0xFF) << 8));
     }
 
 
@@ -216,7 +216,7 @@ public class EndianUtils {
     }
 
     public static int readIntegerBE(InputStream input) throws IOException {
-        return ((read(input) & 0xFF) << 0) | ((read(input) & 0xFF) << 8) | ((read(input) & 0xFF) << 16) | ((read(input) & 0xFF) << 24);
+        return ((read(input) & 0xFF) << 24) | ((read(input) & 0xFF) << 16) | ((read(input) & 0xFF) << 8) | ((read(input) & 0xFF) << 0);
     }
 
 
@@ -225,7 +225,7 @@ public class EndianUtils {
     }
 
     public static int readIntegerLE(InputStream input) throws IOException {
-        return ((read(input) & 0xFF) << 24) | ((read(input) & 0xFF) << 16) | ((read(input) & 0xFF) << 8) | ((read(input) & 0xFF) << 0);
+        return ((read(input) & 0xFF) << 0) | ((read(input) & 0xFF) << 8) | ((read(input) & 0xFF) << 16) | ((read(input) & 0xFF) << 24);
     }
 
 
@@ -234,7 +234,7 @@ public class EndianUtils {
     }
 
     public static long readLongBE(InputStream input) throws IOException {
-        return (((read(input) & 0xFF) << 0) | ((read(input) & 0xFF) << 8) | ((read(input) & 0xFF) << 16) | ((read(input) & 0xFF) << 24) | ((read(input) & 0xFF) << 32) | ((read(input) & 0xFF) << 40) | ((read(input) & 0xFF) << 48) | ((read(input) & 0xFF) << 56));
+        return (((read(input) & 0xFF) << 56) | ((read(input) & 0xFF) << 48) | ((read(input) & 0xFF) << 40) | ((read(input) & 0xFF) << 32) | ((read(input) & 0xFF) << 24) | ((read(input) & 0xFF) << 16) | ((read(input) & 0xFF) << 8) | ((read(input) & 0xFF) << 0));
     }
 
 
@@ -243,7 +243,7 @@ public class EndianUtils {
     }
 
     public static long readLongLE(InputStream input) throws IOException {
-        return (((read(input) & 0xFF) << 56) | ((read(input) & 0xFF) << 48) | ((read(input) & 0xFF) << 40) | ((read(input) & 0xFF) << 32) | ((read(input) & 0xFF) << 24) | ((read(input) & 0xFF) << 16) | ((read(input) & 0xFF) << 8) | ((read(input) & 0xFF) << 0));
+        return (((read(input) & 0xFF) << 0) | ((read(input) & 0xFF) << 8) | ((read(input) & 0xFF) << 16) | ((read(input) & 0xFF) << 24) | ((read(input) & 0xFF) << 32) | ((read(input) & 0xFF) << 40) | ((read(input) & 0xFF) << 48) | ((read(input) & 0xFF) << 56));
     }
 
 
