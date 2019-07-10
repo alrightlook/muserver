@@ -50,7 +50,7 @@ public abstract class SDHP_CREATECHARRESULT extends AbstractPacket<SDHP_CREATECH
         return SDHP_CREATECHARRESULT.create(
                 header,
                 readByte(stream),
-                readShortLE(stream),
+                readShort(stream),
                 new String(readBytes(stream, Globals.MAX_IDSTRING)),
                 new String(readBytes(stream, Globals.MAX_IDSTRING)),
                 readByte(stream),

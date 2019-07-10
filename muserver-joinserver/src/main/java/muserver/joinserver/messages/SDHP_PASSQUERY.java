@@ -45,7 +45,7 @@ public abstract class SDHP_PASSQUERY extends AbstractPacket<SDHP_PASSQUERY> {
 
   return SDHP_PASSQUERY.create(
       header,
-      readShortLE(stream),
+      readShort(stream),
       new String(readBytes(stream, Globals.MAX_IDSTRING)),
       new String(readBytes(stream, Globals.MAX_JOOMINNUMBERSTR)),
       new String(readBytes(stream, Globals.MAX_ANSWERSTR)),

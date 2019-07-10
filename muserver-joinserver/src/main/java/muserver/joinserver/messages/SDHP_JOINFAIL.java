@@ -44,10 +44,10 @@ public abstract class SDHP_JOINFAIL extends AbstractPacket<SDHP_JOINFAIL> {
 
   return SDHP_JOINFAIL.create(
       header,
-      readShortLE(stream),
+      readShort(stream),
       new String(readBytes(stream, Globals.MAX_IDSTRING + 1)),
-      readIntegerLE(stream),
-      readIntegerLE(stream)
+      readInteger(stream),
+      readInteger(stream)
   );
  }
 

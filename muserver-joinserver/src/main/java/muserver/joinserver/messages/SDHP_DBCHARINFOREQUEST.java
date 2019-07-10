@@ -43,7 +43,7 @@ public abstract class SDHP_DBCHARINFOREQUEST extends AbstractPacket<SDHP_DBCHARI
       header,
       new String(readBytes(stream, Globals.MAX_IDSTRING + 1)),
       new String(readBytes(stream, Globals.MAX_IDSTRING + 1)),
-      readShortLE(stream)
+      readShort(stream)
   );
  }
 

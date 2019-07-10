@@ -44,7 +44,7 @@ public abstract class SDHP_CHARDELETE extends AbstractPacket<SDHP_CHARDELETE> {
 
         return SDHP_CHARDELETE.create(
                 header,
-                readShortLE(stream),
+                readShort(stream),
                 new String(readBytes(stream, Globals.MAX_IDSTRING)),
                 new String(readBytes(stream, Globals.MAX_IDSTRING)),
                 readByte(stream),

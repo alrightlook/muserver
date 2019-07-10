@@ -49,8 +49,8 @@ public abstract class SDHP_IDPASSRESULT extends AbstractPacket<SDHP_IDPASSRESULT
       header,
       readByte(stream),
       new String(readBytes(stream, Globals.MAX_IDSTRING)),
-      readIntegerLE(stream),
-      readIntegerLE(stream),
+      readInteger(stream),
+      readInteger(stream),
       new String(readBytes(stream, Globals.MAX_JOOMINNUMBERSTR))
   );
  }

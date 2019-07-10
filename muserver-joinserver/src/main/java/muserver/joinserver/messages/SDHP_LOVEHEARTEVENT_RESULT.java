@@ -46,7 +46,7 @@ public abstract class SDHP_LOVEHEARTEVENT_RESULT extends AbstractPacket<SDHP_LOV
       header,
       readByte(stream),
       new String(readBytes(stream, Globals.MAX_IDSTRING)),
-      readIntegerLE(stream)
+      readInteger(stream)
   );
  }
 

@@ -44,8 +44,8 @@ public abstract class SDHP_GETWAREHOUSEDB_RESULT extends AbstractPacket<SDHP_GET
   return SDHP_GETWAREHOUSEDB_RESULT.create(
       header,
       new String(readBytes(stream, Globals.MAX_IDSTRING)),
-      readShortLE(stream),
-      readIntegerLE(stream),
+      readShort(stream),
+      readInteger(stream),
       readBytes(stream, Globals.MAX_WAREHOUSEDBSIZE)
   );
  }

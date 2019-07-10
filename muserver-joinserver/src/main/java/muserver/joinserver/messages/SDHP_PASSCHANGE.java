@@ -47,7 +47,7 @@ public abstract class SDHP_PASSCHANGE extends AbstractPacket<SDHP_PASSCHANGE> {
 
   return SDHP_PASSCHANGE.create(
       header,
-      readShortLE(stream),
+      readShort(stream),
       new String(readBytes(stream, Globals.MAX_IDSTRING)),
       new String(readBytes(stream, Globals.MAX_IDSTRING)),
       new String(readBytes(stream, Globals.MAX_IDSTRING)),

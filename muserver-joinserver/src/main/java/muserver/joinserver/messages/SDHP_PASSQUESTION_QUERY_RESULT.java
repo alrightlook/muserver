@@ -41,7 +41,7 @@ public abstract class SDHP_PASSQUESTION_QUERY_RESULT extends AbstractPacket<SDHP
 
   return SDHP_PASSQUESTION_QUERY_RESULT.create(
       header,
-      readShortLE(stream),
+      readShort(stream),
       readByte(stream),
       new String(readBytes(stream, Globals.MAX_QUESTIONSTR))
   );

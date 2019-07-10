@@ -39,7 +39,7 @@ public abstract class SDHP_BILLSEARCH extends AbstractPacket<SDHP_BILLSEARCH> {
         return SDHP_BILLSEARCH.create(
                 header,
                 new String(EndianUtils.readBytes(stream, Globals.MAX_IDSTRING)),
-                EndianUtils.readShortLE(stream)
+                EndianUtils.readShort(stream)
         );
     }
 

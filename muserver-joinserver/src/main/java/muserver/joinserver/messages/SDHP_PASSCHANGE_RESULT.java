@@ -38,7 +38,7 @@ public abstract class SDHP_PASSCHANGE_RESULT extends AbstractPacket<SDHP_PASSCHA
 
   return SDHP_PASSCHANGE_RESULT.create(
       header,
-      readShortLE(stream),
+      readShort(stream),
       readByte(stream)
   );
  }

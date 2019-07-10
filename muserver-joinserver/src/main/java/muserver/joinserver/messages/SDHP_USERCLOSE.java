@@ -38,8 +38,8 @@ public abstract class SDHP_USERCLOSE extends AbstractPacket<SDHP_USERCLOSE> {
 
   return SDHP_USERCLOSE.create(
       header,
-      readIntegerLE(stream),
-      readIntegerLE(stream)
+      readInteger(stream),
+      readInteger(stream)
   );
  }
 

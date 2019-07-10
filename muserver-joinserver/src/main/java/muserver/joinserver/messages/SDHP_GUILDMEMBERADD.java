@@ -44,7 +44,7 @@ public abstract class SDHP_GUILDMEMBERADD extends AbstractPacket<SDHP_GUILDMEMBE
       header,
       new String(readBytes(stream, Globals.MAX_GUILDNAMESTRING + 1)),
       new String(readBytes(stream, Globals.MAX_IDSTRING + 1)),
-      readShortLE(stream)
+      readShort(stream)
   );
  }
 

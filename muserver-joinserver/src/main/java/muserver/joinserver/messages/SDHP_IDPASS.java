@@ -46,7 +46,7 @@ public abstract class SDHP_IDPASS extends AbstractPacket<SDHP_IDPASS> {
       header,
       new String(readBytes(stream, Globals.MAX_IDSTRING)),
       new String(readBytes(stream, Globals.MAX_IDSTRING)),
-      readShortLE(stream),
+      readShort(stream),
       new String(readBytes(stream, Globals.MAX_IPADDRESS))
   );
  }

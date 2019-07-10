@@ -45,8 +45,8 @@ public abstract class SDHP_ZENSAVE extends AbstractPacket<SDHP_ZENSAVE> {
       header,
       new String(readBytes(stream, Globals.MAX_IDSTRING)),
       new String(readBytes(stream, Globals.MAX_IDSTRING)),
-      readIntegerLE(stream),
-      readIntegerLE(stream)
+      readInteger(stream),
+      readInteger(stream)
   );
  }
 

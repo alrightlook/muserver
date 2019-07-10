@@ -48,7 +48,7 @@ public abstract class SDHP_ACCOUNTINFO extends AbstractPacket<SDHP_ACCOUNTINFO> 
                 header,
                 readByte(stream),
                 readByte(stream),
-                readIntegerLE(stream),
+                readInteger(stream),
                 new String(readBytes(stream, Globals.MAX_IDSTRING + 1))
         );
     }
@@ -68,7 +68,7 @@ public abstract class SDHP_ACCOUNTINFO extends AbstractPacket<SDHP_ACCOUNTINFO> 
         header().serialize(stream);
         writeByte(stream, serverCode());
         writeByte(stream, subCode());
-        writeIntegerBE(stream, number());
+        writeIntegerLE(stream, number());
         writeString(stream, accountId(), Globals.MAX_IDSTRING);
         return stream.toByteArray();
     }

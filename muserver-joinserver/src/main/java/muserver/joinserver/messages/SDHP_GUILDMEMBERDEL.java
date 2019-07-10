@@ -44,7 +44,7 @@ public abstract class SDHP_GUILDMEMBERDEL extends AbstractPacket<SDHP_GUILDMEMBE
 
   return SDHP_GUILDMEMBERDEL.create(
       header,
-      readShortLE(stream),
+      readShort(stream),
       new String(readBytes(stream, Globals.MAX_GUILDNAMESTRING)),
       new String(readBytes(stream, Globals.MAX_IDSTRING))
   );

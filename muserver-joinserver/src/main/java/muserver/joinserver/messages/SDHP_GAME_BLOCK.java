@@ -45,7 +45,7 @@ public abstract class SDHP_GAME_BLOCK extends AbstractPacket<SDHP_GAME_BLOCK> {
 
   return SDHP_GAME_BLOCK.create(
       header,
-      readIntegerLE(stream),
+      readInteger(stream),
       new String(readBytes(stream, Globals.MAX_IDSTRING)),
       readByte(stream),
       new String(readBytes(stream, Globals.MAX_IDSTRING)),

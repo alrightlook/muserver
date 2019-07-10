@@ -41,7 +41,7 @@ public abstract class SDHP_GETCHARLIST extends AbstractPacket<SDHP_GETCHARLIST> 
   return SDHP_GETCHARLIST.create(
       header,
       new String(readBytes(stream, Globals.MAX_IDSTRING)),
-      readShortLE(stream)
+      readShort(stream)
   );
  }
 

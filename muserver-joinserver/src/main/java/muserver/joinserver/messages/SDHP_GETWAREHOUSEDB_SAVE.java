@@ -44,8 +44,8 @@ public abstract class SDHP_GETWAREHOUSEDB_SAVE extends AbstractPacket<SDHP_GETWA
         return SDHP_GETWAREHOUSEDB_SAVE.create(
                 header,
                 new String(readBytes(stream, Globals.MAX_IDSTRING)),
-                readShortLE(stream),
-                readIntegerLE(stream),
+                readShort(stream),
+                readInteger(stream),
                 readBytes(stream, Globals.MAX_WAREHOUSEDBSIZE)
         );
     }

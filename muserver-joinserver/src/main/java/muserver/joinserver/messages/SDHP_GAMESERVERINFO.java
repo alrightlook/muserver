@@ -35,7 +35,7 @@ public abstract class SDHP_GAMESERVERINFO extends AbstractPacket<SDHP_GAMESERVER
  public static SDHP_GAMESERVERINFO deserialize(ByteArrayInputStream stream) throws IOException {
   PBMSG_HEAD header = PBMSG_HEAD.deserialize(stream);
 
-  return SDHP_GAMESERVERINFO.create(header, readIntegerLE(stream));
+  return SDHP_GAMESERVERINFO.create(header, readInteger(stream));
  }
 
  public abstract PBMSG_HEAD header();

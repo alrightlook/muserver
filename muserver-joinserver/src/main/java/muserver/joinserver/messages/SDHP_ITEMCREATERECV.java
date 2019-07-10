@@ -59,14 +59,14 @@ public abstract class SDHP_ITEMCREATERECV extends AbstractPacket<SDHP_ITEMCREATE
       readByte(stream),
       readByte(stream),
       readByte(stream),
-      readIntegerLE(stream),
+      readInteger(stream),
       readByte(stream),
       readByte(stream),
       readByte(stream),
       readByte(stream),
       readByte(stream),
       readByte(stream),
-      readIntegerLE(stream)
+      readInteger(stream)
   );
  }
 

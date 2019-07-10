@@ -42,8 +42,8 @@ public abstract class SDHP_WAREHOUSEMONEY_SAVE extends AbstractPacket<SDHP_WAREH
   return SDHP_WAREHOUSEMONEY_SAVE.create(
       header,
       new String(readBytes(stream, Globals.MAX_IDSTRING)),
-      readShortLE(stream),
-      readIntegerLE(stream)
+      readShort(stream),
+      readInteger(stream)
   );
  }
 

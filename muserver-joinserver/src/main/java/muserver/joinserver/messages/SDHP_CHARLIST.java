@@ -40,7 +40,7 @@ public abstract class SDHP_CHARLIST extends AbstractPacket<SDHP_CHARLIST> {
         return SDHP_CHARLIST.create(
                 readByte(stream),
                 new String(readBytes(stream, Globals.MAX_IDSTRING)),
-                readShortLE(stream),
+                readShort(stream),
                 readByte(stream),
                 readBytes(stream, 24)
         );
