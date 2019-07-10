@@ -12,14 +12,14 @@
    {
     "code": 0,
     "name": "GameServer",
-    "address": "192.168.1.139",
+    "ip": "192.168.1.139",
     "port": 55901,
     "type": "visible"
    },
    {
     "code": 19,
     "name": "GameServerCS",
-    "address": "192.168.1.139",
+    "ip": "192.168.1.139",
     "port": 55919,
     "type": "hidden"
    }
