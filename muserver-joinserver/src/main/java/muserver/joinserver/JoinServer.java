@@ -12,6 +12,7 @@ import muserver.common.configs.CommonConfigs;
 import muserver.common.configs.ServerConfigs;
 import muserver.common.logging.LoggingLevel;
 import muserver.common.types.AppenderType;
+import muserver.common.utils.EndianUtils;
 import muserver.joinserver.exceptions.JoinServerException;
 import muserver.joinserver.initializers.TcpJoinServerInitializer;
 import muserver.common.utils.LoggerUtils;
@@ -23,8 +24,11 @@ import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
@@ -82,12 +86,6 @@ public class JoinServer implements IServer {
   }
 
   LoggerUtils.updateLoggerConfiguration(JoinServer.class.getCanonicalName(), AppenderType.CONSOLE, "%d{DEFAULT} [%t] %-5level %logger{36} - %msg%n", LoggingLevel.INFO);
-
-//  Map<Short, ServerConfigs> serverListConfigsMap = new HashMap<>();
-//
-//  for (Map.Entry<Short, List<ServerConfigs>> entry : commonConfigs.connectServer().serversConfigs().stream().collect(Collectors.groupingBy(x -> x.code())).entrySet()) {
-//   serverListConfigsMap.put(entry.getKey(), entry.getValue().get(0));
-//  }
 
   TcpJoinServerInitializer tcpJoinServerInitializer = new TcpJoinServerInitializer();
 
