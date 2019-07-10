@@ -42,7 +42,7 @@ public class TcpConnectServerHandler extends SimpleChannelInboundHandler<ByteBuf
 
   connectServerContext.clients().put(ctx.channel().id(), ctx);
 
-  PMSG_HANDSHAKE handshake = PMSG_HANDSHAKE.create(PBMSG_HEAD.create(Globals.PMHC_BYTE, (byte) 4, (byte) 0), (byte) 1);
+  PMSG_HANDSHAKE handshake = PMSG_HANDSHAKE.create(PBMSG_HEAD.create(Globals.PMHC_BYTE, (byte) PMSG_HANDSHAKE.sizeOf(), (byte) 0), (byte) 1);
 
   byte[] buffer = handshake.serialize(new ByteArrayOutputStream());
 
