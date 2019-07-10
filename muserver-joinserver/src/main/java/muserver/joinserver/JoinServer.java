@@ -83,16 +83,16 @@ public class JoinServer implements IServer {
 
   LoggerUtils.updateLoggerConfiguration(JoinServer.class.getCanonicalName(), AppenderType.CONSOLE, "%d{DEFAULT} [%t] %-5level %logger{36} - %msg%n", LoggingLevel.INFO);
 
-  Map<Short, ServerConfigs> serverListConfigsMap = new HashMap<>();
-
-  for (Map.Entry<Short, List<ServerConfigs>> entry : commonConfigs.connectServer().serversConfigs().stream().collect(Collectors.groupingBy(x -> x.code())).entrySet()) {
-   serverListConfigsMap.put(entry.getKey(), entry.getValue().get(0));
-  }
+//  Map<Short, ServerConfigs> serverListConfigsMap = new HashMap<>();
+//
+//  for (Map.Entry<Short, List<ServerConfigs>> entry : commonConfigs.connectServer().serversConfigs().stream().collect(Collectors.groupingBy(x -> x.code())).entrySet()) {
+//   serverListConfigsMap.put(entry.getKey(), entry.getValue().get(0));
+//  }
 
   TcpJoinServerInitializer tcpJoinServerInitializer = new TcpJoinServerInitializer();
 
-  logger.info(String.format("Start join server tcp channel on port %d", commonConfigs.connectServer().tcpPort()));
-  ChannelFuture tcpChannel = new ServerBootstrap().group(tcpParentLoopGroup, tcpChildLoopGroup).channel(NioServerSocketChannel.class).childHandler(tcpJoinServerInitializer).bind(commonConfigs.joinServer().tcpPort());
+  logger.info(String.format("Start join server tcp channel on port %d", commonConfigs.joinServer().tcpPort()));
+  new ServerBootstrap().group(tcpParentLoopGroup, tcpChildLoopGroup).channel(NioServerSocketChannel.class).childHandler(tcpJoinServerInitializer).bind(commonConfigs.joinServer().tcpPort());
  }
 
  public void shutdown() {
