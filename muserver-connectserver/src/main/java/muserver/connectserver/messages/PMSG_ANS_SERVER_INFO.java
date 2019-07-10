@@ -15,7 +15,7 @@ public abstract class PMSG_ANS_SERVER_INFO extends AbstractPacket<PMSG_ANS_SERVE
  }
 
  public static Builder builder() {
-  return new AutoValue_PMSG_ANSSERVERINFO.Builder();
+  return new AutoValue_PMSG_ANS_SERVER_INFO.Builder();
  }
 
  public static PMSG_ANS_SERVER_INFO create(PBMSG_HEAD2 header, String serverAddress, Short serverPort) {
