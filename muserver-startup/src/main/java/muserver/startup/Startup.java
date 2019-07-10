@@ -18,23 +18,6 @@ public class Startup {
 
   IServer joinServer = new JoinServer(path), connectServer = new ConnectServer(path);
 
-  CompletableFuture<Void> startupFeature = CompletableFuture.runAsync(() -> {
-   try {
-    connectServer.startup();
-   } catch (ServerException e) {
-    logger.error(e.getMessage(), e);
-   }
-  }).thenRun(() -> {
-   try {
-    joinServer.startup();
-   } catch (ServerException e) {
-    logger.error(e.getMessage(), e);
-   }
-  }).exceptionally(throwable -> {
-   logger.error(throwable.getMessage(), throwable);
-   return null;
-  });
-
   Runtime.getRuntime().addShutdownHook(new Thread(() -> {
    try {
     if (joinServer != null) {
@@ -49,6 +32,21 @@ public class Startup {
    }
   }));
 
-  startupFeature.get();
+  CompletableFuture.runAsync(() -> {
+   try {
+    connectServer.startup();
+   } catch (ServerException e) {
+    logger.error(e.getMessage(), e);
+   }
+  }).thenRun(() -> {
+   try {
+    joinServer.startup();
+   } catch (ServerException e) {
+    logger.error(e.getMessage(), e);
+   }
+  }).exceptionally(throwable -> {
+   logger.error(throwable.getMessage(), throwable);
+   return null;
+  }).get();
  }
 }
