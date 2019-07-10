@@ -45,11 +45,11 @@ public abstract class SDHP_GUILDCREATED extends AbstractPacket<SDHP_GUILDCREATED
 
         return SDHP_GUILDCREATED.create(
                 header,
-                readShort(stream),
+                readShortBE(stream),
                 new String(readBytes(stream, Globals.MAX_GUILDNAMESTRING + 1)),
                 new String(readBytes(stream, Globals.MAX_IDSTRING + 1)),
                 readBytes(stream, 32),
-                readInteger(stream)
+                readIntegerBE(stream)
         );
     }
 

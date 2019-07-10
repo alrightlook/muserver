@@ -42,7 +42,7 @@ public abstract class SDHP_CHARDELETERESULT extends AbstractPacket<SDHP_CHARDELE
         return SDHP_CHARDELETERESULT.create(
                 header,
                 readByte(stream),
-                readShort(stream),
+                readShortBE(stream),
                 new String(readBytes(stream, Globals.MAX_IDSTRING))
         );
     }

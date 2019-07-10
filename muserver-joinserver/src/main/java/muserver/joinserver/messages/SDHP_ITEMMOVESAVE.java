@@ -59,7 +59,7 @@ public abstract class SDHP_ITEMMOVESAVE extends AbstractPacket<SDHP_ITEMMOVESAVE
 
   return SDHP_ITEMMOVESAVE.create(
       header,
-      readInteger(stream),
+      readIntegerBE(stream),
       new String(readBytes(stream, Globals.MAX_SERVERNAME)),
       new String(readBytes(stream, Globals.MAX_IDSTRING)),
       new String(readBytes(stream, Globals.MAX_IDSTRING)),

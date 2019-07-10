@@ -56,11 +56,11 @@ public abstract class SDHP_BILLSEARCH_RESULT extends AbstractPacket<SDHP_BILLSEA
         return SDHP_BILLSEARCH_RESULT.create(
                 header,
                 new String(readBytes(stream, Globals.MAX_IDSTRING)),
-                readShort(stream),
+                readShortBE(stream),
                 readByte(stream),
                 readByte(stream),
                 new String(readBytes(stream, 12)),
-                readInteger(stream)
+                readIntegerBE(stream)
         );
     }
 

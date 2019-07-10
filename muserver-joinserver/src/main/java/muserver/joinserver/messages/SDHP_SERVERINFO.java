@@ -43,7 +43,7 @@ public abstract class SDHP_SERVERINFO extends AbstractPacket<SDHP_SERVERINFO> {
   return SDHP_SERVERINFO.create(
       header,
       readByte(stream),
-      readShort(stream),
+      readShortBE(stream),
       new String(readBytes(stream, Globals.MAX_SERVERNAME + 30))
   );
  }

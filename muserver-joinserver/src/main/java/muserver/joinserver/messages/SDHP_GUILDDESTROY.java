@@ -44,7 +44,7 @@ public abstract class SDHP_GUILDDESTROY extends AbstractPacket<SDHP_GUILDDESTROY
 
         return SDHP_GUILDDESTROY.create(
                 header,
-                readShort(stream),
+                readShortBE(stream),
                 new String(readBytes(stream, Globals.MAX_GUILDNAMESTRING)),
                 new String(readBytes(stream, Globals.MAX_IDSTRING))
         );

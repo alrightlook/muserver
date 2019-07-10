@@ -42,8 +42,8 @@ public abstract class SDHP_ZENLOAD extends AbstractPacket<SDHP_ZENLOAD> {
   return SDHP_ZENLOAD.create(
       header,
       new String(readBytes(stream, Globals.MAX_IDSTRING)),
-      readInteger(stream),
-      readInteger(stream)
+      readIntegerBE(stream),
+      readIntegerBE(stream)
   );
  }
 

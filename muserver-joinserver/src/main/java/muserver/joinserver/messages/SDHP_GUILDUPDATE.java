@@ -48,7 +48,7 @@ public abstract class SDHP_GUILDUPDATE extends AbstractPacket<SDHP_GUILDUPDATE> 
       new String(readBytes(stream, Globals.MAX_GUILDNAMESTRING + 1)),
       new String(readBytes(stream, Globals.MAX_IDSTRING + 1)),
       readBytes(stream, 32),
-      readInteger(stream),
+      readIntegerBE(stream),
       readByte(stream)
   );
  }

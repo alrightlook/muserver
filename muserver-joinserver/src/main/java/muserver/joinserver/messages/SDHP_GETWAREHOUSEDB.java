@@ -40,7 +40,7 @@ public abstract class SDHP_GETWAREHOUSEDB extends AbstractPacket<SDHP_GETWAREHOU
   return SDHP_GETWAREHOUSEDB.create(
       header,
       new String(readBytes(stream, Globals.MAX_IDSTRING)),
-      readShort(stream)
+      readShortBE(stream)
   );
  }
 

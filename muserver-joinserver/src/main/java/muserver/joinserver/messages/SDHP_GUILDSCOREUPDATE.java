@@ -35,7 +35,7 @@ public abstract class SDHP_GUILDSCOREUPDATE extends AbstractPacket<SDHP_GUILDSCO
  public static SDHP_GUILDSCOREUPDATE deserialize(ByteArrayInputStream stream) throws IOException {
   return SDHP_GUILDSCOREUPDATE.create(
       new String(readBytes(stream, Globals.MAX_GUILDNAMESTRING + 1)),
-      readInteger(stream)
+      readIntegerBE(stream)
   );
  }
 

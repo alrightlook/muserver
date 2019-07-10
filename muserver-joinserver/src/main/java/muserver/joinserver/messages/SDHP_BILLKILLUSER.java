@@ -37,7 +37,7 @@ public abstract class SDHP_BILLKILLUSER extends AbstractPacket<SDHP_BILLKILLUSER
 
     public static SDHP_BILLKILLUSER deserialize(ByteArrayInputStream stream) throws IOException {
         PBMSG_HEAD header = PBMSG_HEAD.deserialize(stream);
-        return SDHP_BILLKILLUSER.create(header, new String(readBytes(stream, Globals.MAX_IDSTRING)), readShort(stream));
+        return SDHP_BILLKILLUSER.create(header, new String(readBytes(stream, Globals.MAX_IDSTRING)), readShortBE(stream));
     }
 
     public abstract PBMSG_HEAD header();

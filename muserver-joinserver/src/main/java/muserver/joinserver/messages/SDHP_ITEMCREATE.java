@@ -63,7 +63,7 @@ public abstract class SDHP_ITEMCREATE extends AbstractPacket<SDHP_ITEMCREATE> {
       readByte(stream),
       readByte(stream),
       readByte(stream),
-      readInteger(stream)
+      readIntegerBE(stream)
   );
  }
 

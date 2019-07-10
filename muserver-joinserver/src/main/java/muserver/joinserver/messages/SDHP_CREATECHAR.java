@@ -46,9 +46,9 @@ public abstract class SDHP_CREATECHAR extends AbstractPacket<SDHP_CREATECHAR> {
 
         return SDHP_CREATECHAR.create(
                 header,
-                readInteger(stream),
-                readInteger(stream),
-                readShort(stream),
+                readIntegerBE(stream),
+                readIntegerBE(stream),
+                readShortBE(stream),
                 new String(readBytes(stream, Globals.MAX_IDSTRING)),
                 new String(readBytes(stream, Globals.MAX_IDSTRING)),
                 readByte(stream)

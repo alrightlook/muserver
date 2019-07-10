@@ -48,7 +48,7 @@ public abstract class SDHP_ACCOUNTINFO extends AbstractPacket<SDHP_ACCOUNTINFO> 
                 header,
                 readByte(stream),
                 readByte(stream),
-                readInteger(stream),
+                readIntegerBE(stream),
                 new String(readBytes(stream, Globals.MAX_IDSTRING + 1))
         );
     }

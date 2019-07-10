@@ -52,7 +52,7 @@ public abstract class SDHP_GUILDMEMBERADD_RESULT extends AbstractPacket<SDHP_GUI
       header,
       readByte(stream),
       readByte(stream),
-      readShort(stream),
+      readShortBE(stream),
       new String(readBytes(stream, Globals.MAX_GUILDNAMESTRING + 1)),
       new String(readBytes(stream, Globals.MAX_IDSTRING + 1))
   );

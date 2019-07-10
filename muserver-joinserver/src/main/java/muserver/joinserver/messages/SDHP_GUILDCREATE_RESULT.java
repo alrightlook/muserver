@@ -56,8 +56,8 @@ public abstract class SDHP_GUILDCREATE_RESULT extends AbstractPacket<SDHP_GUILDC
                 header,
                 readByte(stream),
                 readByte(stream),
-                readInteger(stream),
-                readShort(stream),
+                readIntegerBE(stream),
+                readShortBE(stream),
                 new String(readBytes(stream, Globals.MAX_IDSTRING + 1)),
                 new String(readBytes(stream, Globals.MAX_GUILDNAMESTRING + 1)),
                 readBytes(stream, 32)

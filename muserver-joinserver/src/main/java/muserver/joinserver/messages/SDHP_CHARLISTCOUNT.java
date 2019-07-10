@@ -44,9 +44,9 @@ public abstract class SDHP_CHARLISTCOUNT extends AbstractPacket<SDHP_CHARLISTCOU
 
         return SDHP_CHARLISTCOUNT.create(
                 header,
-                readShort(stream),
+                readShortBE(stream),
                 readByte(stream),
-                readInteger(stream),
+                readIntegerBE(stream),
                 readByte(stream),
                 new String(readBytes(stream, Globals.MAX_IDSTRING + 1))
         );

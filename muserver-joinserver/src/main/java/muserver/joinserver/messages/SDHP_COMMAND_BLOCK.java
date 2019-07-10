@@ -45,10 +45,10 @@ public abstract class SDHP_COMMAND_BLOCK extends AbstractPacket<SDHP_COMMAND_BLO
 
         return SDHP_COMMAND_BLOCK.create(
                 header,
-                readShort(stream),
+                readShortBE(stream),
                 new String(readBytes(stream, Globals.MAX_IDSTRING + 1)),
-                readInteger(stream),
-                readInteger(stream),
+                readIntegerBE(stream),
+                readIntegerBE(stream),
                 readByte(stream)
         );
     }
