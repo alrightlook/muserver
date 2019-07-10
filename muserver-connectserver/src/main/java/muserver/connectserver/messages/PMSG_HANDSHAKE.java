@@ -12,7 +12,7 @@ import java.io.IOException;
 @AutoValue
 public abstract class PMSG_HANDSHAKE extends AbstractPacket<PMSG_HANDSHAKE> {
  public static int sizeOf() {
-  return 4;
+  return PBMSG_HEAD.sizeOf() + 1;
  }
 
  public static Builder builder() {

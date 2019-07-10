@@ -79,8 +79,8 @@ public class TcpConnectServerHandler extends SimpleChannelInboundHandler<ByteBuf
    byteBuf.getBytes(0, buffer);
 
    if (buffer.length < 4) {
+    logger.warn(String.format("Invalid buffer length: %d", buffer.length));
     NettyUtils.closeConnection(ctx);
-    logger.warn(String.format("Invalid buffer length that equals to: %d", buffer.length));
    }
 
    switch (buffer[0]) {
@@ -89,21 +89,19 @@ public class TcpConnectServerHandler extends SimpleChannelInboundHandler<ByteBuf
       case (byte) 0xF4: {
        switch (buffer[3]) {
         case 3: {
-         PMSG_SERVER_CODE serverCode = PMSG_SERVER_CODE.deserialize(new ByteArrayInputStream(buffer));
+         PMSG_REQ_SERVER_INFO serverInfoRequest = PMSG_REQ_SERVER_INFO.deserialize(new ByteArrayInputStream(buffer));
 
-         ServerConfigs serverConfigs = this.connectServerContext.serversConfigsMap().getOrDefault(serverCode.serverCode().shortValue(), null);
+         ServerConfigs serverConfigs = this.connectServerContext.serversConfigsMap().getOrDefault(serverInfoRequest.serverCode().shortValue(), null);
 
          if (serverConfigs == null) {
           NettyUtils.closeConnection(ctx);
-          throw new ConnectServerException(String.format("Server code: %d mismatch configuration", serverCode.serverCode()));
+          throw new ConnectServerException(String.format("Server code: %d mismatch configuration", serverInfoRequest.serverCode()));
          }
 
-         byte sizeOf = PMSG_SERVER_CONNECTION.sizeOf();
-
-         PMSG_SERVER_CONNECTION serverConnection = PMSG_SERVER_CONNECTION.create(
-             PBMSG_HEAD2.create(Globals.C1_PACKET, sizeOf, serverCode.header().headCode(), serverCode.header().subCode()),
-             serverConfigs.address(),
-             serverConfigs.port().shortValue()
+         PMSG_ANS_SERVER_INFO serverConnection = PMSG_ANS_SERVER_INFO.create(
+                 PBMSG_HEAD2.create(Globals.C1_PACKET, (byte) PMSG_ANS_SERVER_INFO.sizeOf(), serverInfoRequest.header().headCode(), serverInfoRequest.header().subCode()),
+                 serverConfigs.address(),
+                 serverConfigs.port().shortValue()
          );
 
          ctx.writeAndFlush(Unpooled.wrappedBuffer(serverConnection.serialize(new ByteArrayOutputStream())));
@@ -127,12 +125,12 @@ public class TcpConnectServerHandler extends SimpleChannelInboundHandler<ByteBuf
           }
          }
 
-         short sizeOf = (short) (PWMSG_HEAD2.sizeOf() + 2 + (servers.size() * 4));
+         short sizeOf = (short) (PMSG_SERVERLIST.sizeOf() + (servers.size() * PMSG_SERVER.sizeOf()));
 
-         PMSG_SERVER_LIST serverList = PMSG_SERVER_LIST.create(
-             PWMSG_HEAD2.create(Globals.C2_PACKET, sizeOf, header.headCode(), header.subCode()),
-             (short) servers.size(),
-             servers
+         PMSG_SERVERLIST serverList = PMSG_SERVERLIST.create(
+                 PWMSG_HEAD2.create(Globals.C2_PACKET, sizeOf, header.headCode(), header.subCode()),
+                 (short) servers.size(),
+                 servers
          );
 
          ctx.writeAndFlush(Unpooled.wrappedBuffer(serverList.serialize(new ByteArrayOutputStream())));

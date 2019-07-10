@@ -11,8 +11,8 @@ import java.io.IOException;
 
 @AutoValue
 public abstract class PMSG_SERVERINFO extends AbstractPacket<PMSG_SERVERINFO> {
- public static Short sizeOf() {
-  return 16;
+ public static int sizeOf() {
+  return PBMSG_HEAD.sizeOf() + 12;
  }
 
  public static Builder builder() {
@@ -37,12 +37,12 @@ public abstract class PMSG_SERVERINFO extends AbstractPacket<PMSG_SERVERINFO> {
   return PMSG_SERVERINFO.create(
       header,
       EndianUtils.readByte(stream),
-      EndianUtils.readShort(stream),
+      EndianUtils.readShortBE(stream),
       EndianUtils.readByte(stream),
-      EndianUtils.readShort(stream),
-      EndianUtils.readShort(stream),
-      EndianUtils.readShort(stream),
-      EndianUtils.readShort(stream)
+      EndianUtils.readShortBE(stream),
+      EndianUtils.readShortBE(stream),
+      EndianUtils.readShortBE(stream),
+      EndianUtils.readShortBE(stream)
   );
  }
 

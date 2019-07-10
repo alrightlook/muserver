@@ -282,7 +282,7 @@ public class EndianUtils {
         return Double.longBitsToDouble(readLongLE(input));
     }
 
-    
+
     private static int read(InputStream input) throws IOException {
         int value = input.read();
         if (value == -1) {

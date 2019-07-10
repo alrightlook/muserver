@@ -12,12 +12,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 @AutoValue
-public abstract class PMSG_SERVER_LIST extends AbstractPacket<PMSG_SERVER_LIST> {
- public static Builder builder() {
-  return new AutoValue_PMSG_SERVER_LIST.Builder();
+public abstract class PMSG_SERVERLIST extends AbstractPacket<PMSG_SERVERLIST> {
+ public static int sizeOf() {
+  return PWMSG_HEAD2.sizeOf() + 2;
  }
 
- public static PMSG_SERVER_LIST create(PWMSG_HEAD2 header, short count, List<PMSG_SERVER> serverList) {
+ public static Builder builder() {
+  return new AutoValue_PMSG_SERVERLIST.Builder();
+ }
+
+ public static PMSG_SERVERLIST create(PWMSG_HEAD2 header, short count, List<PMSG_SERVER> serverList) {
   return builder()
       .header(header)
       .count(count)
@@ -25,10 +29,10 @@ public abstract class PMSG_SERVER_LIST extends AbstractPacket<PMSG_SERVER_LIST> 
       .build();
  }
 
- public static PMSG_SERVER_LIST deserialize(ByteArrayInputStream stream) throws IOException {
+ public static PMSG_SERVERLIST deserialize(ByteArrayInputStream stream) throws IOException {
   PWMSG_HEAD2 header = PWMSG_HEAD2.deserialize(stream);
 
-  short count = EndianUtils.readShort(stream);
+  short count = EndianUtils.readShortBE(stream);
 
   List<PMSG_SERVER> serverList = new ArrayList<>();
 
@@ -36,7 +40,7 @@ public abstract class PMSG_SERVER_LIST extends AbstractPacket<PMSG_SERVER_LIST> 
    serverList.add(PMSG_SERVER.deserialize(stream));
   }
 
-  return PMSG_SERVER_LIST.create(header, count, serverList);
+  return PMSG_SERVERLIST.create(header, count, serverList);
  }
 
  public abstract PWMSG_HEAD2 header();
@@ -63,6 +67,6 @@ public abstract class PMSG_SERVER_LIST extends AbstractPacket<PMSG_SERVER_LIST> 
 
   public abstract Builder serverList(List<PMSG_SERVER> serverList);
 
-  public abstract PMSG_SERVER_LIST build();
+  public abstract PMSG_SERVERLIST build();
  }
 }

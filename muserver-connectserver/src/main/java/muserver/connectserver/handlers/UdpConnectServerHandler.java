@@ -82,23 +82,21 @@ public class UdpConnectServerHandler extends SimpleChannelInboundHandler<Datagra
 
  @Override
  protected void channelRead0(ChannelHandlerContext ctx, DatagramPacket packet) throws Exception {
-  ByteBuf content = packet.content();
+  ByteBuf byteBuf = packet.content();
 
-  if (content.readableBytes() > 0) {
-   byte[] buffer = new byte[content.readableBytes()];
+  if (byteBuf.readableBytes() > 0) {
+   byte[] buffer = new byte[byteBuf.readableBytes()];
 
-   content.getBytes(0, buffer);
+   byteBuf.getBytes(0, buffer);
 
    if (buffer.length < 3) {
     logger.warn(String.format("Invalid buffer length: %d", buffer.length));
     NettyUtils.closeConnection(ctx);
    }
 
-   PBMSG_HEAD header = PBMSG_HEAD.deserialize(new ByteArrayInputStream(buffer));
-
-   switch (header.type()) {
+   switch (buffer[0]) {
     case Globals.C1_PACKET: {
-     switch (header.headCode()) {
+     switch (buffer[2]) {
       case 1: {
        PMSG_SERVERINFO gameServerInfo = PMSG_SERVERINFO.deserialize(new ByteArrayInputStream(buffer));
 
@@ -124,13 +122,13 @@ public class UdpConnectServerHandler extends SimpleChannelInboundHandler<Datagra
       }
       break;
       default: {
-       throw new UnsupportedOperationException(String.format("Unsupported head code type: %d", header.headCode()));
+       throw new UnsupportedOperationException(String.format("Unsupported head code type: %d", buffer[2]));
       }
      }
     }
     break;
     default:
-     throw new UnsupportedOperationException(String.format("Unsupported protocol type: %d", header.type()));
+     throw new UnsupportedOperationException(String.format("Unsupported protocol type: %d", buffer[0]));
    }
   } else {
    NettyUtils.closeConnection(ctx);

@@ -5,40 +5,38 @@ import muserver.common.messages.AbstractPacket;
 import muserver.common.messages.PBMSG_HEAD2;
 import muserver.common.utils.EndianUtils;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 @AutoValue
-public abstract class PMSG_SERVER_CODE extends AbstractPacket<PMSG_SERVER_CODE> {
+public abstract class PMSG_ANS_SERVER_INFO extends AbstractPacket<PMSG_ANS_SERVER_INFO> {
  public static int sizeOf() {
-  return 5;
+  return PBMSG_HEAD2.sizeOf() + 16 + 2;
  }
 
  public static Builder builder() {
-  return new AutoValue_PMSG_SERVER_CODE.Builder();
+  return new AutoValue_PMSG_ANSSERVERINFO.Builder();
  }
 
- public static PMSG_SERVER_CODE create(PBMSG_HEAD2 header, Byte serverCode) {
+ public static PMSG_ANS_SERVER_INFO create(PBMSG_HEAD2 header, String serverAddress, Short serverPort) {
   return builder()
       .header(header)
-      .serverCode(serverCode)
+      .serverAddress(serverAddress)
+      .serverPort(serverPort)
       .build();
- }
-
- public static PMSG_SERVER_CODE deserialize(ByteArrayInputStream stream) throws IOException {
-  PBMSG_HEAD2 header = PBMSG_HEAD2.deserialize(stream);
-  return PMSG_SERVER_CODE.create(header, EndianUtils.readByte(stream));
  }
 
  public abstract PBMSG_HEAD2 header();
 
- public abstract Byte serverCode();
+ public abstract String serverAddress();
+
+ public abstract Short serverPort();
 
  @Override
  public byte[] serialize(ByteArrayOutputStream stream) throws IOException {
   header().serialize(stream);
-  EndianUtils.writeByte(stream, serverCode());
+  EndianUtils.writeString(stream, serverAddress(), 16);
+  EndianUtils.writeShortBE(stream, serverPort());
   return stream.toByteArray();
  }
 
@@ -46,8 +44,10 @@ public abstract class PMSG_SERVER_CODE extends AbstractPacket<PMSG_SERVER_CODE> 
  public abstract static class Builder {
   public abstract Builder header(PBMSG_HEAD2 header);
 
-  public abstract Builder serverCode(Byte serverCode);
+  public abstract Builder serverAddress(String ipAddress);
 
-  public abstract PMSG_SERVER_CODE build();
+  public abstract Builder serverPort(Short portNumber);
+
+  public abstract PMSG_ANS_SERVER_INFO build();
  }
 }

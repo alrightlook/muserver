@@ -12,7 +12,7 @@ import java.io.IOException;
 @AutoValue
 public abstract class PMSG_JOINSERVER_INFO extends AbstractPacket<PMSG_JOINSERVER_INFO> {
  public int sizeOf() {
-  return 7;
+  return PBMSG_HEAD.sizeOf() + 4;
  }
 
  public static Builder builder() {
@@ -28,7 +28,7 @@ public abstract class PMSG_JOINSERVER_INFO extends AbstractPacket<PMSG_JOINSERVE
 
  public static PMSG_JOINSERVER_INFO deserialize(ByteArrayInputStream stream) throws IOException {
   PBMSG_HEAD header = PBMSG_HEAD.deserialize(stream);
-  return PMSG_JOINSERVER_INFO.create(header, EndianUtils.readInteger(stream));
+  return PMSG_JOINSERVER_INFO.create(header, EndianUtils.readIntegerBE(stream));
  }
 
  public abstract PBMSG_HEAD header();
