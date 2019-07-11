@@ -12,8 +12,8 @@ public abstract class ServerConfigs extends AbstractConfigs {
   return new AutoValue_ServerConfigs.Builder();
  }
 
- @JsonProperty("code")
- public abstract Short code();
+ @JsonProperty("id")
+ public abstract Short id();
 
  @JsonProperty("name")
  public abstract String name();
@@ -29,14 +29,14 @@ public abstract class ServerConfigs extends AbstractConfigs {
 
  @JsonCreator
  public static ServerConfigs create(
-         @JsonProperty("code") Short code,
+         @JsonProperty("id") Short id,
          @JsonProperty("name") String name,
          @JsonProperty("ip") String ip,
          @JsonProperty("port") Integer port,
          @JsonProperty("type") ServerType type
  ) {
   return builder()
-          .code(code)
+          .id(id)
           .name(name)
           .ip(ip)
           .port(port)
@@ -47,7 +47,7 @@ public abstract class ServerConfigs extends AbstractConfigs {
  @AutoValue.Builder
  public abstract static class Builder {
 
-  public abstract Builder code(Short code);
+  public abstract Builder id(Short id);
 
   public abstract Builder name(String name);
 
