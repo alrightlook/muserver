@@ -5,11 +5,13 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelId;
 import io.netty.channel.SimpleChannelInboundHandler;
+import jdk.nashorn.internal.objects.Global;
 import muserver.common.Globals;
 import muserver.common.messages.PBMSG_HEAD;
 import muserver.common.utils.HexUtils;
 import muserver.common.utils.NettyUtils;
 import muserver.joinserver.messages.SDHP_IDPASS;
+import muserver.joinserver.messages.SDHP_IDPASSRESULT;
 import muserver.joinserver.messages.SDHP_RESULT;
 import muserver.joinserver.messages.SDHP_SERVERINFO;
 import org.apache.logging.log4j.LogManager;
@@ -148,8 +150,8 @@ public class TcpJoinServerHandler extends SimpleChannelInboundHandler<ByteBuf> {
    break;
 
    default:
-    logger.warn("Unsupported header code: {}", buffer[2]);
-    //throw new UnsupportedOperationException(String.format("Unsupported header code: %s", buffer[2]));
+    logger.warn("Unsupported header id: {}", buffer[2]);
+    //throw new UnsupportedOperationException(String.format("Unsupported header id: %s", buffer[2]));
   }
  }
 
@@ -163,6 +165,20 @@ public class TcpJoinServerHandler extends SimpleChannelInboundHandler<ByteBuf> {
 
  private void joinIdPassRequest(ChannelHandlerContext ctx, byte[] buffer) throws IOException {
   SDHP_IDPASS idPass = SDHP_IDPASS.deserialize(new ByteArrayInputStream(buffer));
-  ctx.close();
+
+  if (idPass.id() == null || idPass.id().isEmpty()) {
+//   spResult.h.size     = sizeof( spResult );
+//   spResult.h.c		= PMHC_BYTE;
+//   spResult.h.headcode = 0x01;
+//   spResult.result     = result;
+//   spResult.Number     = lpMsgIdPass->Number;
+//   spResult.UserNumber = UserNumber;
+//   spResult.DBNumber   = DBNumber;
+
+//   SDHP_IDPASSRESULT.create(
+//       PBMSG_HEAD.create(Globals.PMHC_BYTE, (byte) 0, (byte) 1),
+//
+//   );
+  }
  }
 }
