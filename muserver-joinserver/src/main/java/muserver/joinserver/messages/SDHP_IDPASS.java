@@ -4,6 +4,7 @@ import com.google.auto.value.AutoValue;
 import muserver.common.messages.AbstractPacket;
 import muserver.common.Globals;
 import muserver.common.messages.PBMSG_HEAD;
+import muserver.common.utils.BuxConvert;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -29,12 +30,13 @@ public abstract class SDHP_IDPASS extends AbstractPacket<SDHP_IDPASS> {
   return new AutoValue_SDHP_IDPASS.Builder();
  }
 
- public static SDHP_IDPASS create(PBMSG_HEAD header, String id, String pass, Short number, String ipAddress) {
+ public static SDHP_IDPASS create(PBMSG_HEAD header, Byte type, Short number, String id, String pass, String ipAddress) {
   return builder()
       .header(header)
+      .type(type)
+      .number(number)
       .id(id)
       .pass(pass)
-      .number(number)
       .ipAddress(ipAddress)
       .build();
  }
@@ -44,29 +46,33 @@ public abstract class SDHP_IDPASS extends AbstractPacket<SDHP_IDPASS> {
 
   return SDHP_IDPASS.create(
       header,
-      new String(readBytes(stream, Globals.MAX_IDSTRING)),
-      new String(readBytes(stream, Globals.MAX_IDSTRING)),
+      readByte(stream),
       readShortLE(stream),
+      new String(readBytes(stream, Globals.MAX_IDSTRING + 1)),
+      new String(readBytes(stream, Globals.MAX_IDSTRING + 1)),
       new String(readBytes(stream, Globals.MAX_IPADDRESS))
   );
  }
 
  public abstract PBMSG_HEAD header();
 
+ public abstract Byte type();
+
+ public abstract Short number();
+
  public abstract String id();
 
  public abstract String pass();
-
- public abstract Short number();
 
  public abstract String ipAddress();
 
  @Override
  public byte[] serialize(ByteArrayOutputStream stream) throws IOException {
   header().serialize(stream);
+  writeByte(stream, type());
+  writeShortLE(stream, number());
   writeString(stream, id(), Globals.MAX_IDSTRING);
   writeString(stream, pass(), Globals.MAX_IDSTRING);
-  writeShortLE(stream, number());
   writeString(stream, ipAddress(), Globals.MAX_IPADDRESS);
   return stream.toByteArray();
  }
@@ -82,6 +88,8 @@ public abstract class SDHP_IDPASS extends AbstractPacket<SDHP_IDPASS> {
   public abstract Builder number(Short number);
 
   public abstract Builder ipAddress(String ipAddress);
+
+  public abstract Builder type(Byte type);
 
   public abstract SDHP_IDPASS build();
  }

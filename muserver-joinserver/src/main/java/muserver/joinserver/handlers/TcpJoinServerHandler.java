@@ -7,6 +7,7 @@ import io.netty.channel.ChannelId;
 import io.netty.channel.SimpleChannelInboundHandler;
 import muserver.common.Globals;
 import muserver.common.messages.PBMSG_HEAD;
+import muserver.common.utils.HexUtils;
 import muserver.common.utils.NettyUtils;
 import muserver.joinserver.messages.SDHP_IDPASS;
 import muserver.joinserver.messages.SDHP_RESULT;
@@ -29,7 +30,7 @@ public class TcpJoinServerHandler extends SimpleChannelInboundHandler<ByteBuf> {
   InetSocketAddress remoteAddress = (InetSocketAddress) ctx.channel().remoteAddress();
 
   if (remoteAddress != null) {
-   logger.info(String.format("Connection with: {} is accepted", remoteAddress.getAddress().getHostName()));
+   logger.info("Connection with: {} is accepted", remoteAddress.getAddress().getHostName());
   }
 
   clients.put(ctx.channel().id(), ctx);
@@ -40,7 +41,7 @@ public class TcpJoinServerHandler extends SimpleChannelInboundHandler<ByteBuf> {
   InetSocketAddress remoteAddress = (InetSocketAddress) ctx.channel().remoteAddress();
 
   if (remoteAddress != null) {
-   logger.info(String.format("Connection with: {} is interrupted", remoteAddress.getAddress().getHostName()));
+   logger.info("Connection with: {} is interrupted", remoteAddress.getAddress().getHostName());
   }
 
   clients.remove(ctx.channel().id());
@@ -60,7 +61,7 @@ public class TcpJoinServerHandler extends SimpleChannelInboundHandler<ByteBuf> {
  @Override
  protected void channelRead0(ChannelHandlerContext ctx, ByteBuf byteBuf) throws Exception {
   if (byteBuf.readableBytes() < 4) {
-   logger.warn(String.format("Invalid buffer length: %d", byteBuf.readableBytes()));
+   logger.warn("Invalid buffer length: {}", byteBuf.readableBytes());
    NettyUtils.closeConnection(ctx);
   }
 
@@ -69,23 +70,30 @@ public class TcpJoinServerHandler extends SimpleChannelInboundHandler<ByteBuf> {
   byteBuf.getBytes(0, buffer);
 
   if (buffer[0] != Globals.PMHC_BYTE) {
-   logger.warn(String.format("Invalid protocol type: %d", buffer[0]));
+   logger.warn("Invalid protocol type: {}", buffer[0]);
    NettyUtils.closeConnection(ctx);
   }
 
+  logger.trace(HexUtils.toString(buffer));
+
   switch (buffer[2]) {
    case 0: {
-    handleJoinInfo(ctx, buffer);
+    getJoinInfo(ctx, buffer);
    }
    break;
 
    case 1: {
-    handleJoinIdPassRequest(ctx, buffer);
+    // 0xC1 0x2C 0x1
+    // 0x0
+    // 0x28 0x23
+    // 0x74 0x65 0x73 0x74 0x0 0x0 0x0 0x0 0x0 0x0 0x0
+    // 0x74 0x65 0x73 0x74 0x0 0x0 0x0 0x0 0x0 0x0 0x0
+    // 0x31 0x39 0x32 0x2E 0x31 0x36 0x38 0x2E 0x32 0x2E 0x36 0x0 0x0 0x0 0x0 0x0
+    joinIdPassRequest(ctx, buffer);
    }
    break;
 
    case 2: {
-
    }
    break;
 
@@ -99,17 +107,12 @@ public class TcpJoinServerHandler extends SimpleChannelInboundHandler<ByteBuf> {
    }
    break;
 
-   case 0x10: {
+   case 5: {
 
    }
    break;
 
-   case 0x11: {
-
-   }
-   break;
-
-   case 0x20: {
+   case 6: {
 
    }
    break;
@@ -119,20 +122,46 @@ public class TcpJoinServerHandler extends SimpleChannelInboundHandler<ByteBuf> {
    }
    break;
 
+   case 0x31: {
+
+   }
+   break;
+
+   case (byte) 0xA0: {
+
+   }
+   break;
+
+   case (byte) 0xA1: {
+
+   }
+   break;
+
+   case (byte) 0xA2: {
+
+   }
+   break;
+
+   case (byte) 0xA3: {
+
+   }
+   break;
+
    default:
-    throw new UnsupportedOperationException(String.format("Unsupported header code: %s", buffer[2]));
+    logger.warn("Unsupported header code: {}", buffer[2]);
+    //throw new UnsupportedOperationException(String.format("Unsupported header code: %s", buffer[2]));
   }
  }
 
 
- private void handleJoinInfo(ChannelHandlerContext ctx, byte[] buffer) throws IOException {
+ private void getJoinInfo(ChannelHandlerContext ctx, byte[] buffer) throws IOException {
   SDHP_SERVERINFO serverInfo = SDHP_SERVERINFO.deserialize(new ByteArrayInputStream(buffer));
   logger.info("Server info -> name: {} port: {} type: {}", serverInfo.serverName(), serverInfo.port(), serverInfo.type());
   SDHP_RESULT result = SDHP_RESULT.create(PBMSG_HEAD.create(Globals.PMHC_BYTE, (byte) SDHP_RESULT.sizeOf(), (byte) 0), (byte) 1, 0);
   ctx.writeAndFlush(Unpooled.wrappedBuffer(result.serialize(new ByteArrayOutputStream())));
  }
 
- private void handleJoinIdPassRequest(ChannelHandlerContext ctx, byte[] buffer) throws IOException {
+ private void joinIdPassRequest(ChannelHandlerContext ctx, byte[] buffer) throws IOException {
   SDHP_IDPASS idPass = SDHP_IDPASS.deserialize(new ByteArrayInputStream(buffer));
   ctx.close();
  }
