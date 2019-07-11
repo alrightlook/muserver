@@ -37,7 +37,7 @@ public class TcpConnectServerHandler extends SimpleChannelInboundHandler<ByteBuf
   InetSocketAddress remoteAddress = (InetSocketAddress) ctx.channel().remoteAddress();
 
   if (remoteAddress != null) {
-   logger.info(String.format("Connection with: {} is accepted", remoteAddress.getAddress().getHostName()));
+   logger.info("Connection with: {} is accepted", remoteAddress.getAddress().getHostName());
   }
 
   connectServerContext.clients().put(ctx.channel().id(), ctx);
@@ -54,7 +54,7 @@ public class TcpConnectServerHandler extends SimpleChannelInboundHandler<ByteBuf
   InetSocketAddress remoteAddress = (InetSocketAddress) ctx.channel().remoteAddress();
 
   if (remoteAddress != null) {
-   logger.info(String.format("Connection with: {} is interrupted", remoteAddress.getAddress().getHostName()));
+   logger.info("Connection with: {} is interrupted", remoteAddress.getAddress().getHostName());
   }
 
   connectServerContext.clients().remove(ctx.channel().id());
@@ -74,7 +74,7 @@ public class TcpConnectServerHandler extends SimpleChannelInboundHandler<ByteBuf
  @Override
  protected void channelRead0(ChannelHandlerContext ctx, ByteBuf byteBuf) throws Exception {
   if (byteBuf.readableBytes() < 4) {
-   logger.warn(String.format("Invalid buffer length: %d", byteBuf.readableBytes()));
+   logger.warn("Invalid buffer length: {}", byteBuf.readableBytes());
    NettyUtils.closeConnection(ctx);
   }
 
@@ -83,7 +83,7 @@ public class TcpConnectServerHandler extends SimpleChannelInboundHandler<ByteBuf
   byteBuf.getBytes(0, buffer);
 
   if (buffer[0] != Globals.PMHC_BYTE) {
-   logger.warn(String.format("Invalid protocol type: %d", buffer[0]));
+   logger.warn("Invalid protocol type: {}", buffer[0]);
    NettyUtils.closeConnection(ctx);
   }
 
