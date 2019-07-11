@@ -10,14 +10,14 @@
   "udpPort": 55557,
   "servers": [
    {
-    "code": 0,
+    "id": 0,
     "name": "GameServer",
     "ip": "192.168.1.139",
     "port": 55901,
     "type": "visible"
    },
    {
-    "code": 19,
+    "id": 19,
     "name": "GameServerCS",
     "ip": "192.168.1.139",
     "port": 55919,
