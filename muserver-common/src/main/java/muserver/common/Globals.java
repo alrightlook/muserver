@@ -7,7 +7,7 @@ public class Globals {
  public static final int MAX_IDSTRING = 10;
  public static final int MAX_ITEMNAME = 21;
  public static final int MAX_ANSWERSTR = 30;
- public static final int MAX_IPADDRESS = 17;
+ public static final int MAX_IPADDRESS = 16;
  public static final int MAX_SERVERNAME = 20;
  public static final int MAX_QUESTIONSTR = 30;
  public static final int MAX_GUILDNOTICE = 60;

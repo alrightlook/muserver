@@ -12,7 +12,7 @@ public class NettyUtils {
     public static void closeConnection(ChannelHandlerContext ctx) {
         InetSocketAddress remoteAddress = (InetSocketAddress) ctx.channel().remoteAddress();
         if (remoteAddress != null) {
-            logger.warn(String.format("Hacking attempt from: %s", remoteAddress.getAddress().getHostName()));
+            logger.warn("Hacking attempt from: {}", remoteAddress.getAddress().getHostName());
             ctx.close();
         }
     }
