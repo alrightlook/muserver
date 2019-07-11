@@ -10,11 +10,9 @@ import muserver.common.types.AppenderType;
 import muserver.connectserver.contexts.ConnectServerContext;
 import muserver.connectserver.exceptions.ConnectServerException;
 import muserver.connectserver.intializers.TcpConnectServerInitializer;
-import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.nio.NioDatagramChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import muserver.common.utils.LoggerUtils;
 import org.apache.commons.cli.CommandLine;
@@ -87,7 +85,7 @@ public class ConnectServer implements IServer {
 
   Map<Short, ServerConfigs> serversConfigsMap = new HashMap<>();
 
-  for (Map.Entry<Short, List<ServerConfigs>> entry : commonConfigs.connectServer().serversConfigs().stream().collect(Collectors.groupingBy(x -> x.code())).entrySet()) {
+  for (Map.Entry<Short, List<ServerConfigs>> entry : commonConfigs.connectServer().serversConfigs().stream().collect(Collectors.groupingBy(x -> x.id())).entrySet()) {
    serversConfigsMap.put(entry.getKey(), entry.getValue().get(0));
   }
 

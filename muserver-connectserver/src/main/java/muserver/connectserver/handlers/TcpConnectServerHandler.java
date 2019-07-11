@@ -97,7 +97,7 @@ public class TcpConnectServerHandler extends SimpleChannelInboundHandler<ByteBuf
 
       if (serverConfigs == null) {
        NettyUtils.closeConnection(ctx);
-       throw new ConnectServerException(String.format("Server code: %d mismatch configuration", serverInfoRequest.serverCode()));
+       throw new ConnectServerException(String.format("Server id: %d mismatch configuration", serverInfoRequest.serverCode()));
       }
 
       PMSG_ANS_SERVER_INFO serverConnection = PMSG_ANS_SERVER_INFO.create(
@@ -118,7 +118,7 @@ public class TcpConnectServerHandler extends SimpleChannelInboundHandler<ByteBuf
       for (ServerConfigs serverConfigs : this.connectServerContext.serversConfigsMap().values()) {
        if (serverConfigs.type() == ServerType.VISIBLE) {
         //todo: Request players count from GS
-        servers.add(PMSG_SERVER.create(serverConfigs.code(), (byte) 0, (byte) 0xCC));
+        servers.add(PMSG_SERVER.create(serverConfigs.id(), (byte) 0, (byte) 0xCC));
        }
       }
 
@@ -135,14 +135,14 @@ public class TcpConnectServerHandler extends SimpleChannelInboundHandler<ByteBuf
      break;
 
      default: {
-      throw new UnsupportedOperationException(String.format("Unsupported sub code: %d", buffer[3]));
+      throw new UnsupportedOperationException(String.format("Unsupported sub id: %d", buffer[3]));
      }
     }
    }
    break;
 
    default: {
-    throw new UnsupportedOperationException(String.format("Unsupported header code: %d", buffer[2]));
+    throw new UnsupportedOperationException(String.format("Unsupported header id: %d", buffer[2]));
    }
   }
  }
