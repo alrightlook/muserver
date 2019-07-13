@@ -7,7 +7,7 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import muserver.common.Globals;
 import muserver.common.messages.PBMSG_HEAD;
 import muserver.common.utils.HexUtils;
-import muserver.common.utils.NettyUtils;
+import muserver.joinserver.common.JoinIdPassRequestResult;
 import muserver.joinserver.contexts.JoinServerContext;
 import muserver.joinserver.exceptions.JoinServerException;
 import muserver.joinserver.messages.SDHP_IDPASS;
@@ -79,62 +79,8 @@ public class TcpJoinServerHandler extends SimpleChannelInboundHandler<ByteBuf> {
    }
    break;
 
-   case 2: {
-   }
-   break;
-
-   case 3: {
-
-   }
-   break;
-
-   case 4: {
-
-   }
-   break;
-
-   case 5: {
-
-   }
-   break;
-
-   case 6: {
-
-   }
-   break;
-
-   case 0x30: {
-
-   }
-   break;
-
-   case 0x31: {
-
-   }
-   break;
-
-   case (byte) 0xA0: {
-
-   }
-   break;
-
-   case (byte) 0xA1: {
-
-   }
-   break;
-
-   case (byte) 0xA2: {
-
-   }
-   break;
-
-   case (byte) 0xA3: {
-
-   }
-   break;
-
    default:
-    throw new JoinServerException(String.format("Unsupported header code: %s", buffer[2]));
+    //throw new JoinServerException(String.format("Unsupported header code: %s", buffer[2]));
   }
  }
 
@@ -157,7 +103,7 @@ public class TcpJoinServerHandler extends SimpleChannelInboundHandler<ByteBuf> {
 
   SDHP_IDPASSRESULT idPassResult = SDHP_IDPASSRESULT.create(
       PBMSG_HEAD.create(Globals.PMHC_BYTE, (byte) SDHP_IDPASSRESULT.sizeOf(), (byte) 1),
-      (byte) 2,
+      JoinIdPassRequestResult.UNKNOWN3,
       idPass.number(),
       idPass.id(),
       userNumber,
@@ -165,6 +111,8 @@ public class TcpJoinServerHandler extends SimpleChannelInboundHandler<ByteBuf> {
       joominNumber
   );
 
-  ctx.writeAndFlush(Unpooled.wrappedBuffer(idPassResult.serialize(new ByteArrayOutputStream())));
+  byte[] packet = idPassResult.serialize(new ByteArrayOutputStream());
+
+  ctx.writeAndFlush(Unpooled.wrappedBuffer(packet));
  }
 }
