@@ -17,5 +17,23 @@
    <artifactId>database-dialect</artifactId>
    <version>${project.parent.version}</version>
   </dependency>
+
+  <dependency>
+   <groupId>muserver</groupId>
+   <artifactId>muserver-common</artifactId>
+   <version>${project.parent.version}</version>
+  </dependency>
+
+  <dependency>
+   <groupId>muserver</groupId>
+   <artifactId>muserver-connectserver</artifactId>
+   <version>${project.parent.version}</version>
+  </dependency>
+
+  <dependency>
+   <groupId>muserver</groupId>
+   <artifactId>muserver-joinserver</artifactId>
+   <version>${project.parent.version}</version>
+  </dependency>
  </dependencies>
 </project>
