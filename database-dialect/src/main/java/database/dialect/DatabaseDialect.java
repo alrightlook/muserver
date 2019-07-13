@@ -1,9 +1,9 @@
 package database.dialect;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 
-public interface DatabaseDialect extends DatabaseConnectionProvider {
- PreparedStatement createPreparedStatement(Connection connection, String query) throws SQLException;
+public interface DatabaseDialect extends AutoCloseable {
+ Statement createStatement() throws SQLException;
 }
