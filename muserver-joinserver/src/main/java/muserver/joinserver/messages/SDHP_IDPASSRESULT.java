@@ -28,7 +28,7 @@ typedef struct
 @AutoValue
 public abstract class SDHP_IDPASSRESULT extends AbstractPacket<SDHP_IDPASSRESULT> {
  public static int sizeOf() {
-  return PBMSG_HEAD.sizeOf() + 34;
+  return PBMSG_HEAD.sizeOf() + 39;
  }
 
  public static Builder builder() {
@@ -79,10 +79,10 @@ public abstract class SDHP_IDPASSRESULT extends AbstractPacket<SDHP_IDPASSRESULT
  public byte[] serialize(ByteArrayOutputStream stream) throws IOException {
   header().serialize(stream);
   writeByte(stream, result());
-  writeShortLE(stream, number());
+  writeShortBE(stream, number());
   writeString(stream, id(), Globals.MAX_IDSTRING);
-  writeIntegerLE(stream, userNumber());
-  writeIntegerLE(stream, dbNumber());
+  writeIntegerBE(stream, userNumber());
+  writeIntegerBE(stream, dbNumber());
   writeString(stream, joominNumber(), Globals.MAX_JOOMINNUMBERSTR);
   return stream.toByteArray();
  }

@@ -151,17 +151,18 @@ public class TcpJoinServerHandler extends SimpleChannelInboundHandler<ByteBuf> {
  private void joinIdPassRequest(ChannelHandlerContext ctx, byte[] buffer) throws IOException {
   SDHP_IDPASS idPass = SDHP_IDPASS.deserialize(new ByteArrayInputStream(buffer));
 
-  Integer userNumber = 0, dbNumber = 0;
+  Integer userNumber = -1, dbNumber = 0;
+  String joominNumber = "";
 
   if (idPass.id() == null || idPass.id().isEmpty()) {
    SDHP_IDPASSRESULT idPassResult =  SDHP_IDPASSRESULT.create(
-       PBMSG_HEAD.create(Globals.PMHC_BYTE, (byte) PBMSG_HEAD.sizeOf(), (byte) 0),
+       PBMSG_HEAD.create(Globals.PMHC_BYTE, (byte) SDHP_IDPASSRESULT.sizeOf(), (byte) 1),
        (byte) 2,
        idPass.number(),
        idPass.id(),
        userNumber,
        dbNumber,
-       ""
+       joominNumber
    );
 
    ctx.writeAndFlush(Unpooled.wrappedBuffer(idPassResult.serialize(new ByteArrayOutputStream())));
@@ -169,13 +170,13 @@ public class TcpJoinServerHandler extends SimpleChannelInboundHandler<ByteBuf> {
 
   if (idPass.id().equals("test")) {
    SDHP_IDPASSRESULT idPassResult = SDHP_IDPASSRESULT.create(
-       PBMSG_HEAD.create(Globals.PMHC_BYTE, (byte) PBMSG_HEAD.sizeOf(), (byte) 0),
+       PBMSG_HEAD.create(Globals.PMHC_BYTE, (byte) SDHP_IDPASSRESULT.sizeOf(), (byte) 1),
        (byte) 2,
        idPass.number(),
        idPass.id(),
        userNumber,
        dbNumber,
-       ""
+       joominNumber
    );
 
    ctx.writeAndFlush(Unpooled.wrappedBuffer(idPassResult.serialize(new ByteArrayOutputStream())));

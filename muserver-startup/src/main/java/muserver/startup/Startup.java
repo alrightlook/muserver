@@ -12,6 +12,7 @@ import org.apache.commons.cli.Options;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.File;
 import java.util.concurrent.CompletableFuture;
 
 public class Startup {
@@ -32,7 +33,7 @@ public class Startup {
 
   String path = cl.getOptionValue("p");
   
-  IServer joinServer = new JoinServer(path), connectServer = new ConnectServer();
+  IServer joinServer = new JoinServer(), connectServer = new ConnectServer();
 
   Runtime.getRuntime().addShutdownHook(new Thread(() -> {
    try {
@@ -48,15 +49,17 @@ public class Startup {
    }
   }));
 
+  File startup = new File(path);
+
   CompletableFuture.runAsync(() -> {
    try {
-    connectServer.startup();
+    connectServer.startup(startup);
    } catch (ServerException e) {
     logger.error(e.getMessage(), e);
    }
   }).thenRun(() -> {
    try {
-    joinServer.startup();
+    joinServer.startup(startup);
    } catch (ServerException e) {
     logger.error(e.getMessage(), e);
    }
