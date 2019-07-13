@@ -12,7 +12,7 @@ public class Globals {
  public static final int MAX_QUESTIONSTR = 30;
  public static final int MAX_GUILDNOTICE = 60;
  public static final int MAX_DBINVENTORY = 532;
- public static final int MAX_JOOMINNUMBERSTR = 13;
+ public static final int MAX_JOOMINNUMBERSTR = 18;
  public static final int MAX_GUILDNAMESTRING = 8;
  public static final int MAX_WAREHOUSEDBSIZE = 840;
  public static final byte PMHC_BYTE = (byte) 0xC1;
