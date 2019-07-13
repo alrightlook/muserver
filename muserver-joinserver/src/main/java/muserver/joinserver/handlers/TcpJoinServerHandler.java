@@ -3,13 +3,12 @@ package muserver.joinserver.handlers;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelId;
 import io.netty.channel.SimpleChannelInboundHandler;
-import jdk.nashorn.internal.objects.Global;
 import muserver.common.Globals;
 import muserver.common.messages.PBMSG_HEAD;
 import muserver.common.utils.HexUtils;
 import muserver.common.utils.NettyUtils;
+import muserver.joinserver.contexts.JoinServerContext;
 import muserver.joinserver.messages.SDHP_IDPASS;
 import muserver.joinserver.messages.SDHP_IDPASSRESULT;
 import muserver.joinserver.messages.SDHP_RESULT;
@@ -20,33 +19,25 @@ import org.apache.logging.log4j.Logger;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class TcpJoinServerHandler extends SimpleChannelInboundHandler<ByteBuf> {
  private final static Logger logger = LogManager.getLogger(TcpJoinServerHandler.class);
- private final static ConcurrentHashMap<ChannelId, ChannelHandlerContext> clients = new ConcurrentHashMap<>();
+
+ public TcpJoinServerHandler(JoinServerContext joinServerContext) {
+ }
 
  @Override
  public void channelActive(ChannelHandlerContext ctx) throws Exception {
-  InetSocketAddress remoteAddress = (InetSocketAddress) ctx.channel().remoteAddress();
-
-  if (remoteAddress != null) {
-   logger.info("Connection with: {} is accepted", remoteAddress.getAddress().getHostName());
+  if (ctx.channel().remoteAddress() != null) {
+   logger.info("Connection accepted: {}", ctx.channel().remoteAddress().toString());
   }
-
-  clients.put(ctx.channel().id(), ctx);
  }
 
  @Override
  public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-  InetSocketAddress remoteAddress = (InetSocketAddress) ctx.channel().remoteAddress();
-
-  if (remoteAddress != null) {
-   logger.info("Connection with: {} is interrupted", remoteAddress.getAddress().getHostName());
+  if (ctx.channel().remoteAddress() != null) {
+   logger.info("Connection interrupted: {}", ctx.channel().remoteAddress().toString());
   }
-
-  clients.remove(ctx.channel().id());
  }
 
  @Override
@@ -85,12 +76,6 @@ public class TcpJoinServerHandler extends SimpleChannelInboundHandler<ByteBuf> {
    break;
 
    case 1: {
-    // 0xC1 0x2C 0x1
-    // 0x0
-    // 0x28 0x23
-    // 0x74 0x65 0x73 0x74 0x0 0x0 0x0 0x0 0x0 0x0 0x0
-    // 0x74 0x65 0x73 0x74 0x0 0x0 0x0 0x0 0x0 0x0 0x0
-    // 0x31 0x39 0x32 0x2E 0x31 0x36 0x38 0x2E 0x32 0x2E 0x36 0x0 0x0 0x0 0x0 0x0
     joinIdPassRequest(ctx, buffer);
    }
    break;
@@ -166,19 +151,34 @@ public class TcpJoinServerHandler extends SimpleChannelInboundHandler<ByteBuf> {
  private void joinIdPassRequest(ChannelHandlerContext ctx, byte[] buffer) throws IOException {
   SDHP_IDPASS idPass = SDHP_IDPASS.deserialize(new ByteArrayInputStream(buffer));
 
-  if (idPass.id() == null || idPass.id().isEmpty()) {
-//   spResult.h.size     = sizeof( spResult );
-//   spResult.h.c		= PMHC_BYTE;
-//   spResult.h.headcode = 0x01;
-//   spResult.result     = result;
-//   spResult.Number     = lpMsgIdPass->Number;
-//   spResult.UserNumber = UserNumber;
-//   spResult.DBNumber   = DBNumber;
+  Integer userNumber = 0, dbNumber = 0;
 
-//   SDHP_IDPASSRESULT.create(
-//       PBMSG_HEAD.create(Globals.PMHC_BYTE, (byte) 0, (byte) 1),
-//
-//   );
+  if (idPass.id() == null || idPass.id().isEmpty()) {
+   SDHP_IDPASSRESULT idPassResult =  SDHP_IDPASSRESULT.create(
+       PBMSG_HEAD.create(Globals.PMHC_BYTE, (byte) PBMSG_HEAD.sizeOf(), (byte) 0),
+       (byte) 2,
+       idPass.number(),
+       idPass.id(),
+       userNumber,
+       dbNumber,
+       ""
+   );
+
+   ctx.writeAndFlush(Unpooled.wrappedBuffer(idPassResult.serialize(new ByteArrayOutputStream())));
+  }
+
+  if (idPass.id().equals("test")) {
+   SDHP_IDPASSRESULT idPassResult = SDHP_IDPASSRESULT.create(
+       PBMSG_HEAD.create(Globals.PMHC_BYTE, (byte) PBMSG_HEAD.sizeOf(), (byte) 0),
+       (byte) 2,
+       idPass.number(),
+       idPass.id(),
+       userNumber,
+       dbNumber,
+       ""
+   );
+
+   ctx.writeAndFlush(Unpooled.wrappedBuffer(idPassResult.serialize(new ByteArrayOutputStream())));
   }
  }
 }

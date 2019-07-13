@@ -1,18 +1,17 @@
 package muserver.joinserver.contexts;
 
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelId;
+import database.dialect.DatabaseDialect;
 
-import java.util.concurrent.ConcurrentHashMap;
+import java.sql.Connection;
 
 public class JoinServerContext {
- private final ConcurrentHashMap<ChannelId, ChannelHandlerContext> clients;
+ private final DatabaseDialect dialect;
 
- public JoinServerContext() {
-  clients = new ConcurrentHashMap<>();
+ public JoinServerContext(DatabaseDialect dialect) {
+  this.dialect = dialect;
  }
 
- public ConcurrentHashMap<ChannelId, ChannelHandlerContext> clients() {
-  return clients;
+ public DatabaseDialect dialect() {
+  return dialect;
  }
 }

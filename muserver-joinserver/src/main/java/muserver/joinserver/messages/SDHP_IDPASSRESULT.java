@@ -27,14 +27,19 @@ typedef struct
 
 @AutoValue
 public abstract class SDHP_IDPASSRESULT extends AbstractPacket<SDHP_IDPASSRESULT> {
+ public static int sizeOf() {
+  return PBMSG_HEAD.sizeOf() + 34;
+ }
+
  public static Builder builder() {
   return new AutoValue_SDHP_IDPASSRESULT.Builder();
  }
 
- public static SDHP_IDPASSRESULT create(PBMSG_HEAD header, Byte result, String id, Integer userNumber, Integer dbNumber, String joominNumber) {
+ public static SDHP_IDPASSRESULT create(PBMSG_HEAD header, Byte result, Short number, String id, Integer userNumber, Integer dbNumber, String joominNumber) {
   return builder()
       .header(header)
       .result(result)
+      .number(number)
       .id(id)
       .userNumber(userNumber)
       .dbNumber(dbNumber)
@@ -48,6 +53,7 @@ public abstract class SDHP_IDPASSRESULT extends AbstractPacket<SDHP_IDPASSRESULT
   return SDHP_IDPASSRESULT.create(
       header,
       readByte(stream),
+      readShortLE(stream),
       new String(readBytes(stream, Globals.MAX_IDSTRING)),
       readIntegerBE(stream),
       readIntegerBE(stream),
@@ -58,6 +64,8 @@ public abstract class SDHP_IDPASSRESULT extends AbstractPacket<SDHP_IDPASSRESULT
  public abstract PBMSG_HEAD header();
 
  public abstract Byte result();
+
+ public abstract Short number();
 
  public abstract String id();
 
@@ -71,6 +79,7 @@ public abstract class SDHP_IDPASSRESULT extends AbstractPacket<SDHP_IDPASSRESULT
  public byte[] serialize(ByteArrayOutputStream stream) throws IOException {
   header().serialize(stream);
   writeByte(stream, result());
+  writeShortLE(stream, number());
   writeString(stream, id(), Globals.MAX_IDSTRING);
   writeIntegerLE(stream, userNumber());
   writeIntegerLE(stream, dbNumber());
@@ -83,6 +92,8 @@ public abstract class SDHP_IDPASSRESULT extends AbstractPacket<SDHP_IDPASSRESULT
   public abstract Builder header(PBMSG_HEAD header);
 
   public abstract Builder result(Byte result);
+
+  public abstract Builder number(Short number);
 
   public abstract Builder id(String id);
 
