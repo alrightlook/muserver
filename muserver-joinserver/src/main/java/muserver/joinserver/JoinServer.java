@@ -56,7 +56,7 @@ public class JoinServer implements IServer {
   CommandLine cl = parser.parse(cliOptions, args);
 
   if (!cl.hasOption("p")) {
-   throw new JoinServerException("Arg --path is required");
+   throw new JoinServerException("--path argument to the startup.json file is required for starting join service");
   }
 
   String path = cl.getOptionValue("p");
@@ -85,8 +85,8 @@ public class JoinServer implements IServer {
    TcpJoinServerInitializer tcpJoinServerInitializer = new TcpJoinServerInitializer(new JoinServerContext(dialect));
 
    logger.info(String.format("Start join server tcp channel on port %d", commonConfigs.joinServer().tcpPort()));
-
    new ServerBootstrap().group(tcpParentLoopGroup, tcpChildLoopGroup).channel(NioServerSocketChannel.class).childHandler(tcpJoinServerInitializer).bind(commonConfigs.joinServer().tcpPort());
+   logger.info(String.format("Join server is running and listens for connections"));
   } catch (Exception e) {
    throw new JoinServerException(e.getMessage(), e);
   }

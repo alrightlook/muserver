@@ -9,6 +9,7 @@ import muserver.common.messages.PBMSG_HEAD;
 import muserver.common.utils.HexUtils;
 import muserver.common.utils.NettyUtils;
 import muserver.joinserver.contexts.JoinServerContext;
+import muserver.joinserver.exceptions.JoinServerException;
 import muserver.joinserver.messages.SDHP_IDPASS;
 import muserver.joinserver.messages.SDHP_IDPASSRESULT;
 import muserver.joinserver.messages.SDHP_RESULT;
@@ -54,8 +55,7 @@ public class TcpJoinServerHandler extends SimpleChannelInboundHandler<ByteBuf> {
  @Override
  protected void channelRead0(ChannelHandlerContext ctx, ByteBuf byteBuf) throws Exception {
   if (byteBuf.readableBytes() < 4) {
-   logger.warn("Invalid buffer length: {}", byteBuf.readableBytes());
-   NettyUtils.closeConnection(ctx);
+   throw new JoinServerException(String.format("Invalid buffer length: %d", byteBuf.readableBytes()));
   }
 
   byte[] buffer = new byte[byteBuf.readableBytes()];
@@ -63,8 +63,7 @@ public class TcpJoinServerHandler extends SimpleChannelInboundHandler<ByteBuf> {
   byteBuf.getBytes(0, buffer);
 
   if (buffer[0] != Globals.PMHC_BYTE) {
-   logger.warn("Invalid protocol type: {}", buffer[0]);
-   NettyUtils.closeConnection(ctx);
+   throw new JoinServerException(String.format("Invalid protocol type: %d", buffer[0]));
   }
 
   logger.trace(HexUtils.toString(buffer));
@@ -135,8 +134,7 @@ public class TcpJoinServerHandler extends SimpleChannelInboundHandler<ByteBuf> {
    break;
 
    default:
-    logger.warn("Unsupported header id: {}", buffer[2]);
-    //throw new UnsupportedOperationException(String.format("Unsupported header id: %s", buffer[2]));
+    throw new JoinServerException(String.format("Unsupported header code: %s", buffer[2]));
   }
  }
 
@@ -151,35 +149,22 @@ public class TcpJoinServerHandler extends SimpleChannelInboundHandler<ByteBuf> {
  private void joinIdPassRequest(ChannelHandlerContext ctx, byte[] buffer) throws IOException {
   SDHP_IDPASS idPass = SDHP_IDPASS.deserialize(new ByteArrayInputStream(buffer));
 
-  Integer userNumber = -1, dbNumber = 0;
   String joominNumber = "";
+  Integer userNumber = -1, dbNumber = 0;
 
-  if (idPass.id() == null || idPass.id().isEmpty()) {
-   SDHP_IDPASSRESULT idPassResult =  SDHP_IDPASSRESULT.create(
-       PBMSG_HEAD.create(Globals.PMHC_BYTE, (byte) SDHP_IDPASSRESULT.sizeOf(), (byte) 1),
-       (byte) 2,
-       idPass.number(),
-       idPass.id(),
-       userNumber,
-       dbNumber,
-       joominNumber
-   );
+  //byte result
+  //2: Incorrect password
 
-   ctx.writeAndFlush(Unpooled.wrappedBuffer(idPassResult.serialize(new ByteArrayOutputStream())));
-  }
+  SDHP_IDPASSRESULT idPassResult = SDHP_IDPASSRESULT.create(
+      PBMSG_HEAD.create(Globals.PMHC_BYTE, (byte) SDHP_IDPASSRESULT.sizeOf(), (byte) 1),
+      (byte) 2,
+      idPass.number(),
+      idPass.id(),
+      userNumber,
+      dbNumber,
+      joominNumber
+  );
 
-  if (idPass.id().equals("test")) {
-   SDHP_IDPASSRESULT idPassResult = SDHP_IDPASSRESULT.create(
-       PBMSG_HEAD.create(Globals.PMHC_BYTE, (byte) SDHP_IDPASSRESULT.sizeOf(), (byte) 1),
-       (byte) 2,
-       idPass.number(),
-       idPass.id(),
-       userNumber,
-       dbNumber,
-       joominNumber
-   );
-
-   ctx.writeAndFlush(Unpooled.wrappedBuffer(idPassResult.serialize(new ByteArrayOutputStream())));
-  }
+  ctx.writeAndFlush(Unpooled.wrappedBuffer(idPassResult.serialize(new ByteArrayOutputStream())));
  }
 }
