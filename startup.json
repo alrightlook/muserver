@@ -2,7 +2,7 @@
  "joinServer": {
   "hostname": "127.0.0.1",
   "tcpPort":  55970,
-  "connectionString": "jdbc:sqlserver://127.0.0.1:1444;instanceName=MSSQLSERVER;databaseName=MuOnline;username=test;password=test"
+  "connectionString": "jdbc:sqlserver://192.168.1.139:1433;instanceName=VM139;databaseName=MuOnline;username=sa;password=test"
  },
  "connectServer": {
   "hostname": "127.0.0.1",
