@@ -23,6 +23,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -33,13 +34,11 @@ import java.util.stream.Collectors;
 
 public class ConnectServer implements IServer {
  private final static Logger logger = LogManager.getLogger(ConnectServer.class);
- private final String path;
- private final ObjectMapper mapper = new ObjectMapper();
- private final EventLoopGroup udpEventLoopGroup, tcpParentLoopGroup, tcpChildLoopGroup;
 
- public ConnectServer(String path) {
-  this.path = path;
-  udpEventLoopGroup = new NioEventLoopGroup(1);
+ private final ObjectMapper mapper = new ObjectMapper();
+ private final EventLoopGroup tcpParentLoopGroup, tcpChildLoopGroup;
+
+ public ConnectServer() {
   tcpChildLoopGroup = new NioEventLoopGroup(1);
   tcpParentLoopGroup = new NioEventLoopGroup(1);
   mapper.enable(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS);
@@ -60,9 +59,9 @@ public class ConnectServer implements IServer {
 
   String path = cl.getOptionValue("p");
 
-  ConnectServer connectServer = new ConnectServer(path);
+  ConnectServer connectServer = new ConnectServer();
 
-  connectServer.startup();
+  connectServer.startup(new File(path));
 
   Runtime.getRuntime().addShutdownHook(new Thread(() -> {
    try {
@@ -73,34 +72,35 @@ public class ConnectServer implements IServer {
   }));
  }
 
- public void startup() throws ConnectServerException {
-  CommonConfigs commonConfigs;
+ public void startup(File file) throws ConnectServerException {
   try {
-   commonConfigs = mapper.readValue(IOUtils.toString(new FileInputStream(path), StandardCharsets.UTF_8), CommonConfigs.class);
+   CommonConfigs commonConfigs = mapper.readValue(IOUtils.toString(new FileInputStream(file), StandardCharsets.UTF_8), CommonConfigs.class);
+
+   LoggerUtils.updateLoggerConfiguration(ConnectServer.class.getCanonicalName(), AppenderType.CONSOLE, "%d{DEFAULT} [%t] %-5level %logger{36} - %msg%n", LoggingLevel.INFO);
+
+   Map<Short, ServerConfigs> serversConfigsMap = new HashMap<>();
+
+   for (Map.Entry<Short, List<ServerConfigs>> entry : commonConfigs.connectServer().serversConfigs().stream().collect(Collectors.groupingBy(x -> x.id())).entrySet()) {
+    serversConfigsMap.put(entry.getKey(), entry.getValue().get(0));
+   }
+
+   ConnectServerContext connectServerContext = new ConnectServerContext(serversConfigsMap);
+
+   TcpConnectServerInitializer tcpConnectServerInitializer = new TcpConnectServerInitializer(connectServerContext);
+
+   logger.info(String.format("Start connect server tcp channel on port %d", commonConfigs.connectServer().tcpPort()));
+
+   new ServerBootstrap().group(tcpParentLoopGroup, tcpChildLoopGroup).channel(NioServerSocketChannel.class).childHandler(tcpConnectServerInitializer).bind(commonConfigs.connectServer().tcpPort());
   } catch (IOException e) {
    throw new ConnectServerException(e.getMessage(), e);
   }
-
-  LoggerUtils.updateLoggerConfiguration(ConnectServer.class.getCanonicalName(), AppenderType.CONSOLE, "%d{DEFAULT} [%t] %-5level %logger{36} - %msg%n", LoggingLevel.INFO);
-
-  Map<Short, ServerConfigs> serversConfigsMap = new HashMap<>();
-
-  for (Map.Entry<Short, List<ServerConfigs>> entry : commonConfigs.connectServer().serversConfigs().stream().collect(Collectors.groupingBy(x -> x.id())).entrySet()) {
-   serversConfigsMap.put(entry.getKey(), entry.getValue().get(0));
-  }
-
-  ConnectServerContext connectServerContext = new ConnectServerContext(serversConfigsMap);
-
-  TcpConnectServerInitializer tcpConnectServerInitializer = new TcpConnectServerInitializer(connectServerContext);
-
-  logger.info(String.format("Start connect server tcp channel on port %d", commonConfigs.connectServer().tcpPort()));
-  new ServerBootstrap().group(tcpParentLoopGroup, tcpChildLoopGroup).channel(NioServerSocketChannel.class).childHandler(tcpConnectServerInitializer).bind(commonConfigs.connectServer().tcpPort());
  }
 
  public void shutdown() {
   logger.info("Shutdown connect server gracefully");
-  udpEventLoopGroup.shutdownGracefully();
+
   tcpChildLoopGroup.shutdownGracefully();
+
   tcpParentLoopGroup.shutdownGracefully();
  }
 }

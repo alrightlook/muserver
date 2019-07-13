@@ -34,10 +34,8 @@ public class TcpConnectServerHandler extends SimpleChannelInboundHandler<ByteBuf
 
  @Override
  public void channelActive(ChannelHandlerContext ctx) throws Exception {
-  InetSocketAddress remoteAddress = (InetSocketAddress) ctx.channel().remoteAddress();
-
-  if (remoteAddress != null) {
-   logger.info("Connection with: {} is accepted", remoteAddress.getAddress().getHostName());
+  if (ctx.channel().remoteAddress() != null) {
+   logger.info("Connection accepted: {}", ctx.channel().remoteAddress().toString());
   }
 
   connectServerContext.clients().put(ctx.channel().id(), ctx);
@@ -51,12 +49,9 @@ public class TcpConnectServerHandler extends SimpleChannelInboundHandler<ByteBuf
 
  @Override
  public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-  InetSocketAddress remoteAddress = (InetSocketAddress) ctx.channel().remoteAddress();
-
-  if (remoteAddress != null) {
-   logger.info("Connection with: {} is interrupted", remoteAddress.getAddress().getHostName());
+  if (ctx.channel().remoteAddress() != null) {
+   logger.info("Connection interrupted: {}", ctx.channel().remoteAddress().toString());
   }
-
   connectServerContext.clients().remove(ctx.channel().id());
  }
 
