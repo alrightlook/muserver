@@ -3,7 +3,6 @@ package muserver.startup;
 import muserver.common.IServer;
 import muserver.common.exceptions.ServerException;
 import muserver.connectserver.ConnectServer;
-import muserver.connectserver.exceptions.ConnectServerException;
 import muserver.joinserver.JoinServer;
 import muserver.joinserver.exceptions.JoinServerException;
 import org.apache.commons.cli.CommandLine;
@@ -33,7 +32,7 @@ public class Startup {
 
   String path = cl.getOptionValue("p");
   
-  IServer joinServer = new JoinServer(path), connectServer = new ConnectServer(path);
+  IServer joinServer = new JoinServer(path), connectServer = new ConnectServer();
 
   Runtime.getRuntime().addShutdownHook(new Thread(() -> {
    try {
