@@ -54,7 +54,7 @@ public class ConnectServer implements IServer {
   CommandLine cl = parser.parse(cliOptions, args);
 
   if (!cl.hasOption("p")) {
-   throw new ConnectServerException("Arg --path is required");
+   throw new ConnectServerException("--path argument to the startup.json file is required for starting connect server");
   }
 
   String path = cl.getOptionValue("p");
@@ -89,8 +89,8 @@ public class ConnectServer implements IServer {
    TcpConnectServerInitializer tcpConnectServerInitializer = new TcpConnectServerInitializer(connectServerContext);
 
    logger.info(String.format("Start connect server tcp channel on port %d", commonConfigs.connectServer().tcpPort()));
-
    new ServerBootstrap().group(tcpParentLoopGroup, tcpChildLoopGroup).channel(NioServerSocketChannel.class).childHandler(tcpConnectServerInitializer).bind(commonConfigs.connectServer().tcpPort());
+   logger.info(String.format("Connect Server is running and listens for connections"));
   } catch (IOException e) {
    throw new ConnectServerException(e.getMessage(), e);
   }

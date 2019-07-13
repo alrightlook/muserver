@@ -10,9 +10,7 @@ import muserver.common.messages.PBMSG_HEAD;
 import muserver.common.messages.PBMSG_HEAD2;
 import muserver.common.messages.PWMSG_HEAD2;
 import muserver.common.types.ServerType;
-import muserver.common.utils.NettyUtils;
 import muserver.connectserver.contexts.ConnectServerContext;
-import muserver.connectserver.exceptions.ConnectServerException;
 import muserver.connectserver.exceptions.TcpConnectServerHandlerException;
 import muserver.connectserver.messages.*;
 import org.apache.logging.log4j.LogManager;
@@ -20,7 +18,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -125,14 +122,14 @@ public class TcpConnectServerHandler extends SimpleChannelInboundHandler<ByteBuf
      break;
 
      default: {
-      throw new UnsupportedOperationException(String.format("Unsupported subcode: %d", buffer[3]));
+      throw new TcpConnectServerHandlerException(String.format("Unsupported subcode: %d", buffer[3]));
      }
     }
    }
    break;
 
    default: {
-    throw new UnsupportedOperationException(String.format("Unsupported header: %d", buffer[2]));
+    throw new TcpConnectServerHandlerException(String.format("Unsupported headcode: %d", buffer[2]));
    }
   }
  }
