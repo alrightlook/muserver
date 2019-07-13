@@ -28,7 +28,7 @@ public class Startup {
   CommandLine cl = parser.parse(cliOptions, args);
 
   if (!cl.hasOption("p")) {
-   throw new JoinServerException("Arg --path is required");
+   throw new JoinServerException("--path argument to the startup.json file is required for starting services");
   }
 
   String path = cl.getOptionValue("p");
