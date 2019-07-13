@@ -13,6 +13,7 @@ import muserver.common.types.ServerType;
 import muserver.common.utils.NettyUtils;
 import muserver.connectserver.contexts.ConnectServerContext;
 import muserver.connectserver.exceptions.ConnectServerException;
+import muserver.connectserver.exceptions.TcpConnectServerHandlerException;
 import muserver.connectserver.messages.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -38,8 +39,6 @@ public class TcpConnectServerHandler extends SimpleChannelInboundHandler<ByteBuf
    logger.info("Connection accepted: {}", ctx.channel().remoteAddress().toString());
   }
 
-  connectServerContext.clients().put(ctx.channel().id(), ctx);
-
   PMSG_HANDSHAKE handshake = PMSG_HANDSHAKE.create(PBMSG_HEAD.create(Globals.PMHC_BYTE, (byte) PMSG_HANDSHAKE.sizeOf(), (byte) 0), (byte) 1);
 
   byte[] buffer = handshake.serialize(new ByteArrayOutputStream());
@@ -52,7 +51,6 @@ public class TcpConnectServerHandler extends SimpleChannelInboundHandler<ByteBuf
   if (ctx.channel().remoteAddress() != null) {
    logger.info("Connection interrupted: {}", ctx.channel().remoteAddress().toString());
   }
-  connectServerContext.clients().remove(ctx.channel().id());
  }
 
  @Override
@@ -69,8 +67,7 @@ public class TcpConnectServerHandler extends SimpleChannelInboundHandler<ByteBuf
  @Override
  protected void channelRead0(ChannelHandlerContext ctx, ByteBuf byteBuf) throws Exception {
   if (byteBuf.readableBytes() < 4) {
-   logger.warn("Invalid buffer length: {}", byteBuf.readableBytes());
-   NettyUtils.closeConnection(ctx);
+   throw new TcpConnectServerHandlerException(String.format("Invalid buffer length: %d", byteBuf.readableBytes()));
   }
 
   byte[] buffer = new byte[byteBuf.readableBytes()];
@@ -78,8 +75,7 @@ public class TcpConnectServerHandler extends SimpleChannelInboundHandler<ByteBuf
   byteBuf.getBytes(0, buffer);
 
   if (buffer[0] != Globals.PMHC_BYTE) {
-   logger.warn("Invalid protocol type: {}", buffer[0]);
-   NettyUtils.closeConnection(ctx);
+   throw new TcpConnectServerHandlerException(String.format("Invalid protocol type: %d", buffer[0]));
   }
 
   switch (buffer[2]) {
@@ -91,8 +87,7 @@ public class TcpConnectServerHandler extends SimpleChannelInboundHandler<ByteBuf
       ServerConfigs serverConfigs = this.connectServerContext.serversConfigsMap().getOrDefault(serverInfoRequest.serverCode().shortValue(), null);
 
       if (serverConfigs == null) {
-       NettyUtils.closeConnection(ctx);
-       throw new ConnectServerException(String.format("Server id: %d mismatch configuration", serverInfoRequest.serverCode()));
+       throw new TcpConnectServerHandlerException( String.format("Server id: %d mismatch configuration", serverInfoRequest.serverCode()));
       }
 
       PMSG_ANS_SERVER_INFO serverConnection = PMSG_ANS_SERVER_INFO.create(
@@ -130,14 +125,14 @@ public class TcpConnectServerHandler extends SimpleChannelInboundHandler<ByteBuf
      break;
 
      default: {
-      throw new UnsupportedOperationException(String.format("Unsupported sub id: %d", buffer[3]));
+      throw new UnsupportedOperationException(String.format("Unsupported subcode: %d", buffer[3]));
      }
     }
    }
    break;
 
    default: {
-    throw new UnsupportedOperationException(String.format("Unsupported header id: %d", buffer[2]));
+    throw new UnsupportedOperationException(String.format("Unsupported header: %d", buffer[2]));
    }
   }
  }
