@@ -11,6 +11,7 @@
  <modules>
   <module>database-dialect</module>
   <module>muserver-connectserver</module>
+  <module>muserver-gameserver</module>
   <module>muserver-joinserver</module>
   <module>muserver-tests</module>
   <module>muserver-common</module>
