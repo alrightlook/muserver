@@ -66,7 +66,7 @@ public class TcpJoinServerHandler extends SimpleChannelInboundHandler<ByteBuf> {
    throw new JoinServerException(String.format("Invalid protocol type: %d", buffer[0]));
   }
 
-  logger.trace(HexUtils.toString(buffer));
+  logger.info(HexUtils.toString(buffer));
 
   switch (buffer[2]) {
    case 0: {

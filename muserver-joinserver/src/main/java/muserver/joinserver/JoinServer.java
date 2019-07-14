@@ -27,18 +27,12 @@ import org.apache.logging.log4j.Logger;
 import java.io.File;
 import java.io.FileInputStream;
 import java.nio.charset.StandardCharsets;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
 
 public class JoinServer implements IServer {
  private final static Logger logger = LogManager.getLogger(JoinServer.class);
- private final static Integer SQL_TEST_CONNECTION_TIMEOUT_SECONDS = 5;
 
  private final ObjectMapper mapper = new ObjectMapper();
  private final EventLoopGroup tcpParentLoopGroup, tcpChildLoopGroup;
- private Connection connection;
 
  public JoinServer() {
   tcpChildLoopGroup = new NioEventLoopGroup(1);
@@ -84,8 +78,14 @@ public class JoinServer implements IServer {
 
    TcpJoinServerInitializer tcpJoinServerInitializer = new TcpJoinServerInitializer(new JoinServerContext(dialect));
 
-   logger.info(String.format("Start join server tcp channel on port %d", commonConfigs.joinServer().tcpPort()));
-   new ServerBootstrap().group(tcpParentLoopGroup, tcpChildLoopGroup).channel(NioServerSocketChannel.class).childHandler(tcpJoinServerInitializer).bind(commonConfigs.joinServer().tcpPort());
+   logger.info(String.format("Start join server tcp channel on port: %d", commonConfigs.joinServer().tcpPort()));
+
+   new ServerBootstrap()
+       .group(tcpParentLoopGroup, tcpChildLoopGroup)
+       .channel(NioServerSocketChannel.class)
+       .childHandler(tcpJoinServerInitializer)
+       .bind(commonConfigs.joinServer().hostname(), commonConfigs.joinServer().tcpPort());
+
    logger.info(String.format("Join server is running and listens for connections"));
   } catch (Exception e) {
    throw new JoinServerException(e.getMessage(), e);
@@ -99,10 +99,6 @@ public class JoinServer implements IServer {
    tcpChildLoopGroup.shutdownGracefully();
 
    tcpParentLoopGroup.shutdownGracefully();
-
-   if (connection != null && !connection.isClosed()) {
-    connection.close();
-   }
   } catch (Exception e) {
    logger.error(e.getMessage(), e);
    throw new JoinServerException(e.getMessage(), e);

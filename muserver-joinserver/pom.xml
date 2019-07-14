@@ -61,11 +61,5 @@
    <artifactId>muserver-common</artifactId>
    <version>${project.parent.version}</version>
   </dependency>
-
-  <dependency>
-   <groupId>muserver</groupId>
-   <artifactId>muserver-utils</artifactId>
-   <version>${project.parent.version}</version>
-  </dependency>
  </dependencies>
 </project>
