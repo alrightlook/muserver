@@ -10,28 +10,35 @@ public abstract class CommonConfigs extends AbstractConfigs {
         return new AutoValue_CommonConfigs.Builder();
     }
 
+    @JsonCreator
+    public static CommonConfigs create(
+        @JsonProperty("joinServer") JoinServerConfigs joinServer,
+        @JsonProperty("connectServer") ConnectServerConfigs connectServer,
+        @JsonProperty("gameServer") GameServerConfigs gameServer
+    ) {
+        return builder()
+            .joinServer(joinServer)
+            .connectServer(connectServer)
+            .gameServer(gameServer)
+            .build();
+    }
+
     @JsonProperty("joinServer")
     public abstract JoinServerConfigs joinServer();
 
     @JsonProperty("connectServer")
     public abstract ConnectServerConfigs connectServer();
 
-    @JsonCreator
-    public static CommonConfigs create(
-            @JsonProperty("joinServer") JoinServerConfigs joinServer,
-            @JsonProperty("connectServer") ConnectServerConfigs connectServer
-    ) {
-        return builder()
-                .joinServer(joinServer)
-                .connectServer(connectServer)
-                .build();
-    }
+    @JsonProperty("gameServer")
+    public abstract GameServerConfigs gameServer();
 
     @AutoValue.Builder
     public abstract static class Builder {
         public abstract Builder joinServer(JoinServerConfigs joinServer);
 
         public abstract Builder connectServer(ConnectServerConfigs connectServer);
+
+        public abstract Builder gameServer(GameServerConfigs gameServer);
 
         public abstract CommonConfigs build();
     }
