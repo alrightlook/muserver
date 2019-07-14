@@ -3,8 +3,10 @@ package muserver.startup;
 import muserver.common.IServer;
 import muserver.common.exceptions.ServerException;
 import muserver.connectserver.ConnectServer;
+import muserver.gameserver.GameServer;
 import muserver.joinserver.JoinServer;
 import muserver.joinserver.exceptions.JoinServerException;
+import muserver.startup.exceptions.StartupException;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -28,12 +30,12 @@ public class Startup {
   CommandLine cl = parser.parse(cliOptions, args);
 
   if (!cl.hasOption("p")) {
-   throw new JoinServerException("--path argument to the startup.json file is required for starting services");
+   throw new StartupException("--path argument to the startup.json file is required for starting services");
   }
 
   String path = cl.getOptionValue("p");
   
-  IServer joinServer = new JoinServer(), connectServer = new ConnectServer();
+  IServer joinServer = new JoinServer(), connectServer = new ConnectServer(), gameServer = new GameServer();
 
   Runtime.getRuntime().addShutdownHook(new Thread(() -> {
    try {
@@ -43,6 +45,10 @@ public class Startup {
 
     if (connectServer != null) {
      connectServer.shutdown();
+    }
+
+    if (gameServer != null) {
+     gameServer.shutdown();
     }
    } catch (Exception e) {
     logger.error(e.getMessage(), e);
@@ -55,13 +61,19 @@ public class Startup {
    try {
     connectServer.startup(startup);
    } catch (ServerException e) {
-    logger.error(e.getMessage(), e);
+    logger.fatal(e.getMessage(), e);
    }
   }).thenRun(() -> {
    try {
     joinServer.startup(startup);
    } catch (ServerException e) {
-    logger.error(e.getMessage(), e);
+    logger.fatal(e.getMessage(), e);
+   }
+  }).thenRun(() -> {
+   try {
+    gameServer.startup(startup);
+   } catch (ServerException e) {
+    logger.fatal(e.getMessage(), e);
    }
   }).exceptionally(throwable -> {
    logger.error(throwable.getMessage(), throwable);

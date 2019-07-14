@@ -14,13 +14,19 @@
     <dependencies>
         <dependency>
             <groupId>muserver</groupId>
-            <artifactId>muserver-joinserver</artifactId>
+            <artifactId>muserver-connectserver</artifactId>
             <version>1.0</version>
         </dependency>
 
         <dependency>
             <groupId>muserver</groupId>
-            <artifactId>muserver-connectserver</artifactId>
+            <artifactId>muserver-gameserver</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>muserver</groupId>
+            <artifactId>muserver-joinserver</artifactId>
             <version>1.0</version>
         </dependency>
     </dependencies>
