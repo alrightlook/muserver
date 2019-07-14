@@ -15,6 +15,10 @@ muserver-connectserver/target/
 muserver-connectserver/*.iml
 muserver-connectserver/dependency-reduced-pom.xml
 
+muserver-gameserver/target/
+muserver-gameserver/*.iml
+muserver-gameserver/dependency-reduced-pom.xml
+
 muserver-joinserver/target/
 muserver-joinserver/*.iml
 muserver-joinserver/dependency-reduced-pom.xml
