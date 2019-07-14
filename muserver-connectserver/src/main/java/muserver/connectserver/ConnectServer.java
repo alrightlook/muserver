@@ -88,8 +88,14 @@ public class ConnectServer implements IServer {
 
    TcpConnectServerInitializer tcpConnectServerInitializer = new TcpConnectServerInitializer(connectServerContext);
 
-   logger.info(String.format("Start connect server tcp channel on port %d", commonConfigs.connectServer().tcpPort()));
-   new ServerBootstrap().group(tcpParentLoopGroup, tcpChildLoopGroup).channel(NioServerSocketChannel.class).childHandler(tcpConnectServerInitializer).bind(commonConfigs.connectServer().tcpPort());
+   logger.info(String.format("Start connect server tcp channel on port: %d", commonConfigs.connectServer().tcpPort()));
+
+   new ServerBootstrap()
+       .group(tcpParentLoopGroup, tcpChildLoopGroup)
+       .channel(NioServerSocketChannel.class)
+       .childHandler(tcpConnectServerInitializer)
+       .bind(commonConfigs.connectServer().tcpPort());
+
    logger.info(String.format("Connect Server is running and listens for connections"));
   } catch (IOException e) {
    throw new ConnectServerException(e.getMessage(), e);

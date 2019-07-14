@@ -10,6 +10,7 @@ import muserver.common.messages.PBMSG_HEAD;
 import muserver.common.messages.PBMSG_HEAD2;
 import muserver.common.messages.PWMSG_HEAD2;
 import muserver.common.types.ServerType;
+import muserver.common.utils.HexUtils;
 import muserver.connectserver.contexts.ConnectServerContext;
 import muserver.connectserver.exceptions.TcpConnectServerHandlerException;
 import muserver.connectserver.messages.*;
@@ -75,25 +76,27 @@ public class TcpConnectServerHandler extends SimpleChannelInboundHandler<ByteBuf
    throw new TcpConnectServerHandlerException(String.format("Invalid protocol type: %d", buffer[0]));
   }
 
+  logger.info(HexUtils.toString(buffer));
+
   switch (buffer[2]) {
    case (byte) 0xF4: {
     switch (buffer[3]) {
      case 3: {
-      PMSG_REQ_SERVER_INFO serverInfoRequest = PMSG_REQ_SERVER_INFO.deserialize(new ByteArrayInputStream(buffer));
+      PMSG_REQ_SERVER_INFO requestServerInfo = PMSG_REQ_SERVER_INFO.deserialize(new ByteArrayInputStream(buffer));
 
-      ServerConfigs serverConfigs = this.connectServerContext.serversConfigsMap().getOrDefault(serverInfoRequest.serverCode().shortValue(), null);
+      ServerConfigs serverConfigs = this.connectServerContext.serversConfigsMap().getOrDefault(requestServerInfo.serverCode().shortValue(), null);
 
       if (serverConfigs == null) {
-       throw new TcpConnectServerHandlerException( String.format("Server id: %d mismatch configuration", serverInfoRequest.serverCode()));
+       throw new TcpConnectServerHandlerException( String.format("Server id: %d mismatch configuration", requestServerInfo.serverCode()));
       }
 
-      PMSG_ANS_SERVER_INFO serverConnection = PMSG_ANS_SERVER_INFO.create(
-          PBMSG_HEAD2.create(Globals.PMHC_BYTE, (byte) PMSG_ANS_SERVER_INFO.sizeOf(), serverInfoRequest.header().headCode(), serverInfoRequest.header().subCode()),
+      PMSG_RESP_SERVER_INFO responseServerInfo = PMSG_RESP_SERVER_INFO.create(
+          PBMSG_HEAD2.create(Globals.PMHC_BYTE, (byte) PMSG_RESP_SERVER_INFO.sizeOf(), requestServerInfo.header().headCode(), requestServerInfo.header().subCode()),
           serverConfigs.ip(),
           serverConfigs.port().shortValue()
       );
 
-      ctx.writeAndFlush(Unpooled.wrappedBuffer(serverConnection.serialize(new ByteArrayOutputStream())));
+      ctx.writeAndFlush(Unpooled.wrappedBuffer(responseServerInfo.serialize(new ByteArrayOutputStream())));
      }
      break;
 

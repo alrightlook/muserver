@@ -9,16 +9,16 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 @AutoValue
-public abstract class PMSG_ANS_SERVER_INFO extends AbstractPacket<PMSG_ANS_SERVER_INFO> {
+public abstract class PMSG_RESP_SERVER_INFO extends AbstractPacket<PMSG_RESP_SERVER_INFO> {
  public static int sizeOf() {
   return PBMSG_HEAD2.sizeOf() + 16 + 2;
  }
 
  public static Builder builder() {
-  return new AutoValue_PMSG_ANS_SERVER_INFO.Builder();
+  return new AutoValue_PMSG_RESP_SERVER_INFO.Builder();
  }
 
- public static PMSG_ANS_SERVER_INFO create(PBMSG_HEAD2 header, String serverAddress, Short serverPort) {
+ public static PMSG_RESP_SERVER_INFO create(PBMSG_HEAD2 header, String serverAddress, Short serverPort) {
   return builder()
       .header(header)
       .serverAddress(serverAddress)
@@ -48,6 +48,6 @@ public abstract class PMSG_ANS_SERVER_INFO extends AbstractPacket<PMSG_ANS_SERVE
 
   public abstract Builder serverPort(Short portNumber);
 
-  public abstract PMSG_ANS_SERVER_INFO build();
+  public abstract PMSG_RESP_SERVER_INFO build();
  }
 }
