@@ -74,9 +74,9 @@ public class ConnectServer implements IServer {
 
  public void startup(File file) throws ConnectServerException {
   try {
-   CommonConfigs commonConfigs = mapper.readValue(IOUtils.toString(new FileInputStream(file), StandardCharsets.UTF_8), CommonConfigs.class);
-
    LoggerUtils.updateLoggerConfiguration(ConnectServer.class.getCanonicalName(), AppenderType.CONSOLE, "%d{DEFAULT} [%t] %-5level %logger{36} - %msg%n", LoggingLevel.INFO);
+
+   CommonConfigs commonConfigs = mapper.readValue(IOUtils.toString(new FileInputStream(file), StandardCharsets.UTF_8), CommonConfigs.class);
 
    Map<Short, ServerConfigs> serversConfigsMap = new HashMap<>();
 
