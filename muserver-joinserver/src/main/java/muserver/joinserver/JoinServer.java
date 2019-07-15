@@ -70,9 +70,9 @@ public class JoinServer implements IServer {
 
  public void startup(File file) throws JoinServerException {
   try {
-   CommonConfigs commonConfigs = mapper.readValue(IOUtils.toString(new FileInputStream(file), StandardCharsets.UTF_8), CommonConfigs.class);
-
    LoggerUtils.updateLoggerConfiguration(JoinServer.class.getCanonicalName(), AppenderType.CONSOLE, "%d{DEFAULT} [%t] %-5level %logger{36} - %msg%n", LoggingLevel.INFO);
+
+   CommonConfigs commonConfigs = mapper.readValue(IOUtils.toString(new FileInputStream(file), StandardCharsets.UTF_8), CommonConfigs.class);
 
    DatabaseDialect dialect = new SqlServerDatabaseDialect(commonConfigs.joinServer().connectionString());
 
