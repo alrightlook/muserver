@@ -6,40 +6,47 @@ import com.google.auto.value.AutoValue;
 
 @AutoValue
 public abstract class CommonConfigs extends AbstractConfigs {
-    public static Builder builder() {
-        return new AutoValue_CommonConfigs.Builder();
-    }
+ public static Builder builder() {
+  return new AutoValue_CommonConfigs.Builder();
+ }
 
-    @JsonCreator
-    public static CommonConfigs create(
-        @JsonProperty("joinServer") JoinServerConfigs joinServer,
-        @JsonProperty("connectServer") ConnectServerConfigs connectServer,
-        @JsonProperty("gameServer") GameServerConfigs gameServer
-    ) {
-        return builder()
-            .joinServer(joinServer)
-            .connectServer(connectServer)
-            .gameServer(gameServer)
-            .build();
-    }
+ @JsonCreator
+ public static CommonConfigs create(
+         @JsonProperty("connectServer") ConnectServerConfigs connectServer,
+         @JsonProperty("joinServer") JoinServerConfigs joinServer,
+         @JsonProperty("dataServer") DataServerConfigs dataServer,
+         @JsonProperty("gameServer") GameServerConfigs gameServer
+ ) {
+  return builder()
+          .connectServer(connectServer)
+          .joinServer(joinServer)
+          .dataServer(dataServer)
+          .gameServer(gameServer)
+          .build();
+ }
 
-    @JsonProperty("joinServer")
-    public abstract JoinServerConfigs joinServer();
+ @JsonProperty("connectServer")
+ public abstract ConnectServerConfigs connectServer();
 
-    @JsonProperty("connectServer")
-    public abstract ConnectServerConfigs connectServer();
+ @JsonProperty("joinServer")
+ public abstract JoinServerConfigs joinServer();
 
-    @JsonProperty("gameServer")
-    public abstract GameServerConfigs gameServer();
+ @JsonProperty("dataServer")
+ public abstract DataServerConfigs dataServer();
 
-    @AutoValue.Builder
-    public abstract static class Builder {
-        public abstract Builder joinServer(JoinServerConfigs joinServer);
+ @JsonProperty("gameServer")
+ public abstract GameServerConfigs gameServer();
 
-        public abstract Builder connectServer(ConnectServerConfigs connectServer);
+ @AutoValue.Builder
+ public abstract static class Builder {
+  public abstract Builder joinServer(JoinServerConfigs joinServer);
 
-        public abstract Builder gameServer(GameServerConfigs gameServer);
+  public abstract Builder connectServer(ConnectServerConfigs connectServer);
 
-        public abstract CommonConfigs build();
-    }
+  public abstract Builder gameServer(GameServerConfigs gameServer);
+
+  public abstract Builder dataServer(DataServerConfigs dataServer);
+
+  public abstract CommonConfigs build();
+ }
 }
