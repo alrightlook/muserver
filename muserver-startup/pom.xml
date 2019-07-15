@@ -15,19 +15,25 @@
         <dependency>
             <groupId>muserver</groupId>
             <artifactId>muserver-connectserver</artifactId>
-            <version>1.0</version>
+            <version>${project.parent.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>muserver</groupId>
+            <artifactId>muserver-dataserver</artifactId>
+            <version>${project.parent.version}</version>
         </dependency>
 
         <dependency>
             <groupId>muserver</groupId>
             <artifactId>muserver-gameserver</artifactId>
-            <version>1.0</version>
+            <version>${project.parent.version}</version>
         </dependency>
 
         <dependency>
             <groupId>muserver</groupId>
             <artifactId>muserver-joinserver</artifactId>
-            <version>1.0</version>
+            <version>${project.parent.version}</version>
         </dependency>
     </dependencies>
 </project>

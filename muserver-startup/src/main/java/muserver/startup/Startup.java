@@ -3,6 +3,7 @@ package muserver.startup;
 import muserver.common.IServer;
 import muserver.common.exceptions.ServerException;
 import muserver.connectserver.ConnectServer;
+import muserver.dataserver.DataServer;
 import muserver.gameserver.GameServer;
 import muserver.joinserver.JoinServer;
 import muserver.joinserver.exceptions.JoinServerException;
@@ -35,16 +36,20 @@ public class Startup {
 
   String path = cl.getOptionValue("p");
   
-  IServer joinServer = new JoinServer(), connectServer = new ConnectServer(), gameServer = new GameServer();
+  IServer connectServer = new ConnectServer(), joinServer = new JoinServer(), dataServer = new DataServer(), gameServer = new GameServer();
 
   Runtime.getRuntime().addShutdownHook(new Thread(() -> {
    try {
+    if (connectServer != null) {
+     connectServer.shutdown();
+    }
+
     if (joinServer != null) {
      joinServer.shutdown();
     }
 
-    if (connectServer != null) {
-     connectServer.shutdown();
+    if (dataServer != null) {
+     dataServer.shutdown();
     }
 
     if (gameServer != null) {
@@ -66,6 +71,12 @@ public class Startup {
   }).thenRun(() -> {
    try {
     joinServer.startup(startup);
+   } catch (ServerException e) {
+    logger.fatal(e.getMessage(), e);
+   }
+  }).thenRun(() -> {
+   try {
+    dataServer.startup(startup);
    } catch (ServerException e) {
     logger.fatal(e.getMessage(), e);
    }
