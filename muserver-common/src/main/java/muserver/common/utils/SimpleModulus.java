@@ -4,32 +4,33 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class SimpleModulus {
+ public static final Integer FILE_HEADER = 4370;
+
  public static final Integer[] XOR_KEYS = {
-     0x3F08A79B,
-     0xE25CC287,
-     0x93D27AB9,
-     0x20DEA7BF
+         0x3F08A79B,
+         0xE25CC287,
+         0x93D27AB9,
+         0x20DEA7BF
  };
  public static final Integer[] MODULUS_KEYS = {
-     0x3F3EB689,
-     0xB188C287,
-     0xD2D345B0,
-     0x483C45E1,
+         0x1F44F,
+         0x28386,
+         0x1125B,
+         0x1A192
  };
  public static final Integer[] ENCRYPTION_KEYS = {
-     0x39253448,
-     0x3EFFE258,
-     0x56AA45B1,
-     0x84D445E3
+         0x7B38,
+         0x7FF,
+         0xDEB3,
+         0x27C7,
  };
  public static final Integer[] DECRYPTION_KEYS = {
-     0xED9BDF1B,
-     0x3C7C449D,
-     0x9BEDA8CF,
-     0x7C3C5DFE
+         0xBD1D,
+         0xB455,
+         0x3B43,
+         0x9239
  };
 
  public static int encrypt(Byte[] lpDest, Byte[] lpSource, int iSize) {
@@ -74,6 +75,8 @@ public class SimpleModulus {
  }
 
  public static int decryptBlock(ByteBuffer lpDest, ByteBuffer lpSource) {
+  lpDest.clear();
+
   ByteBuffer dwDecBuffer = ByteBuffer.allocate(Integer.BYTES * 4);
 
   Integer iBitPosition = 0;
@@ -150,8 +153,7 @@ public class SimpleModulus {
   // Copy the the bits of Source to the Dest
   int iNewTempBufferLen = ((iShiftRight <= iShiftLeft) ? 0 : 1) + iTempBufferLen;
   byte startI = getByteOfBit(iDestBitPos);
-  for (int i = startI; i<iNewTempBufferLen; i++)
-  {
+  for (int i = startI; i < iNewTempBufferLen; i++) {
    byte val = lpDest.get(i);
    val |= pTempBuffer.get(i);
    lpDest.put(i, val);
@@ -168,7 +170,6 @@ public class SimpleModulus {
 
  public static void shift(ByteBuffer lpBuff, int iSize, int ShiftLen) {
 //  unsigned char * TempBuff = (unsigned char *)lpBuff;
-
 
   // Case no Shift Len
   if (ShiftLen != 0) {
@@ -202,32 +203,41 @@ public class SimpleModulus {
   }
  }
 
- public static boolean printAllKeys(File file, Short fileHeader) throws Exception {
+ public static boolean printAllKeys(File file) throws Exception {
   byte[] fileBuf = Files.readAllBytes(file.toPath());
-
-  if (file.length() != 54) {
-   throw new Exception("Invalid file length");
-  }
 
   ByteArrayInputStream stream = new ByteArrayInputStream(fileBuf);
 
-  if (fileHeader != EndianUtils.readShortLE(fileBuf, 0)) {
+  short fileHeader = EndianUtils.readShortLE(stream);
+
+  if (fileHeader != FILE_HEADER) {
    throw new Exception("Invalid file header");
   }
 
+  short fileLength = EndianUtils.readShortLE(stream);
+
+  if (fileLength != fileBuf.length) {
+   throw new Exception("Invalid file length");
+  }
+
+  short fileUnkw3 = EndianUtils.readShortLE(stream);
+
   System.out.println("Modulus keys");
+
   Integer[] modulusKeys = new Integer[]{EndianUtils.readIntegerLE(stream), EndianUtils.readIntegerLE(stream), EndianUtils.readIntegerLE(stream), EndianUtils.readIntegerLE(stream)};
   for (int n = 0; n < 4; n++) {
    System.out.println(String.format("%X", XOR_KEYS[n] ^ modulusKeys[n]));
   }
 
   System.out.println("Encryption keys");
+
   Integer[] encryptionKeys = new Integer[]{EndianUtils.readIntegerLE(stream), EndianUtils.readIntegerLE(stream), EndianUtils.readIntegerLE(stream), EndianUtils.readIntegerLE(stream)};
   for (int n = 0; n < 4; n++) {
    System.out.println(String.format("%X", XOR_KEYS[n] ^ encryptionKeys[n]));
   }
 
   System.out.println("Decryption keys");
+
   Integer[] decryptionKeys = new Integer[]{EndianUtils.readIntegerLE(stream), EndianUtils.readIntegerLE(stream), EndianUtils.readIntegerLE(stream), EndianUtils.readIntegerLE(stream)};
   for (int n = 0; n < 4; n++) {
    System.out.println(String.format("%X", XOR_KEYS[n] ^ decryptionKeys[n]));
@@ -238,41 +248,38 @@ public class SimpleModulus {
 
 
  public static void main(String[] args) throws Exception {
-//  byte[] c3Packet = new byte[]{(byte) 0xC3, 0x18, 0x28, 0x6F, 0x32, 0x33, (byte) 0x90, 0xA, 0x70, 0x35, 0x51, (byte) 0xFD, (byte) 0xC8, (byte) 0xFC, 0x6D, 0x13, (byte) 0xA9, 0x15, 0x2F, (byte) 0x92, 0x0, 0x0, 0x31, 0xF};
-//
-//  System.out.println(HexUtils.toString(c3Packet));
-//
-//  ByteBuffer dest = ByteBuffer.allocate(c3Packet.length);
-//  ByteBuffer source = ByteBuffer.wrap(c3Packet);
-//  source.position(2);
-//  decrypt(dest, source, c3Packet.length - 2);
-//  byte[] c3PacketDecrypted = dest.array();
-//  System.out.println(HexUtils.toString(c3PacketDecrypted));
+  byte[] c3Packet = new byte[]{(byte) 0xC3, 0x18, 0x28, 0x6F, 0x32, 0x33, (byte) 0x90, 0xA, 0x70, 0x35, 0x51, (byte) 0xFD, (byte) 0xC8, (byte) 0xFC, 0x6D, 0x13, (byte) 0xA9, 0x15, 0x2F, (byte) 0x92, 0x0, 0x0, 0x31, 0xF};
+  System.out.println(HexUtils.toString(c3Packet));
+  ByteBuffer dest = ByteBuffer.allocate(c3Packet.length);
+  ByteBuffer source = ByteBuffer.wrap(c3Packet);
+  source.position(2);
+  decrypt(dest, source, c3Packet.length - 2);
+  byte[] c3PacketDecrypted = dest.array();
+  System.out.println(HexUtils.toString(c3PacketDecrypted));
 
   //Client
 //  File dec2Dat = new File("/home/briankernighan/Desktop/Dec2.dat");
 //  System.out.println(String.format("Print %s keys", dec2Dat.toString()));
-//  if (!printAllKeys(dec2Dat, (short) 4370)) {
+//  if (!printAllKeys(dec2Dat)) {
 //   throw new Exception("Couldn't load Dec2.dat");
 //  }
 //
 //  File enc1Dat = new File("/home/briankernighan/Desktop/Enc1.dat");
 //  System.out.println(String.format("Print %s keys", enc1Dat.toString()));
-//  if (!printAllKeys(enc1Dat, (short) 4370)) {
+//  if (!printAllKeys(enc1Dat)) {
 //   throw new Exception("Couldn't load Enc1.dat");
 //  }
 
   //Server
-  File dec1Dat = new File("/home/briankernighan/Desktop/Dec1.dat");
-  System.out.println(String.format("Print %s keys", dec1Dat.toString()));
-  if (!printAllKeys(dec1Dat, (short) 4370)) {
-   throw new Exception("Couldn't load Dec1.dat");
-  }
-
-  File enc2Dat = new File("/home/briankernighan/Desktop/Enc2.dat");
-  System.out.println(String.format("Print %s keys", enc2Dat.toString()));
-  if (!printAllKeys(enc2Dat, (short) 4370)) {
-   throw new Exception("Couldn't load Enc2.dat");
-  }
+//  File dec1Dat = new File("/home/victorchicu/Desktop/Dec1.dat");
+//  System.out.println(String.format("Print %s keys", dec1Dat.toString()));
+//  if (!printAllKeys(dec1Dat)) {
+//   throw new Exception("Couldn't load Dec1.dat");
+//  }
+//
+//  File enc2Dat = new File("/home/victorchicu/Desktop/Enc2.dat");
+//  System.out.println(String.format("Print %s keys", enc2Dat.toString()));
+//  if (!printAllKeys(enc2Dat)) {
+//   throw new Exception("Couldn't load Enc2.dat");
  }
 }
