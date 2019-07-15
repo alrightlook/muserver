@@ -10,7 +10,7 @@ import muserver.gameserver.exceptions.GameServerException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class TcpGameServerHandler  extends SimpleChannelInboundHandler<ByteBuf> {
+public class TcpGameServerHandler extends SimpleChannelInboundHandler<ByteBuf> {
  private final static Logger logger = LogManager.getLogger(TcpGameServerHandler.class);
 
  public TcpGameServerHandler(GameServerContext gameServerContext) {

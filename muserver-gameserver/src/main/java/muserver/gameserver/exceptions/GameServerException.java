@@ -2,7 +2,7 @@ package muserver.gameserver.exceptions;
 
 import muserver.common.exceptions.ServerException;
 
-public class GameServerException  extends ServerException {
+public class GameServerException extends ServerException {
  public GameServerException() {
  }
 
