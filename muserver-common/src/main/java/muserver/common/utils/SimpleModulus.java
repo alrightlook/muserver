@@ -108,121 +108,111 @@ public class SimpleModulus {
   return addBits(lpDest, iBitPos, dwEncValue, 0, 16);
  }
 
- public static int decrypt(ByteBuffer lpDest, ByteBuffer lpSource, int iSize) {
-  if (lpDest == null) {
-   return iSize * 8 / 11;
-  }
+ public static int decrypt(ByteBuffer lpTarget, ByteBuffer lpSource, int size) {
+  int result = (size * 8) / 11;
+  int decSize = 0;
 
-  ByteBuffer lpTempDest = lpDest;
+  ByteBuffer lpTempDest = lpTarget;
   ByteBuffer lpTempSrc = lpSource;
 
-  int iResult = 0;
-  int iDecLen = 0;
+  if (size > 0) {
+   while (decSize < size) {
+    int tempResult = decryptBlock(lpTempDest, lpTempSrc);
 
-  if (iSize > 0) {
-   while (iDecLen < iSize) {
-    int iTempResult = decryptBlock(lpTempDest, lpTempSrc);
-
-    if (iResult < 0) {
-     return iResult;
+    if (result < 0) {
+     return result;
     }
 
-    iResult += iTempResult;
-    iDecLen += 11;
+    result += tempResult;
+    decSize += 11;
     lpTempSrc.position(lpTempSrc.position() + 11);
     lpTempDest.position(lpTempDest.position() + 8);
 
    }
   }
 
-  return iResult;
+  return result;
  }
 
- public static int decryptBlock(ByteBuffer lpDest, ByteBuffer lpSource) {
-  ByteBuffer dwDecBuffer = ByteBuffer.allocate(Integer.BYTES * 4);
-  int iBitPosition = 0;
+ public static int decryptBlock(ByteBuffer lpTarget, ByteBuffer lpSource) {
+  ByteBuffer decBuffer = ByteBuffer.allocate(Integer.BYTES * 4);
 
-  ByteBuffer lpDecDest = lpDest;
-  ByteBuffer lpDecSource = lpSource;
+  ByteBuffer lpTempSource = lpSource;
+  ByteBuffer lpTempTarget = lpTarget;
 
-  for (int i = 0; i < 4; i++) {
-   addBits(dwDecBuffer, 0, lpDecSource, iBitPosition, 16);
-   dwDecBuffer.position(dwDecBuffer.position() + i * 4);
-   iBitPosition += 16;
-   addBits(dwDecBuffer, 22, lpDecSource, iBitPosition, 2);
-   dwDecBuffer.position(dwDecBuffer.position() + i * 4);
-   iBitPosition += 2;
+  int bitPos = 0;
+
+  for (int n = 0; n < 4; n++) {
+   addBits(decBuffer, 0, lpTempSource, bitPos, 16);
+   bitPos += 16;
+   addBits(decBuffer, 22, lpTempSource, bitPos, 2);
+   bitPos += 2;
   }
 
-  for (int i = 2; i >= 0; i--) {
-   byte val = (byte) (dwDecBuffer.get(i) ^ XOR_KEY_TABLE[i] ^ (dwDecBuffer.get(i + 1) & 0xFFFF));
-   dwDecBuffer.put(i, val);
+  for (int n = 2; n >= 0; n--) {
+   int val = (decBuffer.getInt(n) ^ XOR_KEY_TABLE[n]) ^ decBuffer.getShort(n + 1);
+   decBuffer.putInt(n, val);
   }
 
-  int Temp = 0, Temp1;
+  Integer value = 0;
 
-  for (int i = 0; i < 4; i++) {
-   Temp1 = ((DECRYPTION_KEY_TABLE[i] * (dwDecBuffer.get(i))) % (MODULUS_KEY_TABLE[i])) ^ XOR_KEY_TABLE[i] ^ Temp;
-   Temp = dwDecBuffer.get(i) & 0xFFFF;
-   lpDecDest.putShort(i, (short) Temp1);
+  for (int n = 0; n < 4; n++) {
+   lpTempTarget.putShort(n, (short) (((DECRYPTION_KEY_TABLE[n] * decBuffer.getInt(n)) % (MODULUS_KEY_TABLE[n]) ^ XOR_KEY_TABLE[n]) ^ value));
+   value = decBuffer.getInt(n);
   }
 
-  dwDecBuffer.put(0, (byte) 0);
-  addBits(dwDecBuffer, 0, lpDecSource, iBitPosition, 16);
-  dwDecBuffer.put(0, (byte) (dwDecBuffer.get(1) ^ dwDecBuffer.get(0) ^ 0x3D));
+  decBuffer.putInt(0, 0);
+  addBits(decBuffer, 0, lpTempSource, bitPos, 16);
+  decBuffer.put(0, (byte) ((decBuffer.get(0) ^ decBuffer.get(1)) ^ 0x3D));
 
   byte btCheckSum = (byte) 0xF8;
 
-  for (int i = 0; i < 8; i++) {
-   btCheckSum ^= lpDecDest.get(i);
+  for (int n = 0; n < 8; n++) {
+   btCheckSum ^= lpTempTarget.get(n);
   }
 
-  if (btCheckSum != dwDecBuffer.get(1)) {
+  if (btCheckSum != decBuffer.get(1)) {
    return -1;
   }
 
-  return dwDecBuffer.get(0);
+  return decBuffer.get(0);
  }
 
- public static int addBits(ByteBuffer lpDest, int iDestBitPos, ByteBuffer lpSource, int iBitSourcePos, int iBitLen) {
-  int iSourceBufferBitLen = iBitLen + iBitSourcePos;
-  int iTempBufferLen = getByteOfBit(iSourceBufferBitLen - 1);
-  iTempBufferLen += 1 - getByteOfBit(iBitSourcePos);
+ public static int addBits(ByteBuffer lpTarget, int targetBitPos, ByteBuffer lpSource, int sourceBitPos, int size) {
+  int sourceBitSize = sourceBitPos + size;
+  int tempSize1 = getByteOfBit(sourceBitSize - 1) + (1 - getByteOfBit(sourceBitPos));
 
-  ByteBuffer pTempBuffer = ByteBuffer.allocate(iTempBufferLen + 1);
-  byte lpSourceByteOfBit = getByteOfBit(iBitSourcePos);
-  memcpy(pTempBuffer, (ByteBuffer) lpSource.position(lpSource.position() + lpSourceByteOfBit), iTempBufferLen);
+  ByteBuffer lpTempBuff = ByteBuffer.allocate(tempSize1 + 1);
+  byte lpSourceByteOfBit = getByteOfBit(sourceBitPos);
+  memcpy(lpTempBuff, (ByteBuffer) lpSource.position(lpSource.position() + lpSourceByteOfBit), tempSize1);
 
-  if ((iSourceBufferBitLen % 8) != 0) {
-   byte val = pTempBuffer.get(iTempBufferLen - 1);
-   val &= 255 << (8 - (iSourceBufferBitLen % 8));
-   pTempBuffer.put(iTempBufferLen - 1, val);
+  if ((sourceBitSize % 8) != 0) {
+   byte val = lpTempBuff.get(tempSize1 - 1);
+   val &= 255 << (8 - (sourceBitSize % 8));
+   lpTempBuff.put(tempSize1 - 1, val);
   }
 
-  // Get the Values to Shift
-  int iShiftLeft = (iBitSourcePos % 8);
-  int iShiftRight = (iDestBitPos % 8);
+  int iShiftLeft = (sourceBitPos % 8);
+  int iShiftRight = (targetBitPos % 8);
 
-  // Shift the Values to Add the right space of the desired bits
-  shift(pTempBuffer, iTempBufferLen, -iShiftLeft);
-  shift(pTempBuffer, iTempBufferLen + 1, iShiftRight);
+  shift(lpTempBuff, tempSize1, -iShiftLeft);
+  shift(lpTempBuff, tempSize1 + 1, iShiftRight);
 
-  // Copy the the bits of Source to the Dest
-  int iNewTempBufferLen = ((iShiftRight <= iShiftLeft) ? 0 : 1) + iTempBufferLen;
-  byte lpDestByteOfBit = getByteOfBit(iDestBitPos);
-  ByteBuffer TempDist = (ByteBuffer) lpDest.position(lpDestByteOfBit);
+  int iNewTempBufferLen = ((iShiftRight <= iShiftLeft) ? 0 : 1) + tempSize1;
+  byte lpDestByteOfBit = getByteOfBit(targetBitPos);
+  ByteBuffer TempDist = (ByteBuffer) lpTarget.position(lpDestByteOfBit);
 
   for (int i = 0; i < iNewTempBufferLen; i++) {
-   byte val = pTempBuffer.get(i);
-   val |= pTempBuffer.get(i);
+   byte val = lpTempBuff.get(i);
+   val |= lpTempBuff.get(i);
    TempDist.put(i, val);
   }
 
   // Delete the temp Buffer
-  pTempBuffer = null;
+  lpTempBuff = null;
 
   // Return the number of bits of the new Dest Buffer
-  return iDestBitPos + iBitLen;
+  return targetBitPos + size;
  }
 
  public static byte getByteOfBit(int btByte) {
@@ -326,8 +316,10 @@ public class SimpleModulus {
  }
 
  private static void memset(ByteBuffer pTempBuffer, int offset, int size) {
+  pTempBuffer.mark();
   for (int i = offset; i < size; i++) {
    pTempBuffer.put((byte) 0);
   }
+  pTempBuffer.reset();
  }
 }
