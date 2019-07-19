@@ -19,12 +19,15 @@ public class SimpleModulusTest {
  }
 
  @Test
- public void testC1PacketEncryptionDecryption() throws Exception {
+ public void testC3PacketDecryption() throws Exception {
   byte[] c3Packet = new byte[]{(byte) 0xC3, 0x18, 0x28, 0x6F, 0x32, 0x33, (byte) 0x90, 0xA, 0x70, 0x35, 0x51, (byte) 0xFD, (byte) 0xC8, (byte) 0xFC, 0x6D, 0x13, (byte) 0xA9, 0x15, 0x2F, (byte) 0x92, 0x0, 0x0, 0x31, 0xF};
-  ByteBuffer lpSrc = ByteBuffer.wrap(c3Packet);
-  ByteBuffer lpDest = ByteBuffer.allocate(c3Packet.length);
-  SimpleModulus.decrypt((ByteBuffer) lpDest.position(lpDest.position() + 1), (ByteBuffer) lpSrc.position(lpSrc.position() + 2), c3Packet.length - 2);
-  System.out.println(HexUtils.toString(lpDest.array()));
+  ByteBuffer lpMsg = ByteBuffer.wrap(c3Packet);
+  ByteBuffer decBuff = ByteBuffer.allocate(c3Packet.length);
+  Integer decSize = SimpleModulus.decrypt((ByteBuffer) decBuff.position(decBuff.position() + 1), (ByteBuffer) lpMsg.position(lpMsg.position() + 2), c3Packet.length - 2) + 1;
+  byte header = (byte) 0xC1;
+  decBuff.put(0, header);
+  decBuff.put(1, decSize.byteValue());
+  System.out.println(HexUtils.toString(decBuff.array()));
  }
 
  @Test
